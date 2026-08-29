@@ -466,6 +466,21 @@
     opacity: 0.7; cursor: wait; pointer-events: none;
     transform: none !important;
   }
+  .cat-share-fab {
+    position: fixed;
+    right: 32px; bottom: 140px;
+    z-index: 9999;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 18px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    color: var(--iron);
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(70,73,76,0.12);
+  }
+  .cat-share-fab:hover { border-color: var(--iron); }
 
   /* PDF EXPORT — applied to <body> only while html2pdf is capturing .wrap,
      so the exported file gets clean margins/columns regardless of the
@@ -576,6 +591,14 @@
     <path d="M12 15V3"/>
   </svg>
   <span class="cat-pdf-fab-label">Download as PDF</span>
+</button>
+
+<button type="button" class="cat-share-fab" id="catShareFab" aria-label="Copy a shareable catalogue link">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+    <path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/>
+  </svg>
+  <span id="catShareFabLabel">Copy share link</span>
 </button>
 
 </div><!-- /.page-frame -->
@@ -906,7 +929,29 @@
 
   // --- read state ---
   const PERSIST_KEY = 'cxBadge.designState.v1';
+  function encodeShareState(value) {
+    const bytes = new TextEncoder().encode(value);
+    let binary = '';
+    bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+  }
+  function decodeShareState(value) {
+    const padded = value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '=');
+    const bytes = Uint8Array.from(atob(padded), char => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+  function readSharedCatalogueState() {
+    const match = location.hash.match(/^#catalogue=([A-Za-z0-9_-]+)$/);
+    if (!match) return null;
+    try {
+      const state = JSON.parse(decodeShareState(match[1]));
+      sessionStorage.setItem(PERSIST_KEY, JSON.stringify(state));
+      return state;
+    } catch { return null; }
+  }
+  const sharedState = readSharedCatalogueState();
   const persisted = (() => {
+    if (sharedState) return sharedState;
     try { return JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch { return {}; }
   })();
   const styles = persisted.styles || {};
@@ -1058,6 +1103,20 @@
   // downloadable file and surfaces a real error if it can't.
   const catPdfFab = document.getElementById('catPdfFab');
   const catPdfFabLabel = catPdfFab ? catPdfFab.querySelector('.cat-pdf-fab-label') : null;
+  const catShareFab = document.getElementById('catShareFab');
+  const catShareFabLabel = document.getElementById('catShareFabLabel');
+  if (catShareFab) catShareFab.addEventListener('click', async () => {
+    try {
+      const currentState = sessionStorage.getItem(PERSIST_KEY) || '{}';
+      const shareUrl = new URL(location.href);
+      shareUrl.hash = 'catalogue=' + encodeShareState(currentState);
+      await navigator.clipboard.writeText(shareUrl.toString());
+      if (catShareFabLabel) catShareFabLabel.textContent = 'Link copied';
+      setTimeout(() => { if (catShareFabLabel) catShareFabLabel.textContent = 'Copy share link'; }, 2200);
+    } catch {
+      alert('Unable to copy the link automatically. Please try again.');
+    }
+  });
   function loadHtml2Pdf() {
     if (window.html2pdf) return Promise.resolve();
     return Promise.reject(new Error('The bundled PDF component could not be loaded. Please redeploy the latest files and try again.'));
