@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How it works — Interactive Catalogue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --alabaster: #DCDCDD;
+    --pale-slate: #C5C3C6;
+    --iron: #46494C;
+    --blue-slate: #4C5C68;
+    --cyan: #FF6D05;
+    --cyan-soft: #FFE6D4;
+    --ink: #1F2125;
+    --muted: #6B6E72;
+    --line: #ECECEE;
+    --bg: #F7F7F8;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; background-color: #ffffff; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background-color: transparent;
+        background-attachment: fixed;
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: none; margin: 0; padding: 0 120px; }
+
+  /* AMBIENT ORBS */
+  .bg-orbs { position: fixed; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(120px); will-change: transform, background-color; }
+  .orb-amber { width: 60vw; height: 60vh; bottom: -18vh; left: -14vw;
+    animation: driftAmber 28s ease-in-out infinite alternate, hueShiftAmber 24s ease-in-out infinite alternate; }
+  .orb-cyan  { width: 55vw; height: 55vh; top: -12vh; right: -16vw;
+    animation: driftCyan 32s ease-in-out infinite alternate, hueShiftCyan 30s ease-in-out infinite alternate; }
+  .orb-mint  { width: 38vw; height: 38vh; bottom: 4vh; left: 42vw;
+    animation: driftMint 36s ease-in-out infinite alternate, hueShiftMint 26s ease-in-out infinite alternate; }
+  @keyframes driftAmber { 0% {transform:translate(0,0) scale(1);} 100% {transform:translate(12vw,-6vh) scale(1.06);} }
+  @keyframes driftCyan  { 0% {transform:translate(0,0) scale(1);} 100% {transform:translate(-10vw,8vh) scale(1.05);} }
+  @keyframes driftMint  { 0% {transform:translate(0,0) scale(1);} 100% {transform:translate(-8vw,-4vh) scale(1.1);} }
+  @keyframes hueShiftAmber { 0% {background-color:rgba(248,225,170,0.45);} 33% {background-color:rgba(245,200,180,0.42);} 66% {background-color:rgba(240,220,160,0.42);} 100% {background-color:rgba(250,210,165,0.45);} }
+  @keyframes hueShiftCyan  { 0% {background-color:rgba(190,220,235,0.42);} 33% {background-color:rgba(195,210,230,0.42);} 66% {background-color:rgba(205,225,235,0.42);} 100% {background-color:rgba(195,225,225,0.42);} }
+  @keyframes hueShiftMint  { 0% {background-color:rgba(195,225,210,0.30);} 50% {background-color:rgba(210,225,215,0.30);} 100% {background-color:rgba(200,220,215,0.30);} }
+  @media (prefers-reduced-motion: reduce) { .orb { animation: none; } }
+
+  .page-frame { position: relative; min-height: 100vh; background: transparent; }
+  .page-frame > nav, .page-frame > main, .page-frame > footer { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 120px; max-width: none; margin: 0;
+  }
+  .nav-left { display: flex; align-items: center; gap: 18px; }
+  .brand-logo { display: inline-flex; align-items: center; text-decoration: none; }
+  .brand-logo img { height: 24px; width: auto; display: block; }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 8px 14px; border-radius: 100px; transition: background 0.2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,0.6); color: var(--cyan); }
+  .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; }
+  .nav-links a {
+    color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 21px 0 18px;
+    position: relative;
+  }
+  .hero-shapes {
+    position: absolute;
+    inset: -16px 0 -16px 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .hero-shape {
+    position: absolute;
+    border-radius: 14px;
+    background: rgba(220, 220, 221, 0.55);
+    box-shadow: inset 0 0 0 1px rgba(70,73,76,0.04);
+  }
+  .hero-shape.s1 { width: 69px; height: 69px; top: 24px; left: 13%; border-radius: 18px; background: rgba(229,221,210,0.6); }
+  .hero-shape.s2 { width: 43px; height: 43px; top: 88px; left: 9%; background: rgba(255,230,212,0.55); }
+  .hero-shape.s3 { width: 30px; height: 30px; bottom: 48px; left: 26%; background: rgba(218,228,216,0.55); }
+  .hero-shape.s4 { width: 59px; height: 59px; top: 22px; right: 12%; border-radius: 16px; background: rgba(218,228,216,0.55); }
+  .hero-shape.s5 { width: 37px; height: 37px; top: 106px; right: 8%; background: rgba(255,230,212,0.55); }
+  .hero-shape.s6 { width: 26px; height: 26px; bottom: 56px; right: 24%; background: rgba(229,221,210,0.65); }
+  .hero > * { position: relative; z-index: 1; }
+
+  .hero-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .hero-breadcrumb a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .hero-breadcrumb a:hover { color: var(--ink); }
+  .hero-breadcrumb .sep { opacity: 0.55; }
+  .hero-breadcrumb .current { color: var(--ink); font-weight: 600; }
+
+  .eyebrow-script {
+    display: block;
+    font-family: 'Kalam', cursive;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--iron);
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+  h1 {
+    font-size: 64px;
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -2px;
+    color: var(--ink);
+    max-width: 820px;
+    margin: 0 auto 16px;
+  }
+  h1 .accent {
+    color: var(--ink);
+    font-style: normal;
+    font-weight: 500;
+  }
+  .lead {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  /* HOW-IT-WORKS STEPS */
+  .hiw-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 640px;
+    margin: 0 auto 22px;
+    padding: 14px 0 6px;
+  }
+  .hiw-visual {
+    position: relative;
+    border-radius: 22px;
+    overflow: visible;
+  }
+  .hiw-visual .hiw-img-wrap {
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(70,73,76,0.10);
+    background: var(--white);
+    border: 1px solid var(--line);
+  }
+  .hiw-visual img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .hiw-chip {
+    position: absolute;
+    top: 38%;
+    right: -14px;
+    background: var(--cyan-soft);
+    color: var(--cyan);
+    font-family: 'Kalam', cursive;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 8px 18px;
+    border-radius: 100px;
+    box-shadow: 0 8px 18px rgba(255,109,5,0.18);
+    transform: rotate(-3deg);
+    white-space: nowrap;
+  }
+
+  .hiw-steps {
+    list-style: none;
+    position: relative;
+    padding: 4px 0;
+  }
+  .hiw-steps::before {
+    content: "";
+    position: absolute;
+    left: 19px;
+    top: 32px;
+    bottom: 32px;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, var(--line) 8%, var(--line) 92%, transparent);
+  }
+  .hiw-step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 22px;
+    align-items: flex-start;
+    padding: 16px 0;
+    position: relative;
+  }
+  .hiw-step + .hiw-step { margin-top: 6px; }
+  .hiw-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #fff9e7;
+    border: 1px solid #F2E6BC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 12px rgba(70,73,76,0.06);
+  }
+  .hiw-icon img {
+    width: 21px;
+    height: 21px;
+    display: block;
+  }
+  .hiw-step h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  .hiw-step p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  /* FEATURE STRIP */
+  .feat-strip {
+    background: transparent;
+    border-radius: 24px;
+    padding: 22px 0;
+    margin: 32px 0 26px;
+  }
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .feat-card {
+    background: var(--white);
+    border-radius: 18px;
+    padding: 18px 18px;
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 16px;
+    align-items: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .feat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(70,73,76,0.08);
+  }
+  .feat-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: #F5F5F6;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--iron);
+  }
+  .feat-icon svg { width: 24px; height: 24px; stroke-width: 1.7; }
+  .feat-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+  }
+  .feat-card p {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* SECTION */
+  section.block {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 35px 38px;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 12px 32px rgba(70,73,76,0.05);
+    margin: 0 0 22px;
+  }
+  .block-eyebrow {
+    display: block;
+    font-family: 'Kalam', cursive;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--iron);
+    margin-bottom: 4px;
+  }
+  .block-title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .block-lead {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 720px;
+    margin-bottom: 28px;
+  }
+  .analogy {
+    background: #FFF9E7;
+    border: 1px solid #F2E6BC;
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin: 18px 0 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .analogy .pill {
+    flex-shrink: 0;
+    background: #F2D77A;
+    color: #6A4E08;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 100px;
+    margin-top: 1px;
+  }
+  .analogy p {
+    color: var(--iron);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .analogy p strong { color: var(--ink); font-weight: 600; }
+
+  /* JOURNEY STEPS */
+  .journey {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    counter-reset: jstep;
+  }
+  .j-step {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 22px;
+    align-items: flex-start;
+    padding: 22px 22px;
+    background: #FAFAFB;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    transition: all 0.25s ease;
+  }
+  .j-step:hover {
+    background: var(--white);
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(70,73,76,0.06);
+  }
+  .j-num {
+    counter-increment: jstep;
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: #29294c;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: "SF Mono", Monaco, monospace;
+    box-shadow: 0 6px 16px rgba(41,41,76,0.18);
+  }
+  .j-num::before { content: counter(jstep, decimal-leading-zero); }
+  .j-step h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.2px;
+  }
+  .j-step p {
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .j-step p + p { margin-top: 8px; }
+  .j-step .micro {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--iron);
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  /* BUNDLE LIBRARY */
+  .b-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .b-item {
+    background: #FAFAFB;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px 22px;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+    align-items: flex-start;
+    transition: all 0.25s ease;
+  }
+  .b-item:hover {
+    background: var(--white);
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(70,73,76,0.06);
+  }
+  .b-tile {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: #fff9e7;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .b-tile img { width: 28px; height: 28px; display: block; }
+  .b-item h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+    letter-spacing: -0.1px;
+  }
+  .b-item .b-what {
+    font-size: 13px;
+    color: var(--iron);
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+  .b-item .b-kid {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .b-item .b-kid::before {
+    content: "Think of it as ";
+    color: var(--cyan);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* STYLES */
+  .s-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .s-card {
+    border-radius: 16px;
+    padding: 22px 22px 20px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    transition: all 0.25s ease;
+  }
+  .s-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(70,73,76,0.08); }
+  .s-preview {
+    height: 110px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .s-card.minimal .s-preview {
+    background: #EFEFF1;
+    color: #6E7176;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .s-card.premium .s-preview {
+    background: radial-gradient(circle at 30% 20%, #2B3666, #0F1331);
+    color: #F5C97B;
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: 16px;
+  }
+  .s-card.fun .s-preview {
+    background: linear-gradient(135deg, #FFE3A8, #FFCDB8 50%, #D7CAEC);
+    color: #4D2E80;
+    font-size: 18px;
+  }
+  .s-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .s-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* DETAILS */
+  .d-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .d-card {
+    background: #FAFAFB;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .d-card .d-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .d-card h5 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .d-card p {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  /* CTA */
+  .end-cta {
+    padding: 45px 38px;
+    background: linear-gradient(135deg, #29294c 0%, var(--blue-slate) 100%);
+    border-radius: 24px;
+    color: var(--white);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.12);
+    margin: 0 0 26px;
+  }
+  .end-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255,109,5,0.30), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(220,220,221,0.15), transparent 50%);
+  }
+  .end-cta > * { position: relative; z-index: 1; }
+  .end-cta h2 {
+    font-size: 34px;
+    font-weight: 600;
+    letter-spacing: -0.8px;
+    margin-bottom: 12px;
+  }
+  .end-cta p {
+    color: rgba(255,255,255,0.78);
+    font-size: 16px;
+    max-width: 540px;
+    margin: 0 auto 26px;
+  }
+  .btn {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    padding: 13px 26px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--cyan); color: var(--white); }
+  .btn-primary:hover { background: var(--white); color: var(--iron); transform: translateY(-1px); }
+
+  /* FOOTER */
+  footer { padding: 19px 0 22px; color: var(--muted); font-size: 13px; }
+  .foot-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 18px 120px;
+    max-width: none;
+    margin: 0;
+  }
+  .foot-copy { color: var(--muted); }
+  .foot-brand { color: #5B6CFF; text-decoration: none; font-weight: 600; margin: 0 2px; }
+  .foot-brand:hover { text-decoration: underline; }
+  .foot-links { display: flex; gap: 28px; }
+  .foot-links a { color: var(--iron); text-decoration: none; font-size: 13px; font-weight: 500; transition: color 0.2s; }
+  .foot-links a:hover { color: #5B6CFF; }
+
+  /* Responsive */
+  @media (max-width: 980px) {
+    .hiw-grid { grid-template-columns: 1fr; gap: 32px; }
+    .hiw-chip { right: 18px; }
+    .feat-grid { grid-template-columns: 1fr; }
+    .hero-shape { display: none; }
+  }
+  @media (max-width: 820px) {
+    h1 { font-size: 42px; letter-spacing: -1px; }
+    .lead { font-size: 16px; }
+    .eyebrow-script { font-size: 19px; }
+    .block-title { font-size: 26px; }
+    section.block { padding: 32px 24px; border-radius: 20px; }
+    .b-grid, .s-grid, .d-list { grid-template-columns: 1fr; }
+    .j-step { grid-template-columns: 56px 1fr; gap: 14px; padding: 18px; }
+    .j-num { width: 44px; height: 44px; font-size: 16px; }
+    .hiw-step { grid-template-columns: 34px 1fr; gap: 16px; }
+    .hiw-icon { width: 34px; height: 34px; border-radius: 10px; }
+    .hiw-icon img { width: 18px; height: 18px; }
+    .hiw-steps::before { left: 16px; }
+    .hiw-step h3 { font-size: 18px; }
+    .end-cta { padding: 40px 24px; }
+    .end-cta h2 { font-size: 26px; }
+  }
+
+  .bg-orbs { display: none !important; }
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .page-bg img {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    will-change: transform;
+    animation: pageBgDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes pageBgDrift {
+    0%   { transform: translate(0, 0) scale(1.05); }
+    100% { transform: translate(-1.8%, -1.5%) scale(1.10); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-bg img { animation: none; }
+  }
+
+</style>
+</head>
+<body>
+<div class="page-bg" aria-hidden="true"><img src="Background.svg" alt=""></div>
+
+<div class="page-frame">
+
+<!-- AMBIENT BG -->
+<div class="bg-orbs" aria-hidden="true">
+  <span class="orb orb-amber"></span>
+  <span class="orb orb-cyan"></span>
+  <span class="orb orb-mint"></span>
+</div>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="nav-left">
+    <a href="https://www.vantagecircle.com" class="brand-logo" aria-label="Vantage Circle home" target="_blank" rel="noopener"><img src="Images/vc-logo-new.png" alt="Vantage Circle"></a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How it works</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero-shapes" aria-hidden="true">
+        <span class="hero-shape s1"></span>
+        <span class="hero-shape s2"></span>
+        <span class="hero-shape s3"></span>
+        <span class="hero-shape s4"></span>
+        <span class="hero-shape s5"></span>
+        <span class="hero-shape s6"></span>
+      </div>
+      <nav class="hero-breadcrumb" aria-label="Breadcrumb">
+        <a href="landing.html">Home</a>
+        <span class="sep">›</span>
+        <span class="current">How it works</span>
+      </nav>
+      <span class="eyebrow-script">Simple Steps</span>
+      <h1>How it works</h1>
+      <p class="lead">From your company name to a confirmed design — in five guided steps.</p>
+    </header>
+
+    <!-- HOW IT WORKS · steps -->
+    <div class="hiw-grid">
+      <ol class="hiw-steps">
+        <li class="hiw-step">
+          <div class="hiw-icon"><img src="Icons/Non-Monetary.svg" alt=""></div>
+          <div>
+            <h3>Add your company name</h3>
+            <p>Every preview that follows picks it up automatically.</p>
+          </div>
+        </li>
+        <li class="hiw-step">
+          <div class="hiw-icon"><img src="Icons/Monetary.svg" alt=""></div>
+          <div>
+            <h3>Pick your bundles</h3>
+            <p>Choose the collateral you need — awards, banners, mailers, and more.</p>
+          </div>
+        </li>
+        <li class="hiw-step">
+          <div class="hiw-icon"><img src="Icons/LSA.svg" alt=""></div>
+          <div>
+            <h3>Choose a design style</h3>
+            <p>Minimal, Premium, or Fun &amp; Colourful — one per bundle.</p>
+          </div>
+        </li>
+        <li class="hiw-step">
+          <div class="hiw-icon"><img src="Icons/Teaser.svg" alt=""></div>
+          <div>
+            <h3>Select your badges</h3>
+            <p>Pick from 30 ready-made designs in your chosen style.</p>
+          </div>
+        </li>
+        <li class="hiw-step">
+          <div class="hiw-icon"><img src="Icons/Launch%20Mailer.svg" alt=""></div>
+          <div>
+            <h3>Customise &amp; confirm</h3>
+            <p>Tweak names and colours with a live preview, then confirm.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <!-- FEATURE STRIP -->
+    <section class="feat-strip">
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Live Preview</h4>
+            <p>See every choice on real screens before anything is built.</p>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Auto-Saved Drafts</h4>
+            <p>Close the tab any time — your picks wait for you when you return.</p>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Your Brand Everywhere</h4>
+            <p>Type your company name once — it flows into every preview.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUNDLE LIBRARY -->
+    <section class="block">
+      <span class="block-eyebrow">The eight bundles</span>
+      <h2 class="block-title">What's inside the catalogue</h2>
+      <p class="block-lead">Each bundle covers one part of the employee experience — pick the ones your program needs.</p>
+
+      <div class="b-grid">
+
+        <div class="b-item">
+          <div class="b-tile"><img src="Icons/Non-Monetary.svg" alt=""></div>
+          <div>
+            <h4>Non-Monetary Awards</h4>
+            <p class="b-what">Recognition badges without a cash value — peer shout-outs and value-based callouts.</p>
+          </div>
+        </div>
+
+        <div class="b-item">
+          <div class="b-tile"><img src="Icons/Monetary.svg" alt=""></div>
+          <div>
+            <h4>Monetary Awards</h4>
+            <p class="b-what">Reward badges that carry points to spend in the Vantage rewards store.</p>
+          </div>
+        </div>
+
+        <div class="b-item">
+          <div class="b-tile"><img src="Icons/LSA.svg" alt=""></div>
+          <div>
+            <h4>Long Service Awards</h4>
+            <p class="b-what">Tiered milestone badges for 1, 3, 5, 10, 20, and 25 years of service.</p>
+          </div>
+        </div>
+
+        <div class="b-item">
+          <div class="b-tile"><img src="Icons/Feed%20Banner.svg" alt=""></div>
+          <div>
+            <h4>Feed Banner</h4>
+            <p class="b-what">A wide image at the top of the in-app recognition feed for campaigns and events.</p>
+          </div>
+        </div>
+
+        <div class="b-item">
+          <div class="b-tile"><img src="Icons/Certificate.svg" alt=""></div>
+          <div>
+            <h4>Certificate</h4>
+            <p class="b-what">A printable, shareable award certificate with a framed layout.</p>
+          </div>
+        </div>
+
+        <div class="b-item">
+          <div class="b-tile"><img src="Icons/Teaser.svg" alt=""></div>
+          <div>
+            <h4>Teaser</h4>
+            <p class="b-what">A pre-launch banner that builds curiosity before the program goes live.</p>
+          </div>
+        </div>
+
+        <div class="b-item">
+          <div class="b-tile"><img src="Icons/Launch%20Mailer.svg" alt=""></div>
+          <div>
+            <h4>Launch Mailer</h4>
+            <p class="b-what">A branded HTML email that introduces the program on day one.</p>
+          </div>
+        </div>
+
+        <div class="b-item">
+          <div class="b-tile"><img src="Icons/Login%20Banner.svg" alt=""></div>
+          <div>
+            <h4>Login Banner</h4>
+            <p class="b-what">The branded visual above the sign-in card for non-SSO employees.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DESIGN STYLES -->
+    <section class="block">
+      <span class="block-eyebrow">The three styles</span>
+      <h2 class="block-title">One bundle, three personalities</h2>
+      <p class="block-lead">Every bundle can be rendered in one of three visual moods — pick the one that matches your company.</p>
+
+      <div class="s-grid">
+        <div class="s-card minimal">
+          <div class="s-preview">MINIMAL</div>
+          <h4>Minimal</h4>
+          <p>Clean, calm, mostly grey. A quiet, confident look.</p>
+        </div>
+        <div class="s-card premium">
+          <div class="s-preview">Premium</div>
+          <h4>Premium</h4>
+          <p>Deep navy gradients and a gold accent. A formal, executive feel.</p>
+        </div>
+        <div class="s-card fun">
+          <div class="s-preview">Fun ✨</div>
+          <h4>Fun &amp; Colourful</h4>
+          <p>Warm gradients and bright accents. A celebratory, expressive look.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="end-cta">
+      <h2>Ready to see it for yourself?</h2>
+      <p>Open the Catalogue and watch every preview light up with your brand.</p>
+      <a href="landing.html" class="btn btn-primary">
+        Start the Catalogue
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M5 12h14M13 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </section>
+
+  </div>
+</main>
+
+</div><!-- /.page-frame -->
+</body>
+</html>

@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pick your bundles — Interactive Catalogue</title>
+<style>
+  :root {
+    --alabaster: #DCDCDD;
+    --pale-slate: #C5C3C6;
+    --iron: #46494C;
+    --blue-slate: #4C5C68;
+    --cyan: #FF6D05;
+    --cyan-soft: #FFE6D4;
+    --ink: #1F2125;
+    --muted: #6B6E72;
+    --line: #ECECEE;
+    --bg: #F7F7F8;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; background-color: #ffffff; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background-color: transparent;
+        background-attachment: fixed;
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    padding: 0;
+    min-height: 100vh;
+  }
+  .wrap { max-width: none; margin: 0; padding: 0 120px; }
+
+  /* AMBIENT ORBS */
+  .bg-orbs {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    will-change: transform, background-color;
+  }
+  .orb-amber {
+    width: 60vw; height: 60vh;
+    bottom: -18vh; left: -14vw;
+    animation: driftAmber 28s ease-in-out infinite alternate, hueShiftAmber 24s ease-in-out infinite alternate;
+  }
+  .orb-cyan {
+    width: 55vw; height: 55vh;
+    top: -12vh; right: -16vw;
+    animation: driftCyan 32s ease-in-out infinite alternate, hueShiftCyan 30s ease-in-out infinite alternate;
+  }
+  .orb-mint {
+    width: 38vw; height: 38vh;
+    bottom: 4vh; left: 42vw;
+    animation: driftMint 36s ease-in-out infinite alternate, hueShiftMint 26s ease-in-out infinite alternate;
+  }
+  @keyframes driftAmber { 0% {transform:translate(0,0) scale(1);} 100% {transform:translate(12vw,-6vh) scale(1.06);} }
+  @keyframes driftCyan  { 0% {transform:translate(0,0) scale(1);} 100% {transform:translate(-10vw,8vh) scale(1.05);} }
+  @keyframes driftMint  { 0% {transform:translate(0,0) scale(1);} 100% {transform:translate(-8vw,-4vh) scale(1.1);} }
+  @keyframes hueShiftAmber { 0% {background-color:rgba(248,225,170,0.45);} 33% {background-color:rgba(245,200,180,0.42);} 66% {background-color:rgba(240,220,160,0.42);} 100% {background-color:rgba(250,210,165,0.45);} }
+  @keyframes hueShiftCyan  { 0% {background-color:rgba(190,220,235,0.42);} 33% {background-color:rgba(195,210,230,0.42);} 66% {background-color:rgba(205,225,235,0.42);} 100% {background-color:rgba(195,225,225,0.42);} }
+  @keyframes hueShiftMint  { 0% {background-color:rgba(195,225,210,0.30);} 50% {background-color:rgba(210,225,215,0.30);} 100% {background-color:rgba(200,220,215,0.30);} }
+  @media (prefers-reduced-motion: reduce) { .orb { animation: none; } }
+
+  .page-frame { position: relative; min-height: 100vh; background: transparent; }
+  .page-frame > nav, .page-frame > main, .page-frame > footer { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 120px;
+    max-width: none;
+    margin: 0;
+  }
+  .nav-left { display: flex; align-items: center; gap: 18px; }
+  .brand-logo { display: inline-flex; align-items: center; text-decoration: none; }
+  .brand-logo img { height: 24px; width: auto; display: block; }
+  .nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--iron);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 100px;
+    transition: background 0.2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,0.6); color: var(--cyan); }
+  .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; }
+  .nav-links a {
+    color: var(--iron);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-links a.nav-profile {
+    display: none; align-items: center; gap: 8px;
+    padding: 4px 14px 4px 4px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 100px;
+    color: var(--ink); font-size: 13px; font-weight: 600;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .nav-links a.nav-profile:hover {
+    color: var(--ink); border-color: var(--alabaster);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(70,73,76,0.06);
+  }
+  .nav-links a.nav-profile.show { display: inline-flex; }
+  .nav-profile-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--cyan-soft); color: var(--cyan);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; overflow: hidden; flex: 0 0 auto;
+  }
+  .nav-profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .nav-profile-name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* HEADER */
+  .page-head {
+    text-align: center;
+    padding: 6vh 0 3vh;
+    width: 100%;
+    max-width: 60vw;
+    margin: 0 auto;
+  }
+  /* STEPPER — 50% smaller version of the reference design */
+  .stepper {
+    display: flex; justify-content: center;
+    margin: 0 auto 32px;
+    max-width: 720px; position: relative;
+  }
+  .stepper .step {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 6px; position: relative;
+  }
+  .stepper .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 7px; left: 50%;
+    width: 100%; height: 1.5px;
+    background: var(--alabaster);
+    z-index: 0;
+  }
+  .stepper .step.done:not(:last-child)::after { background: #29294c; }
+  .stepper .step[data-href] { cursor: pointer; }
+  .stepper .step[data-href]:hover .circle { transform: scale(1.05); }
+  .stepper .step[data-href]:hover .step-label { color: var(--ink); }
+  .stepper .circle {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1.5px solid var(--alabaster);
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700;
+    position: relative; z-index: 1;
+    transition: all 0.2s ease;
+  }
+  .stepper .step.done .circle { background: #29294c; border-color: #29294c; color: var(--white); }
+  .stepper .step.active .circle {
+    background: #29294c; border-color: #29294c; color: var(--white);
+    box-shadow: 0 0 0 2px rgba(41,41,76,0.15);
+  }
+  .stepper .step-label { font-size: 10px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+  .stepper .step.active .step-label { color: var(--ink); font-weight: 700; }
+  .stepper .step.done .step-label { color: var(--iron); font-weight: 600; }
+  .welcome-line {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .welcome-line span {
+    color: var(--iron);
+    font-weight: 600;
+  }
+  .page-head h1 {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .page-head h1 .accent { color: var(--cyan); }
+  .page-head p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* TWO-COL LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0,1.25fr) minmax(0,1fr);
+    gap: 0;
+    margin-bottom: 40px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 12px 32px rgba(70,73,76,0.05);
+  }
+
+  /* BUNDLE GRID */
+  .bundles-card {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 28px;
+    box-shadow: none;
+  }
+  .bundles-card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--iron);
+    margin-bottom: 4px;
+  }
+  .bundles-card .sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+  .layout-mockup {
+    margin: 0 0 20px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  .layout-mockup img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    will-change: transform, opacity, filter;
+  }
+  .bundles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .bundle {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.85s cubic-bezier(0.22, 0.9, 0.28, 1), box-shadow 0.6s ease, border-color 0.6s ease;
+    position: relative;
+    user-select: none;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04);
+  }
+  .bundle.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(0.6);
+  }
+  .bundle.is-disabled::after {
+    content: "Coming soon";
+    position: absolute;
+    top: 12px; right: 12px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 4px 10px;
+    background: rgba(70,73,76,0.08);
+    color: var(--iron);
+    border-radius: 100px;
+    pointer-events: none;
+  }
+  .bundle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(70,73,76,0.08);
+  }
+  .bundle.selected {
+    border-color: var(--iron);
+    box-shadow: 0 14px 30px rgba(31,33,37,0.10);
+  }
+  .bundle.selected .b-check { opacity: 1; transform: scale(1); }
+  .b-check {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 18px; height: 18px;
+    background: #2E8B57;
+    color: var(--white);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.2s ease;
+    z-index: 1;
+    box-shadow: 0 2px 6px rgba(46,139,87,0.3);
+  }
+
+  /* HERO — featured phrase with highlighted word */
+  .b-hero {
+    background: transparent;
+    padding: 14px 20px;
+    position: relative;
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .b-hero-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transform: translateY(15%);
+    background: #fff9e7;
+    filter: grayscale(1);
+  }
+  .b-hero-icon {
+    transition: background 0.6s ease, filter 0.6s ease;
+  }
+  .b-hero-icon img {
+    width: 32px;
+    height: 32px;
+    display: block;
+  }
+  .bundle:hover .b-hero-icon,
+  .bundle.selected .b-hero-icon { filter: none; }
+  .bundle:hover  .b-hero-icon,
+  .bundle.selected  .b-hero-icon { background: #F0F1F3; }
+
+  .bundle .b-body h3 { transition: color 0.6s ease; }
+  .bundle:hover  .b-body h3,
+  .bundle.selected  .b-body h3 { color: var(--ink); }
+  .b-hero h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--iron);
+    line-height: 1.3;
+    max-width: 80%;
+    letter-spacing: -0.2px;
+  }
+  .b-hero .hl {
+    padding: 1px 5px;
+    border-radius: 4px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .b-menu {
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--muted);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    letter-spacing: 1px;
+  }
+
+  /* Brand icon — overlaps hero & body */
+  .b-icon {
+    position: absolute;
+    left: 20px;
+    bottom: -16px;
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    z-index: 1;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  }
+
+  /* Per-bundle highlight + brand icon + hover tint */
+  .bundle[data-key="non-monetary"]  .hl,
+  .bundle[data-key="non-monetary"]  .b-icon { background: #FFCDB8; color: #8A3700; }
+  .bundle[data-key="monetary"]      .hl,
+  .bundle[data-key="monetary"]      .b-icon { background: #FFE3A8; color: #8A6502; }
+  .bundle[data-key="lsa"]           .hl,
+  .bundle[data-key="lsa"]           .b-icon { background: #C5E7C8; color: #2E5E3A; }
+  .bundle[data-key="teaser"]        .hl,
+  .bundle[data-key="teaser"]        .b-icon { background: #D7CAEC; color: #4D2E80; }
+  .bundle[data-key="launch-mailer"] .hl,
+  .bundle[data-key="launch-mailer"] .b-icon { background: #BFD3EC; color: #2E4E80; }
+  .bundle[data-key="feed-banner"]   .hl,
+  .bundle[data-key="feed-banner"]   .b-icon { background: #FFC299; color: #8A3500; }
+  .bundle[data-key="certificate"]   .hl,
+  .bundle[data-key="certificate"]   .b-icon { background: #F0BAC4; color: #7A2D3D; }
+  .bundle[data-key="login-banner"]  .hl,
+  .bundle[data-key="login-banner"]  .b-icon { background: #B5DBE3; color: #234D58; }
+
+  /* BODY */
+  .b-body {
+    padding: 14px 20px 10px;
+    flex: 1;
+  }
+  .b-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .b-body h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--iron);
+    letter-spacing: -0.1px;
+  }
+  .b-tag {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    background: #F2F3F5;
+    border-radius: 6px;
+    padding: 3px 8px;
+    letter-spacing: 0.2px;
+  }
+  .b-body p {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* FOOTER */
+  .b-foot {
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .b-add-btn {
+    background: var(--white);
+    border: 1px solid var(--line);
+    color: var(--iron);
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+    pointer-events: none;
+  }
+  .bundle:hover .b-add-btn { border-color: var(--iron); }
+  .bundle.selected .b-add-btn { background: var(--iron); color: var(--white); border-color: var(--iron); }
+  .b-meta {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .b-meta b { color: var(--iron); font-weight: 600; }
+  .b-meta::before {
+    content: "⊕";
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+
+
+  .bundles-foot {
+    position: fixed;
+    right: 32px; bottom: 84px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 12px 10px 22px;
+    background: #FFFFFF;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 100px;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.14), 0 2px 6px rgba(70,73,76,0.06);
+  }
+  .bundles-card { padding-bottom: 24px; }
+  .selected-count {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .selected-count strong { color: var(--iron); font-weight: 600; }
+
+  .btn {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--cyan);
+    color: var(--white);
+  }
+  .btn-primary:hover:not(:disabled) { background: var(--iron); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--iron);
+    border: 1px solid var(--alabaster);
+  }
+  .btn-ghost:hover { border-color: var(--iron); }
+
+  /* RIGHT — VC PLATFORM MOCKUP */
+  .mockup-stage {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    padding: 28px 28px 28px 0;
+  }
+  .mockup-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 12px 32px rgba(70,73,76,0.05);
+  }
+  .mockup-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .mockup-head .title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--iron);
+  }
+  .mockup-head .badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+  .vc-platform {
+    background: #F4F5F7;
+    border: 1px solid #E4E6EA;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    min-height: 420px;
+  }
+  .vc-topbar {
+    background: var(--white);
+    border-bottom: 1px solid #E4E6EA;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .vc-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--iron);
+  }
+  .vc-logo {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    background: linear-gradient(135deg, var(--cyan), #B24803);
+  }
+  .vc-topnav {
+    display: flex;
+    gap: 14px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .vc-avatar {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C7B6E8, #8B6FB8);
+  }
+  .vc-main {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    min-height: 360px;
+  }
+  .vc-side {
+    background: var(--white);
+    border-right: 1px solid #E4E6EA;
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .vc-nav-item {
+    font-size: 10px;
+    color: var(--muted);
+    padding: 6px 8px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .vc-nav-item .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--pale-slate);
+  }
+  .vc-nav-item.active {
+    background: var(--cyan-soft);
+    color: var(--iron);
+    font-weight: 600;
+  }
+  .vc-nav-item.active .dot { background: var(--cyan); }
+  .vc-content {
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* MOCKUP SCENES — toggleable views */
+  .scene { display: none; }
+  .scene.active { display: block; animation: sceneIn 0.35s ease; }
+  @keyframes sceneIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Feed-style scene (for awards, banners) */
+  .feed-card {
+    background: var(--white);
+    border: 1px solid #E4E6EA;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .feed-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .feed-row .av { width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg,#F4B27D,#E08B5A); }
+  .feed-row .meta { font-size: 10px; }
+  .feed-row .meta b { color: var(--iron); display: block; }
+  .feed-row .meta span { color: var(--muted); font-size: 9px; }
+  .feed-text { font-size: 10.5px; color: var(--iron); margin-bottom: 8px; line-height: 1.4; }
+  .feed-bar {
+    height: 8px; background: #ECECEE; border-radius: 4px;
+    width: 70%;
+  }
+
+  /* Award medallion (monetary/non-monetary/LSA) */
+  .award-mock {
+    background: linear-gradient(135deg, #FF6D05, #B24803);
+    border-radius: 12px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    min-height: 140px;
+  }
+  .medallion {
+    width: 100px; height: 100px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+    text-align: center;
+  }
+  .medallion .ribbon { font-size: 8px; color: var(--cyan); font-weight: 800; letter-spacing: 1.5px; }
+  .medallion .big { font-size: 14px; font-weight: 800; color: var(--iron); line-height: 1; margin-top: 3px; }
+  .medallion .sub-t { font-size: 7px; color: var(--muted); letter-spacing: 1px; margin-top: 3px; }
+  .medallion .co { font-size: 8px; color: var(--cyan); font-weight: 700; margin-top: 5px; }
+
+  /* Banner mock (login / feed banner) */
+  .banner-mock {
+    background: linear-gradient(135deg, #FF6D05, #B24803);
+    border-radius: 10px;
+    padding: 16px 14px;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .banner-mock .b-eyebrow { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; margin-bottom: 4px; }
+  .banner-mock .b-title { font-size: 13px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; }
+  .banner-mock .b-sub { font-size: 9px; opacity: 0.85; }
+
+  /* Login screen mock */
+  .login-mock {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+  }
+  .login-input {
+    background: #F4F5F7;
+    height: 22px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .login-btn {
+    background: var(--cyan);
+    color: var(--white);
+    border-radius: 6px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  /* Certificate */
+  .cert-mock {
+    background: var(--white);
+    border: 2px solid var(--cyan);
+    border-radius: 8px;
+    padding: 18px 14px;
+    text-align: center;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .cert-mock::before, .cert-mock::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--cyan);
+    border-radius: 4px;
+    opacity: 0.4;
+  }
+  .cert-mock::before { left: 6px; }
+  .cert-mock::after { right: 6px; }
+  .cert-mock .c-eyebrow { font-size: 7px; letter-spacing: 2px; color: var(--cyan); font-weight: 800; margin-bottom: 6px; }
+  .cert-mock .c-name { font-size: 12px; font-weight: 700; color: var(--iron); margin-bottom: 4px; }
+  .cert-mock .c-line { font-size: 8px; color: var(--muted); margin-bottom: 8px; line-height: 1.4; }
+  .cert-mock .c-co { font-size: 9px; color: var(--cyan); font-weight: 700; }
+
+  /* Mailer */
+  .mailer-mock {
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+  .mailer-head {
+    background: linear-gradient(135deg, #FF6D05, #B24803);
+    color: var(--white);
+    padding: 12px 14px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .mailer-body {
+    padding: 10px 14px;
+  }
+  .mailer-body .line {
+    height: 6px;
+    background: #ECECEE;
+    border-radius: 3px;
+    margin-bottom: 5px;
+  }
+  .mailer-body .line.short { width: 60%; }
+
+  .mockup-hint {
+    margin-top: 12px;
+    font-size: 11.5px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+  }
+  .mockup-hint b { color: var(--iron); font-weight: 600; }
+
+  /* FOOTER */
+  footer { padding: 24px 0 28px; color: var(--muted); font-size: 13px; }
+  .foot-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 18px 28px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .foot-copy { color: var(--muted); }
+  .foot-brand {
+    color: #5B6CFF;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0 2px;
+  }
+  .foot-brand:hover { text-decoration: underline; }
+  .foot-links {
+    display: flex;
+    gap: 28px;
+  }
+  .foot-links a {
+    color: var(--iron);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .foot-links a:hover { color: #5B6CFF; }
+  @media (max-width: 600px) {
+    .foot-links { gap: 18px; }
+  }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .mockup-stage { position: static; }
+    .page-head h1 { font-size: 32px; }
+    .bundles-grid { grid-template-columns: 1fr; }
+  }
+
+  .bg-orbs { display: none !important; }
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .page-bg img {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    will-change: transform;
+    animation: pageBgDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes pageBgDrift {
+    0%   { transform: translate(0, 0) scale(1.05); }
+    100% { transform: translate(-1.8%, -1.5%) scale(1.10); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-bg img { animation: none; }
+  }
+
+
+
+  .back-fab {
+    position: fixed;
+    left: 32px; bottom: 84px;
+    z-index: 9999;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px;
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    color: var(--iron);
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.10), 0 2px 6px rgba(70,73,76,0.05);
+    transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-fab:hover { color: var(--ink); border-color: var(--iron); transform: translateY(-1px); }
+  .back-fab svg { display: block; }
+
+</style>
+</head>
+<body>
+<div class="page-bg" aria-hidden="true"><img src="Background.svg" alt=""></div>
+
+<div class="page-frame">
+
+<!-- AMBIENT BG -->
+<div class="bg-orbs" aria-hidden="true">
+  <span class="orb orb-amber"></span>
+  <span class="orb orb-cyan"></span>
+  <span class="orb orb-mint"></span>
+</div>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="nav-left">
+    <a href="https://www.vantagecircle.com" class="brand-logo" aria-label="Vantage Circle home" target="_blank" rel="noopener"><img src="Images/vc-logo-new.png" alt="Vantage Circle"></a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How it works</a></li>
+    <li><a href="profile.html" class="nav-profile" id="navProfile" aria-label="View your profile">
+      <span class="nav-profile-avatar" id="navProfileAvatar"></span>
+      <span class="nav-profile-name" id="navProfileName"></span>
+    </a></li>
+  </ul>
+</nav>
+<script>
+  (function() {
+    try {
+      var ps = JSON.parse(sessionStorage.getItem('cxBadge.designState.v1') || '{}');
+      var company = (ps.company || '').trim();
+      if (!company) return;
+      var chip = document.getElementById('navProfile');
+      var avatar = document.getElementById('navProfileAvatar');
+      var nameEl = document.getElementById('navProfileName');
+      if (!chip || !avatar || !nameEl) return;
+      nameEl.textContent = 'Profile';
+      var colors = (ps.brand && ps.brand.colors) || [];
+      var primary = colors[0];
+      if (primary) {
+        avatar.style.background = primary;
+        avatar.style.color = 'transparent';
+        avatar.textContent = '';
+      } else {
+        avatar.textContent = company.charAt(0).toUpperCase();
+      }
+      chip.classList.add('show');
+    } catch (e) {}
+  })();
+</script>
+
+<main>
+  <div class="wrap">
+
+    <div class="page-head">
+      <h1>Choose your <span class="accent">collaterals</span></h1>
+      <p>Toggle any card to add it to your bundle. You can change your mind later.</p>
+    </div>
+
+    <!-- 2-COL LAYOUT -->
+    <div class="layout">
+
+      <!-- LEFT — BUNDLE CARDS -->
+      <div class="bundles-card">
+
+        <div class="bundles-grid" id="bundlesGrid">
+
+          <div class="bundle" data-key="monetary" data-scene="award">
+            <div class="b-check">✓</div>
+            <div class="b-hero"><div class="b-hero-icon"><img src="Icons/Monetary.svg" alt=""></div></div>
+            <div class="b-body">
+              <h3>Monetary Awards</h3>
+              <p>Points-backed reward badges shown in the feed and profile.</p>
+            </div>
+            <div class="b-foot">
+              <span class="b-add-btn">Add to bundle</span>
+            </div>
+          </div>
+
+          <div class="bundle" data-key="non-monetary" data-scene="award">
+            <div class="b-check">✓</div>
+            <div class="b-hero"><div class="b-hero-icon"><img src="Icons/Non-Monetary.svg" alt=""></div></div>
+            <div class="b-body">
+              <h3>Non-Monetary Awards</h3>
+              <p>Recognition tokens — peer, manager and value-based shoutouts.</p>
+            </div>
+            <div class="b-foot">
+              <span class="b-add-btn">Add to bundle</span>
+            </div>
+          </div>
+
+          <div class="bundle" data-key="lsa" data-scene="award">
+            <div class="b-check">✓</div>
+            <div class="b-hero"><div class="b-hero-icon"><img src="Icons/LSA.svg" alt=""></div></div>
+            <div class="b-body">
+              <h3>LSA</h3>
+              <p>Long Service Awards — 1, 3, 5, 10, 20, 25 year tiers.</p>
+            </div>
+            <div class="b-foot">
+              <span class="b-add-btn">Add to bundle</span>
+            </div>
+          </div>
+
+          <div class="bundle" data-key="feed-banner" data-scene="feed-banner">
+            <div class="b-check">✓</div>
+            <div class="b-hero"><div class="b-hero-icon"><img src="Icons/Feed%20Banner.svg" alt=""></div></div>
+            <div class="b-body">
+              <h3>Feed Banner</h3>
+              <p>In-app banner at the top of the recognition feed.</p>
+            </div>
+            <div class="b-foot">
+              <span class="b-add-btn">Add to bundle</span>
+            </div>
+          </div>
+
+          <div class="bundle" data-key="certificate" data-scene="certificate">
+            <div class="b-check">✓</div>
+            <div class="b-hero"><div class="b-hero-icon"><img src="Icons/Certificate.svg" alt="Certificate"></div></div>
+            <div class="b-body">
+              <h3>Certificate</h3>
+              <p>Printable & shareable award certificate with framed layout.</p>
+            </div>
+            <div class="b-foot">
+              <span class="b-add-btn">Add to bundle</span>
+            </div>
+          </div>
+
+          <div class="bundle" data-key="teaser" data-scene="banner">
+            <div class="b-check">✓</div>
+            <div class="b-hero"><div class="b-hero-icon"><img src="Icons/Teaser.svg" alt=""></div></div>
+            <div class="b-body">
+              <h3>Teaser</h3>
+              <p>Pre-launch reveal banner that builds anticipation across channels.</p>
+            </div>
+            <div class="b-foot">
+              <span class="b-add-btn">Add to bundle</span>
+            </div>
+          </div>
+
+          <div class="bundle" data-key="launch-mailer" data-scene="mailer">
+            <div class="b-check">✓</div>
+            <div class="b-hero"><div class="b-hero-icon"><img src="Icons/Launch%20Mailer.svg" alt=""></div></div>
+            <div class="b-body">
+              <h3>Launch Mailer</h3>
+              <p>HTML email announcing the program with branded header art.</p>
+            </div>
+            <div class="b-foot">
+              <span class="b-add-btn">Add to bundle</span>
+            </div>
+          </div>
+
+          <div class="bundle" data-key="login-banner" data-scene="login">
+            <div class="b-check">✓</div>
+            <div class="b-hero"><div class="b-hero-icon"><img src="Icons/Login%20Banner.svg" alt="Login Banner"></div></div>
+            <div class="b-body">
+              <h3>Login Banner</h3>
+              <p>Login page is not applicable when SSO isn't enabled.</p>
+            </div>
+            <div class="b-foot">
+              <span class="b-add-btn">Add to bundle</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="bundles-foot">
+          <div class="selected-count"><strong id="countNum">0</strong> of 8 selected</div>
+          <button class="btn btn-primary" id="continueBtn" disabled>
+            Continue
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M13 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT — VC PAGE MOCKUP -->
+      <div class="mockup-stage">
+        <div class="layout-mockup">
+          <img id="mockupImg" src="Layout%20Mockup/VC_page_Static_mockup%20copy.svg" alt="Vantage Circle page mockup">
+        </div>
+      </div>
+
+    </div><!-- /.layout -->
+  </div>
+</main>
+
+</div><!-- /.page-frame -->
+
+<script>
+  // Stepper navigation — clicking a step with [data-href] navigates there.
+  document.querySelectorAll('.stepper .step[data-href]').forEach(step => {
+    step.addEventListener('click', () => {
+      const href = step.getAttribute('data-href');
+      if (href) location.href = href;
+    });
+  });
+
+  // Read company from URL: bundles.html?company=ACME
+  const params = new URLSearchParams(location.search);
+  const company = (params.get('company') || '').trim();
+  const companyDisplay = company || 'there';
+  const companyUpper = (company || 'YOUR COMPANY').toUpperCase();
+
+  // Populate brand
+  const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+  setText('companyName', companyDisplay);
+  setText('brandName', companyUpper);
+  setText('medallionCo', companyUpper);
+  setText('certCo', companyUpper);
+  setText('mailerHead', 'Recognition just got better at ' + companyUpper);
+
+  // Bundle -> scene + sidebar nav highlight + per-scene tweaks
+  const sceneMap = {
+    'non-monetary':  { scene: 'award',       nav: 'awards',    label: 'Awards · feed', tweaks: { medallionTitle: 'TOP STAR' } },
+    'monetary':      { scene: 'award',       nav: 'awards',    label: 'Awards · feed', tweaks: { medallionTitle: '$500' } },
+    'lsa':           { scene: 'award',       nav: 'lsa',       label: 'Long Service',  tweaks: { medallionTitle: '5 YEARS' } },
+    'teaser':        { scene: 'banner',      nav: 'campaigns', label: 'Teaser banner', tweaks: {} },
+    'launch-mailer': { scene: 'mailer',      nav: 'campaigns', label: 'Launch mailer', tweaks: {} },
+    'feed-banner':   { scene: 'feed-banner', nav: 'feed',      label: 'Feed banner',   tweaks: {} },
+    'certificate':   { scene: 'certificate', nav: 'certs',     label: 'Certificate',   tweaks: {} },
+    'login-banner':  { scene: 'login',       nav: 'login',     label: 'Login screen',  tweaks: {} },
+  };
+
+  const scenes = document.querySelectorAll('.scene');
+  const navItems = document.querySelectorAll('.vc-nav-item');
+  const sceneLabel = document.getElementById('sceneLabel');
+  const mockupHint = document.getElementById('mockupHint');
+  const medallionTitle = document.getElementById('medallionTitle');
+  const mockupImg = document.getElementById('mockupImg');
+  const DEFAULT_MOCKUP = 'Layout%20Mockup/VC_page_Static_mockup%20copy.svg';
+  const mockupSrcByKey = {
+    'monetary':     'Layout%20Mockup/VC_page_monetary_mockup.svg',
+    'non-monetary': 'Layout%20Mockup/VC_page_Nonmonetary_mockup.svg',
+    'lsa':          'Layout%20Mockup/VC_page_LSA_mockup.svg',
+    'teaser':       'Layout%20Mockup/VC_page_Teaser_mockup.svg',
+    'launch-mailer':'Layout%20Mockup/VC_page_Launch%20Mailer_mockup.svg',
+    'feed-banner':  'Layout%20Mockup/VC_page_feedbanner_mockup.svg',
+    'certificate':  'Layout%20Mockup/VC_page_Certtificate_mockup.svg',
+    'login-banner': 'Layout%20Mockup/VC_page_Loginbanner_mockup.svg',
+  };
+  function swapMockup(nextSrc) {
+    if (!mockupImg) return;
+    if (mockupImg.dataset.targetSrc === nextSrc) return;
+    mockupImg.dataset.targetSrc = nextSrc;
+    mockupImg.src = nextSrc;
+  }
+
+  function showScene(key, idx) {
+    const cfg = sceneMap[key];
+    if (!cfg) return;
+    scenes.forEach(s => s.classList.toggle('active', s.dataset.scene === cfg.scene));
+    navItems.forEach(n => n.classList.toggle('active', n.dataset.nav === cfg.nav));
+    if (sceneLabel) sceneLabel.textContent = cfg.label;
+    if (cfg.tweaks.medallionTitle && medallionTitle) medallionTitle.textContent = cfg.tweaks.medallionTitle;
+    swapMockup(mockupSrcByKey[key] || DEFAULT_MOCKUP, idx);
+  }
+
+  // Selection state — persisted in sessionStorage under `selectedBundles`.
+  // Restored from sessionStorage first, then merged with any ?selected= param
+  // (query param wins if both are present so shared links still work).
+  const PERSIST_KEY = 'cxBadge.designState.v1';
+  const readPersisted = () => {
+    try { return JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); }
+    catch { return {}; }
+  };
+  const writePersistedSelection = (keys) => {
+    const fresh = readPersisted();
+    const next = { ...fresh, selectedBundles: [...keys] };
+    try { sessionStorage.setItem(PERSIST_KEY, JSON.stringify(next)); }
+    catch (e) { console.warn('[bundles selectedBundles] persist failed', e); }
+  };
+
+  const initialFromStore = Array.isArray(readPersisted().selectedBundles)
+    ? readPersisted().selectedBundles : [];
+  const initialFromUrl = (new URLSearchParams(location.search).get('selected') || '')
+    .split(',').map(s => s.trim()).filter(Boolean);
+  const initialKeys = initialFromUrl.length ? initialFromUrl : initialFromStore;
+  const selected = new Set(initialKeys);
+
+  const bundles = document.querySelectorAll('.bundle');
+  const countNum = document.getElementById('countNum');
+  const continueBtn = document.getElementById('continueBtn');
+
+  function updateHint() {
+    if (!mockupHint) return;
+    mockupHint.innerHTML = selected.size
+      ? '<b>' + selected.size + '</b> bundle' + (selected.size > 1 ? 's' : '') + ' selected · keep going or continue.'
+      : '<b>Hover a bundle</b> to see where it lives in the platform.';
+  }
+  function syncCard(el) {
+    const k = el.dataset.key;
+    const addBtn = el.querySelector('.b-add-btn');
+    if (selected.has(k)) {
+      el.classList.add('selected');
+      if (addBtn) addBtn.textContent = 'Added';
+    } else {
+      el.classList.remove('selected');
+      if (addBtn) addBtn.textContent = 'Add to bundle';
+    }
+  }
+
+  // Drop any restored selections that point at bundles we've disabled — the
+  // user can't uncheck them from the UI, so they'd stay stuck forever.
+  const disabledKeys = new Set(
+    [...bundles].filter(b => b.classList.contains('is-disabled')).map(b => b.dataset.key)
+  );
+  [...selected].forEach(k => { if (disabledKeys.has(k)) selected.delete(k); });
+
+  // Hydrate UI from restored selection
+  bundles.forEach(syncCard);
+  countNum.textContent = selected.size;
+  continueBtn.disabled = selected.size === 0;
+  updateHint();
+  // Persist the initial (URL-derived) selection so a later reload without ?selected= still restores it.
+  if (initialKeys.length) writePersistedSelection(selected);
+
+  const bundlesGrid = document.getElementById('bundlesGrid');
+  if (bundlesGrid) {
+    bundlesGrid.addEventListener('mouseleave', () => {
+      swapMockup(DEFAULT_MOCKUP, -1);
+    });
+  }
+
+  bundles.forEach((b, i) => {
+    if (b.classList.contains('is-disabled')) return;
+    b.addEventListener('mouseenter', () => showScene(b.dataset.key, i));
+    b.addEventListener('click', () => {
+      const k = b.dataset.key;
+      if (selected.has(k)) selected.delete(k); else selected.add(k);
+      syncCard(b);
+      countNum.textContent = selected.size;
+      continueBtn.disabled = selected.size === 0;
+      updateHint();
+      writePersistedSelection(selected);
+    });
+  });
+
+  continueBtn.addEventListener('click', () => {
+    if (!selected.size) return;
+    writePersistedSelection(selected);
+    const params = new URLSearchParams();
+    params.set('selected', [...selected].join(','));
+    window.location.href = 'design-style.html?' + params.toString();
+  });
+</script>
+
+
+<a href="signin.html" class="back-fab" id="pageBackFab" aria-label="Back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</a>
+<script>
+  (function() {
+    var fab = document.getElementById('pageBackFab');
+    if (!fab) return;
+    // Preserve the current query string so bundle/company/selected context
+    // isn't lost when the user pops back a step.
+    var base = fab.getAttribute('href');
+    fab.setAttribute('href', base + (location.search || ''));
+  })();
+</script>
+</body>
+</html>

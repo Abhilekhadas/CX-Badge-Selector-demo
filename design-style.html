@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pick a design style — Interactive Catalogue</title>
+<style>
+  :root {
+    --alabaster: #DCDCDD;
+    --pale-slate: #C5C3C6;
+    --iron: #46494C;
+    --blue-slate: #4C5C68;
+    --cyan: #FF6D05;
+    --cyan-soft: #FFE6D4;
+    --ink: #1F2125;
+    --muted: #6B6E72;
+    --line: #ECECEE;
+    --bg: #F7F7F8;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; background-color: #ffffff; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background-color: transparent;
+        background-attachment: fixed;
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: none; margin: 0; padding: 0 120px; }
+
+  /* AMBIENT ORBS */
+  .bg-orbs { position: fixed; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(120px); will-change: transform, background-color; }
+  .orb-amber { width: 60vw; height: 60vh; bottom: -18vh; left: -14vw; background: rgba(248,225,170,0.45); }
+  .orb-cyan  { width: 55vw; height: 55vh; top: -12vh; right: -16vw; background: rgba(190,220,235,0.42); }
+  .orb-mint  { width: 38vw; height: 38vh; bottom: 4vh; left: 42vw; background: rgba(195,225,210,0.30); }
+
+  .page-frame { position: relative; min-height: 100vh; background: transparent; }
+  .page-frame > nav, .page-frame > main, .page-frame > footer { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 120px; max-width: none; margin: 0;
+  }
+  .nav-left { display: flex; align-items: center; gap: 18px; }
+  .brand-logo { display: inline-flex; align-items: center; text-decoration: none; }
+  .brand-logo img { height: 24px; width: auto; display: block; }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 8px 14px; border-radius: 100px; transition: background 0.2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,0.6); color: var(--cyan); }
+  .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-links a.nav-cta-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #29294c; color: var(--white);
+    padding: 9px 18px; border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .nav-links a.nav-cta-btn:hover {
+    color: var(--white); background: #1F1F3D;
+    transform: translateY(-1px); box-shadow: 0 6px 16px rgba(41,41,76,0.22);
+  }
+  .nav-links a.nav-cta-btn svg { display: block; }
+  .nav-links a.nav-profile {
+    display: none; align-items: center; gap: 8px;
+    padding: 4px 14px 4px 4px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 100px;
+    color: var(--ink); font-size: 13px; font-weight: 600;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .nav-links a.nav-profile:hover {
+    color: var(--ink); border-color: var(--alabaster);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(70,73,76,0.06);
+  }
+  .nav-links a.nav-profile.show { display: inline-flex; }
+  .nav-profile-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--cyan-soft); color: var(--cyan);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; overflow: hidden; flex: 0 0 auto;
+  }
+  .nav-profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .nav-profile-name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* HEADER */
+  .page-head {
+    text-align: center;
+    padding: 6vh 0 3vh;
+    width: 100%;
+    max-width: 60vw;
+    margin: 0 auto;
+  }
+  .stepper { display: flex; justify-content: center; margin: 0 auto 32px; max-width: 720px; position: relative; }
+  .stepper .step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+  .stepper .step:not(:last-child)::after {
+    content: ""; position: absolute; top: 7px; left: 50%; width: 100%; height: 1.5px;
+    background: var(--alabaster); z-index: 0;
+  }
+  .stepper .step.done:not(:last-child)::after { background: #29294c; }
+  .stepper .step[data-href] { cursor: pointer; }
+  .stepper .step[data-href]:hover .circle { transform: scale(1.05); }
+  .stepper .step[data-href]:hover .step-label { color: var(--ink); }
+  .stepper .circle {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--white); border: 1.5px solid var(--alabaster); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700; position: relative; z-index: 1;
+    transition: all 0.2s ease;
+  }
+  .stepper .step.done .circle { background: #29294c; border-color: #29294c; color: var(--white); }
+  .stepper .step.active .circle {
+    background: #29294c; border-color: #29294c; color: var(--white);
+    box-shadow: 0 0 0 2px rgba(41,41,76,0.15);
+  }
+  .stepper .step-label { font-size: 10px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+  .stepper .step.active .step-label { color: var(--ink); font-weight: 700; }
+  .stepper .step.done .step-label { color: var(--iron); font-weight: 600; }
+
+  .page-head h1 {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .page-head h1 .accent { color: var(--cyan); }
+  .page-head p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* PANEL CARD */
+  .panel-card {
+    background: var(--white); border: 1px solid var(--line); border-radius: 24px; padding: 28px;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 12px 32px rgba(70,73,76,0.05);
+  }
+  .panel-card-tabs { padding: 6px 16px; margin-bottom: 16px; }
+  .panel-card-content { padding-top: 14px; }
+
+  /* Single-column shell (filter card removed) */
+  .gallery-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* Filter card — light, matches panel-card chrome */
+  .filter-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 22px 20px;
+    position: sticky; top: 24px;
+    max-height: calc(100vh - 48px); overflow-y: auto;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 12px 32px rgba(70,73,76,0.05);
+  }
+  .fc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .fc-title {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    letter-spacing: -0.1px;
+  }
+  .fc-title svg { color: var(--muted); }
+  .fc-search {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .fc-search input {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: #FAFAFB;
+    border-radius: 100px;
+    padding: 9px 14px 9px 34px;
+    font: inherit; font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.18s ease, background 0.18s ease;
+  }
+  .fc-search input::placeholder { color: var(--muted); }
+  .fc-search input:focus { border-color: var(--iron); background: var(--white); }
+  .fc-search svg {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; color: var(--muted);
+    pointer-events: none;
+  }
+  .fc-count {
+    display: inline-block; margin-left: 4px;
+    font-size: 12.5px; font-weight: 600; color: var(--cyan);
+  }
+  .fc-clear {
+    background: transparent; border: none; color: var(--iron);
+    font: inherit; font-size: 12.5px; font-weight: 600;
+    cursor: pointer; padding: 4px 6px; border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .fc-clear:hover { background: rgba(41,41,76,0.06); color: var(--ink); }
+  .fc-clear[hidden] { display: none; }
+  .fc-section { padding: 14px 0; border-top: 1px solid var(--line); }
+  .fc-section:first-of-type { padding-top: 4px; border-top: none; }
+  .fc-label {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin: 0 0 10px;
+  }
+  .fc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fc-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--white); color: var(--iron);
+    border: 1px solid var(--line);
+    border-radius: 999px; padding: 6px 12px;
+    font: inherit; font-size: 12.5px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  .fc-chip:hover { border-color: var(--iron); }
+  .fc-chip.active {
+    background: var(--cyan-soft);
+    border-color: var(--cyan);
+    color: var(--cyan);
+  }
+  .fc-swatch {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .fc-swatch-gold { background: linear-gradient(135deg, #FBE192 0%, #E8B756 40%, #B8841E 100%); }
+  .fc-swatch-silver { background: linear-gradient(135deg, #F2F4F7 0%, #C9CED6 50%, #8E96A2 100%); }
+  .fc-shape { width: 14px; height: 14px; flex-shrink: 0; display: block; }
+  .fc-shape path, .fc-shape polygon, .fc-shape circle { stroke: currentColor; }
+  .fc-radios { display: flex; flex-direction: column; gap: 6px; }
+  .fc-radio {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    background: #FAFAFB; border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease;
+  }
+  .fc-radio:hover { background: #F4F4F6; border-color: var(--alabaster); }
+  .fc-radio input {
+    appearance: none; -webkit-appearance: none; margin: 0;
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1.5px solid var(--alabaster);
+    flex-shrink: 0; position: relative; cursor: pointer;
+    transition: border-color 0.18s ease;
+  }
+  .fc-radio input:checked { border-color: var(--cyan); }
+  .fc-radio input:checked::after { content: ""; position: absolute; inset: 3px; background: var(--cyan); border-radius: 50%; }
+  .fc-radio span { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .fc-radio.checked { background: var(--cyan-soft); border-color: rgba(255,109,5,0.4); }
+
+  .badge-card.filtered-out { display: none !important; }
+
+  /* TABS — flat nav with underline-on-active */
+  .tabs {
+    display: inline-flex; gap: 24px; overflow-x: auto;
+    padding: 0;
+    margin: 0;
+    flex: 1 1 auto; min-width: 0;
+    background: transparent;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.18) transparent;
+  }
+  .tabs-wrap {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; position: relative;
+  }
+  .tabs-arrow {
+    flex: 0 0 auto;
+    width: 30px; height: 30px;
+    display: none; align-items: center; justify-content: center;
+    background: var(--white); border: 1px solid var(--line); border-radius: 50%;
+    color: var(--iron); cursor: pointer;
+    box-shadow: 0 2px 6px rgba(70,73,76,0.08);
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+    padding: 0;
+  }
+  .tabs-arrow:hover { color: var(--ink); border-color: var(--alabaster); }
+  .tabs-arrow.visible { display: inline-flex; }
+  .tabs-arrow:disabled { opacity: 0.35; cursor: default; }
+  .tabs.centered { justify-content: center; }
+  .tabs::-webkit-scrollbar { height: 3px; }
+  .tabs::-webkit-scrollbar-track { background: transparent; margin: 0 25%; }
+  .tabs::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 3px; }
+  .tabs::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.32); }
+  .tab {
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: transparent; border: none; border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px; font-weight: 500; color: var(--muted);
+    cursor: pointer; white-space: nowrap;
+    transition: color 0.25s ease, background 0.25s ease;
+    position: relative;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active {
+    color: var(--ink);
+    font-weight: 600;
+    background: #F0F1F3;
+  }
+  .tab .tab-icon {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    font-size: 16px; line-height: 1;
+    opacity: 0.55;
+    transition: opacity 0.25s ease;
+  }
+  .tab.active .tab-icon { opacity: 1; }
+  .tab .tab-count {
+    display: none;
+    min-width: 22px; height: 20px; padding: 0 7px;
+    border-radius: 6px;
+    background: #E6F5EC; color: #2E8B57;
+    align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .tab .tab-count.has-selections { display: inline-flex; }
+  .tab .tab-check { display: none; }
+
+  /* QUESTIONNAIRE */
+  .q-header {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 6px;
+  }
+  .q-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: #EDEDEF; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; line-height: 1;
+  }
+  .q-title { font-size: 22px; font-weight: 700; color: var(--iron); }
+  .q-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; padding-left: 58px; }
+  .q-prompt { font-size: 15px; font-weight: 600; color: var(--iron); margin-bottom: 14px; }
+
+  .style-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .style-card {
+    background: var(--white); border: 1.5px solid var(--line); border-radius: 18px;
+    padding: 0; cursor: pointer; transition: all 0.25s ease; position: relative; overflow: hidden;
+  }
+  .style-card:hover { border-color: var(--alabaster); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.06); }
+  .style-card.selected { border-color: var(--cyan); box-shadow: 0 12px 28px rgba(255,109,5,0.18); }
+  .style-card .preview {
+    aspect-ratio: 16 / 10;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .style-card .preview.minimal {
+    background: #F7F7F8 url("Styles/Minimal.svg") center/cover no-repeat;
+  }
+  .style-card .preview.premium {
+    background: #1A1A2E url("Styles/Premium.svg") center/cover no-repeat;
+  }
+  .style-card .preview.fun {
+    background: #FFE3A8 url("Styles/Fun.svg") center/cover no-repeat;
+  }
+  .style-card .meta { padding: 16px 18px 18px; }
+  .style-card h4 { font-size: 16px; font-weight: 700; color: var(--iron); margin-bottom: 4px; }
+  .style-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .style-card .check {
+    position: absolute; top: 14px; right: 14px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--cyan); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+    opacity: 0; transform: scale(0.6); transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(255,109,5,0.3); z-index: 1;
+  }
+  .style-card.selected .check { opacity: 1; transform: scale(1); }
+
+  /* FOOTER ACTIONS */
+  .panel-foot {
+    position: fixed;
+    right: 32px; bottom: 84px;
+    z-index: 9999;
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 12px 10px 22px;
+    background: #FFFFFF;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 100px;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.14), 0 2px 6px rgba(70,73,76,0.06);
+  }
+  .panel-card-content { padding-bottom: 40px; }
+  .progress-text { font-size: 14px; color: var(--muted); }
+  .progress-text strong { color: var(--iron); font-weight: 700; }
+  .btn {
+    border: none; cursor: pointer; font-family: inherit;
+    padding: 11px 20px; border-radius: 100px; font-size: 14px; font-weight: 600;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--cyan); color: var(--white); }
+  .btn-primary:hover:not(:disabled) { background: var(--iron); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--iron); border: 1px solid var(--alabaster); }
+  .btn-ghost:hover { border-color: var(--iron); }
+
+  /* FOOTER */
+  footer { padding: 24px 0 28px; color: var(--muted); font-size: 13px; }
+  .foot-grid {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 14px; padding: 18px 120px;
+    max-width: none; margin: 0;
+  }
+  .foot-copy { color: var(--muted); }
+  .foot-brand { color: #5B6CFF; text-decoration: none; font-weight: 600; margin: 0 2px; }
+  .foot-brand:hover { text-decoration: underline; }
+  .foot-links { display: flex; gap: 28px; }
+  .foot-links a { color: var(--iron); text-decoration: none; font-size: 13px; font-weight: 500; }
+  .foot-links a:hover { color: #5B6CFF; }
+
+  /* BADGE GALLERY */
+  .style-subtabs {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin: 0;
+  }
+  .gallery-controls {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+    margin: 0 0 12px;
+  }
+  .style-subtab {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 100px;
+    background: rgba(0,0,0,0.04); color: var(--iron);
+    border: 1px solid transparent;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .style-subtab:hover { background: rgba(0,0,0,0.08); }
+  .style-subtab.active {
+    background: var(--cyan-soft); color: var(--cyan);
+    border-color: var(--cyan);
+  }
+  .style-subtab-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 20px; padding: 0 6px;
+    border-radius: 100px;
+    background: var(--cyan); color: #fff;
+    font-size: 11px; font-weight: 700;
+  }
+  .style-subtab:not(.active) .style-subtab-count { background: var(--iron); }
+  .badge-toolbar {
+    display: flex; flex-direction: column; align-items: flex-end;
+    gap: 6px; margin: 0;
+  }
+  .badge-toolbar .q-prompt { margin: 0; }
+  .badge-toolbar .style-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 100px;
+    background: var(--cyan-soft); color: var(--cyan);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+  }
+  .gallery-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: -0.3px;
+    margin: 0 0 36px;
+    padding: 6vh 0 0;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+    text-align: center;
+  }
+  .gallery-title[hidden] {
+    display: none;
+  }
+  .gallery-title .style-tag {
+    display: inline-flex; align-items: center;
+    padding: 4px 14px; border-radius: 100px;
+    background: var(--cyan-soft); color: var(--cyan);
+    font-size: 22px; font-weight: 700; letter-spacing: -0.2px;
+    vertical-align: baseline;
+  }
+  .count-pill {
+    display: inline-flex; align-items: center;
+    margin-left: 10px;
+    padding: 3px 10px; border-radius: 100px;
+    background: rgba(0,0,0,0.05); color: var(--iron);
+    font-size: 11px; font-weight: 600;
+  }
+  .btn-link {
+    background: none; border: none; cursor: pointer; font-family: inherit;
+    font-size: 13px; font-weight: 600; color: var(--cyan);
+    padding: 6px 10px; border-radius: 8px;
+    transition: background 0.2s ease;
+  }
+  .btn-link:hover { background: var(--cyan-soft); }
+  .badge-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .badge-grid[data-bundle="certificate"] { grid-template-columns: repeat(2, 1fr); }
+  .badge-grid[data-bundle="feed-banner"] { grid-template-columns: repeat(2, 1fr); }
+  .badge-grid[data-bundle="teaser"] { grid-template-columns: repeat(3, 1fr); }
+  .badge-grid[data-bundle="launch-mailer"] { grid-template-columns: repeat(2, 1fr); }
+  .badge-grid[data-bundle="login-banner"] { grid-template-columns: 1fr; }
+  .badge-card.hidden { display: none; }
+  .view-more-wrap { display: flex; justify-content: center; margin-top: 22px; }
+  .view-more-btn {
+    background: var(--white); border: 1.5px solid var(--line);
+    border-radius: 100px; padding: 10px 24px;
+    font: inherit; font-weight: 600; color: var(--iron);
+    cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+  .view-more-btn:hover { border-color: var(--iron); background: #FBFAF6; }
+  /* Floating action bar — appears when a badge is selected */
+  .badge-card {
+    background: var(--white); border: 1px solid #ECECEE; border-radius: 22px;
+    overflow: hidden; cursor: pointer; position: relative;
+    box-shadow: 0 1px 2px rgba(15,15,30,0.04), 0 8px 24px rgba(15,15,30,0.05);
+    transition: transform 0.4s cubic-bezier(0.22, 0.9, 0.28, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+  }
+  .badge-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 2px 4px rgba(15,15,30,0.05), 0 14px 32px rgba(15,15,30,0.08);
+  }
+  .badge-card.selected {
+    border-color: var(--line);
+    box-shadow: 0 2px 4px rgba(15,15,30,0.05), 0 14px 32px rgba(15,15,30,0.08);
+  }
+  .badge-card .check {
+    position: absolute; top: 8px; right: 20px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #29294C; color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 800;
+    opacity: 0; transform: scale(0.6);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(41,41,76,0.3);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .badge-card.selected .check { opacity: 1; transform: scale(1); }
+  .badge-preview {
+    aspect-ratio: 1 / 1;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; padding: 10px;
+  }
+  .badge-preview .glyph {
+    font-size: 56px; line-height: 1;
+    transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.28, 1);
+  }
+  .badge-preview .glyph-img {
+    width: 90%; height: auto; max-height: 92%; object-fit: contain; display: block;
+    transition: transform 0.28s cubic-bezier(0.22, 0.9, 0.28, 1);
+  }
+  /* Feed Banner samples come in both portrait and landscape — use the default
+     square tile (like certificate) with contain so nothing gets cropped. */
+  .badge-card[data-bundle="feed-banner"] .badge-preview .glyph-img {
+    object-fit: contain;
+  }
+  /* Login Banner samples are wide landscape — shorter tile (~42% of the
+     default square height) with contain so the banner fills width. */
+  .badge-card[data-bundle="login-banner"] .badge-preview {
+    aspect-ratio: 12 / 5;
+  }
+  .badge-card[data-bundle="login-banner"] .badge-preview .glyph-img {
+    object-fit: contain;
+  }
+  /* style: minimal */
+  .badge-preview.minimal { background: #F4F5F7; color: var(--ink); }
+  .badge-preview.minimal .glyph { filter: grayscale(1); opacity: 0.85; }
+  /* style: premium */
+  .badge-preview.premium { background: #F4F5F7; color: var(--ink); }
+  .badge-preview.premium .glyph { filter: drop-shadow(0 2px 6px rgba(240,184,110,0.4)); }
+  /* style: fun */
+  .badge-preview.fun { background: #F4F5F7; color: var(--ink); }
+  .badge-preview.fun .glyph { transform: rotate(-6deg); }
+  /* Hover lift: shift the badge up so it sits centered above the Customize button */
+  .badge-card:hover .badge-preview .glyph { transform: translateY(-14px); }
+  .badge-card:hover .badge-preview.fun .glyph { transform: translateY(-14px) rotate(-6deg); }
+  .badge-card:hover .badge-preview .glyph-img { transform: translateY(-14px); }
+  /* Name at top-left of preview */
+  .badge-name {
+    position: absolute;
+    top: 12px; left: 14px;
+    display: inline-flex; align-items: center; gap: 6px;
+    margin: 0;
+    font-size: 13px; font-weight: 600; letter-spacing: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-width: 0; max-width: calc(100% - 28px);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .badge-preview.minimal .badge-name { color: var(--ink); }
+  .badge-preview.premium .badge-name { color: var(--ink); font-family: inherit; font-style: normal; font-size: 11px; font-weight: 500; letter-spacing: 0.2px; }
+  .badge-preview.fun .badge-name { color: var(--ink); font-weight: 700; }
+  .verified-check {
+    display: none;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--cyan); color: var(--white);
+    align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .badge-card.selected .verified-check { display: inline-flex; }
+  /* Customize button: bottom-right, translucent dark, only on card hover */
+  .badge-customize-btn {
+    position: absolute;
+    right: 12px; bottom: 12px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    font-size: 12px; font-weight: 600;
+    color: var(--white);
+    background: rgba(41,41,76,0.78);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px; cursor: pointer;
+    font-family: inherit;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(4px);
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.18s ease, transform 0.18s ease, background 0.2s ease, border-color 0.2s ease;
+  }
+  .badge-card:hover .badge-customize-btn,
+  .badge-customize-btn:focus-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .badge-customize-btn:hover { background: rgba(31,31,58,0.95); border-color: rgba(255,255,255,0.28); }
+  .badge-customize-btn .pencil { font-size: 13px; line-height: 1; }
+  .badge-customize-btn.is-customized {
+    background: rgba(60,60,68,0.92);
+    border-color: rgba(255,255,255,0.22);
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .badge-customize-btn.is-customized:hover { background: rgba(40,40,48,0.95); }
+  .badge-customize-btn.is-locked {
+    cursor: not-allowed;
+    opacity: 0;
+    background: rgba(120,120,130,0.78);
+    color: rgba(255,255,255,0.85);
+    border-color: rgba(255,255,255,0.18);
+  }
+  .badge-card:hover .badge-customize-btn.is-locked {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .badge-customize-btn.is-locked:hover { background: rgba(120,120,130,0.78); border-color: rgba(255,255,255,0.18); }
+  .badge-customize-btn .coming-soon-tip {
+    position: absolute;
+    left: 50%; bottom: calc(100% + 8px);
+    transform: translateX(-50%) translateY(4px);
+    padding: 5px 10px;
+    background: #29294c; color: #fff;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.2px;
+    border-radius: 6px;
+    white-space: nowrap;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+    z-index: 2;
+  }
+  .badge-customize-btn .coming-soon-tip::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 100%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #29294c;
+  }
+  .badge-customize-btn.is-locked:hover .coming-soon-tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 760px) {
+    .page-head h1 { font-size: 32px; }
+    .style-grid { grid-template-columns: 1fr; }
+    .badge-grid { grid-template-columns: repeat(2, 1fr); }
+    .q-sub { padding-left: 0; }
+  }
+
+  .bg-orbs { display: none !important; }
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .page-bg img {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    will-change: transform;
+    animation: pageBgDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes pageBgDrift {
+    0%   { transform: translate(0, 0) scale(1.05); }
+    100% { transform: translate(-1.8%, -1.5%) scale(1.10); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-bg img { animation: none; }
+  }
+
+
+
+  .back-fab {
+    position: fixed;
+    left: 32px; bottom: 84px;
+    z-index: 9999;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px;
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    color: var(--iron);
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.10), 0 2px 6px rgba(70,73,76,0.05);
+    transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-fab:hover { color: var(--ink); border-color: var(--iron); transform: translateY(-1px); }
+  .back-fab svg { display: block; }
+
+</style>
+</head>
+<body>
+<div class="page-bg" aria-hidden="true"><img src="Background.svg" alt=""></div>
+
+<div class="page-frame">
+
+<div class="bg-orbs" aria-hidden="true">
+  <span class="orb orb-amber"></span>
+  <span class="orb orb-cyan"></span>
+  <span class="orb orb-mint"></span>
+</div>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="nav-left">
+    <a href="https://www.vantagecircle.com" class="brand-logo" aria-label="Vantage Circle home" target="_blank" rel="noopener"><img src="Images/vc-logo-new.png" alt="Vantage Circle"></a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How it works</a></li>
+    <li><a href="profile.html" class="nav-profile" id="navProfile" aria-label="View your profile">
+      <span class="nav-profile-avatar" id="navProfileAvatar"></span>
+      <span class="nav-profile-name" id="navProfileName"></span>
+    </a></li>
+  </ul>
+</nav>
+<script>
+  (function() {
+    try {
+      var ps = JSON.parse(sessionStorage.getItem('cxBadge.designState.v1') || '{}');
+      var company = (ps.company || '').trim();
+      if (!company) return;
+      var chip = document.getElementById('navProfile');
+      var avatar = document.getElementById('navProfileAvatar');
+      var nameEl = document.getElementById('navProfileName');
+      if (!chip || !avatar || !nameEl) return;
+      nameEl.textContent = 'Profile';
+      var colors = (ps.brand && ps.brand.colors) || [];
+      var primary = colors[0];
+      if (primary) {
+        avatar.style.background = primary;
+        avatar.style.color = 'transparent';
+        avatar.textContent = '';
+      } else {
+        avatar.textContent = company.charAt(0).toUpperCase();
+      }
+      chip.classList.add('show');
+    } catch (e) {}
+  })();
+</script>
+
+<main>
+  <div class="wrap">
+
+    <h1 class="gallery-title" id="galleryTitle" hidden></h1>
+
+    <div class="page-head" id="styleHead">
+      <h1>Choose Your <span class="accent">Award Style</span></h1>
+    </div>
+
+    <!-- TABS CARD -->
+    <div class="panel-card panel-card-tabs">
+      <div class="tabs-wrap">
+        <button class="tabs-arrow tabs-arrow-left" id="tabsArrowLeft" type="button" aria-label="Scroll tabs left">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="tabs" id="tabs"></div>
+        <button class="tabs-arrow tabs-arrow-right" id="tabsArrowRight" type="button" aria-label="Scroll tabs right">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTENT SHELL -->
+    <div class="gallery-shell">
+
+    <!-- CONTENT CARD -->
+    <div class="panel-card panel-card-content">
+
+      <!-- ACTIVE QUESTIONNAIRE -->
+      <div id="questionnaire"></div>
+
+      <!-- FOOT -->
+      <div class="panel-foot">
+        <div class="progress-text"><strong id="progNum">0</strong> of <span id="progTotal">8</span> styles chosen</div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-primary" id="nextBtn" disabled>
+            <span id="nextLabel">Next</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M13 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    </div><!-- /.gallery-shell -->
+
+  </div>
+</main>
+
+
+
+</div><!-- /.page-frame -->
+
+<script>
+  // Stepper navigation — clicking a step with [data-href] navigates there,
+  // preserving the current ?selected=... query so badge selections survive.
+  document.querySelectorAll('.stepper .step[data-href]').forEach(step => {
+    step.addEventListener('click', () => {
+      const href = step.getAttribute('data-href');
+      if (!href) return;
+      location.href = href + location.search;
+    });
+  });
+
+  const BUNDLES = [
+    { key: 'monetary',      name: 'Monetary Awards',     icon: '💰', desc: 'Points-backed reward badges shown in the feed and profile.' },
+    { key: 'non-monetary',  name: 'Non-Monetary Awards', icon: '⭐', desc: 'Recognition tokens — peer, manager and value-based shoutouts.' },
+    { key: 'lsa',           name: 'LSA',                  icon: '🏆', desc: 'Long Service Awards — 1, 3, 5, 10, 20, 25 year tiers.' },
+    { key: 'feed-banner',   name: 'Feed Banner',          icon: '📢', desc: 'In-app banner at the top of the recognition feed.' },
+    { key: 'certificate',   name: 'Certificate',          icon: '📜', desc: 'Printable & shareable award certificate with framed layout.' },
+    { key: 'teaser',        name: 'Teaser',               icon: '✨', desc: 'Pre-launch reveal banner that builds anticipation across channels.' },
+    { key: 'launch-mailer', name: 'Launch Mailer',        icon: '✉️', desc: 'HTML email announcing the program with branded header art.' },
+    { key: 'login-banner',  name: 'Login Banner',         icon: '🔐', desc: 'This applies to the standard sign-in process for users without Single Sign-On (SSO) enabled' },
+  ];
+
+  const STYLES = [
+    { id: 'minimal', name: 'Minimal',         desc: 'Clean lines, lots of white space, refined typography.', previewClass: 'minimal' },
+    { id: 'premium', name: 'Premium',         desc: 'Sophisticated, elevated, deep tones with gold accents.', previewClass: 'premium' },
+    { id: 'fun',     name: 'Fun & Colorful',  desc: 'Vibrant, playful gradients, joyful energy.',            previewClass: 'fun' },
+  ];
+
+  const BADGE_VARIANTS = {
+    'non-monetary': [
+      { label: 'Top Star',           icon: '⭐', sub: 'Peer recognition' },
+      { label: 'Team Player',        icon: '🤝', sub: 'Collaboration' },
+      { label: 'Innovator',          icon: '💡', sub: 'Ideas & impact' },
+      { label: 'Mentor',             icon: '🎓', sub: 'Coaching others' },
+      { label: 'Quick Learner',      icon: '🚀', sub: 'Growth mindset' },
+      { label: 'Customer Hero',      icon: '🌟', sub: 'Client champion' },
+    ],
+    'monetary': [
+      { label: '$100 Bonus',         icon: '💵', sub: 'Spot reward' },
+      { label: '$250 Bonus',         icon: '💵', sub: 'Mid-tier' },
+      { label: '$500 Award',         icon: '💰', sub: 'Quarterly' },
+      { label: '$1,000 Award',       icon: '💰', sub: 'Major win' },
+      { label: '$2,500 Honor',       icon: '💎', sub: 'Annual' },
+      { label: '$5,000 Pinnacle',    icon: '🏆', sub: 'Top tier' },
+    ],
+    'lsa': [
+      { label: '1 Year',             icon: '🎯', sub: 'Welcome milestone' },
+      { label: '3 Years',            icon: '🌱', sub: 'Rooted' },
+      { label: '5 Years',            icon: '🏆', sub: 'Half decade' },
+      { label: '10 Years',           icon: '🏅', sub: 'A decade' },
+      { label: '20 Years',           icon: '👑', sub: 'Veteran' },
+      { label: '25 Years',           icon: '💎', sub: 'Legacy' },
+    ],
+    'teaser': [
+      { label: 'Coming Soon',        icon: '✨', sub: 'Generic reveal' },
+      { label: 'Launching Soon',     icon: '🚀', sub: 'Date-fixed' },
+      { label: 'Big Reveal',         icon: '🎊', sub: 'Hype-led' },
+      { label: 'Sneak Peek',         icon: '👀', sub: 'Soft tease' },
+      { label: 'Save the Date',      icon: '📅', sub: 'Event-anchored' },
+      { label: 'Countdown',          icon: '⏳', sub: 'Time-based' },
+    ],
+    'launch-mailer': [
+      { label: 'Welcome Email',      icon: '✉️', sub: 'Onboarding' },
+      { label: 'Program Launch',     icon: '📣', sub: 'Announcement' },
+      { label: 'Invitation',         icon: '💌', sub: 'Personal RSVP' },
+      { label: 'Reminder',           icon: '🔔', sub: 'Mid-campaign' },
+      { label: 'Thank You',          icon: '🙏', sub: 'Post-event' },
+      { label: 'What’s Next',   icon: '➡️', sub: 'Roadmap' },
+    ],
+    'feed-banner': [
+      { label: 'Announcement',       icon: '📢', sub: 'General' },
+      { label: 'Celebrate Wins',     icon: '🎉', sub: 'Spotlight' },
+      { label: 'Milestone Hit',      icon: '🎯', sub: 'Team win' },
+      { label: 'Campaign Live',      icon: '🚀', sub: 'Active push' },
+      { label: 'Upcoming Event',     icon: '📅', sub: 'Save the date' },
+      { label: 'Kudos Wall',         icon: '👏', sub: 'Peer shoutouts' },
+    ],
+    'certificate': [
+      { label: 'Excellence',         icon: '📜', sub: 'Top performer' },
+      { label: 'Achievement',        icon: '🏆', sub: 'Goal hit' },
+      { label: 'Long Service',       icon: '🎖️', sub: 'Tenure' },
+      { label: 'Recognition',        icon: '✨', sub: 'Peer award' },
+      { label: 'Course Completion',  icon: '🎓', sub: 'Learning' },
+      { label: 'Milestone',          icon: '🥇', sub: 'Personal best' },
+    ],
+    'login-banner': [
+      { label: 'Welcome Back',       icon: '👋', sub: 'Daily greeting' },
+      { label: 'Celebrate Today',    icon: '🎉', sub: 'Event day' },
+      { label: 'Milestone Mode',     icon: '🏆', sub: 'Anniversary' },
+      { label: 'Awards Live',        icon: '⭐', sub: 'Active program' },
+      { label: 'Season Greetings',   icon: '🎄', sub: 'Holiday' },
+      { label: 'New Launch',         icon: '🚀', sub: 'Product reveal' },
+    ],
+  };
+
+  const params = new URLSearchParams(window.location.search);
+
+  // Persistence: always hydrate from sessionStorage so refresh / direct loads keep prior picks.
+  const PERSIST_KEY = 'cxBadge.designState.v1';
+  const persisted = (() => {
+    try { return JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch { return {}; }
+  })();
+  const styles = persisted.styles || {}; // bundleKey -> current view style (Minimal/Premium/Fun)
+  // Every per-badge data structure keys by compound `styleId|badgeId` so the
+  // same badge template can be selected/customized under multiple styles as
+  // independent awards. Legacy state (bare badgeId keys) migrated below.
+  function inferStyleForLegacyId(bareId, legacyBadgeStyles) {
+    if (legacyBadgeStyles && legacyBadgeStyles[bareId]) return legacyBadgeStyles[bareId];
+    // BadgeId shape is `${bundleKey}-${row}-${col}` — pull the bundle out and
+    // use its stored active style, falling back to minimal.
+    const m = bareId.match(/^([a-z][a-z-]*)-\d+-\d+$/);
+    const bundleKey = m ? m[1] : null;
+    return (bundleKey && styles[bundleKey]) || 'minimal';
+  }
+  const _legacyBadgeStyles = persisted.badgeStyles || {};
+  const badgeSelections = {};
+  Object.entries(persisted.badgeSelections || {}).forEach(([bundleKey, arr]) => {
+    const set = new Set();
+    const bundleStyle = styles[bundleKey] || 'minimal';
+    (arr || []).forEach(id => {
+      if (typeof id !== 'string') return;
+      if (id.includes('|')) { set.add(id); return; }
+      const style = _legacyBadgeStyles[id] || bundleStyle;
+      set.add(style + '|' + id);
+    });
+    badgeSelections[bundleKey] = set;
+  });
+  function migrateLegacyMap(obj) {
+    const out = {};
+    Object.entries(obj || {}).forEach(([k, v]) => {
+      if (typeof k !== 'string') return;
+      if (k.includes('|')) { out[k] = v; return; }
+      out[inferStyleForLegacyId(k, _legacyBadgeStyles) + '|' + k] = v;
+    });
+    return out;
+  }
+  const badgeNames = migrateLegacyMap(persisted.badgeNames);
+  const badgeCustomizations = migrateLegacyMap(persisted.badgeCustomizations);
+
+  // Resolve which bundles the client is working through, in priority order:
+  //   1) ?selected= query param
+  //   2) persisted.selectedBundles
+  //   3) union of bundles they've already picked a style / badge for
+  //   4) fallback: all bundles (fresh session only)
+  const urlKeys = (params.get('selected') || '').split(',').map(s => s.trim()).filter(Boolean);
+  const savedKeys = Array.isArray(persisted.selectedBundles) ? persisted.selectedBundles : [];
+  const touchedKeys = Array.from(new Set([
+    ...Object.keys(styles),
+    ...Object.keys(persisted.badgeSelections || {}),
+  ]));
+  const resolvedKeys = urlKeys.length ? urlKeys
+                     : savedKeys.length ? savedKeys
+                     : touchedKeys.length ? touchedKeys
+                     : BUNDLES.map(b => b.key);
+  const selectedKeys = new Set(resolvedKeys);
+  const activeBundles = BUNDLES.filter(b => selectedKeys.has(b.key));
+
+  // Keep selectedBundles in sync so a later reload without ?selected= still restores this scope.
+  try {
+    const fresh = JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}');
+    const next = { ...fresh, selectedBundles: [...selectedKeys] };
+    sessionStorage.setItem(PERSIST_KEY, JSON.stringify(next));
+  } catch (e) { console.warn('[design-style selectedBundles] persist failed', e); }
+
+  // Brand colors extracted from the uploaded logo, if any.
+  // The primary color tints all badge previews; text auto-contrasts against it.
+  // Monetary bundle uses a darker shade for a premium / coin-like feel.
+  function applyBrandColors() {
+    const brand = persisted.brand || {};
+    const colors = brand.colors || [];
+    // Monetary/non-monetary force the flat light-gray default even when no
+    // brand has been extracted yet — otherwise the .badge-preview.fun default
+    // gradient bleeds through.
+    const isFlatBg = activeKey === 'monetary' || activeKey === 'non-monetary' || activeKey === 'lsa';
+    if (!isFlatBg && !colors.length && !brand.awardBg) return;
+    // UC2/UC3/UC4: read the persisted darker brand shade directly. Monetary
+    // has its own stored key so the value can't compound when written back.
+    let bg;
+    if (activeKey === 'monetary') {
+      bg = '#F7F7F7';
+    } else if (activeKey === 'non-monetary') {
+      bg = '#F7F7F7';
+    } else if (activeKey === 'lsa') {
+      bg = '#F0F1F2';
+    } else {
+      bg = brand.awardBg || darkenHex(colors[0], 0.45);
+    }
+    // Text color = auto-contrast shade of the primary brand color (matches
+    // customize.html's FG_LIGHTEN_AMOUNT / FG_DARKEN_AMOUNT).
+    const primary = colors[0];
+    const text = primary
+      ? (isLightHex(bg) ? darkenHex(primary, 0.80) : lightenHex(primary, 0.85))
+      : (isLightHex(bg) ? '#1F2125' : '#FFFFFF');
+    // Minimal-style badges sit on light metallic plates — use a deeper shade
+    // of the primary so the label doesn't wash out into the medal.
+    const minimalText = primary ? darkenHex(primary, 0.92) : '#000000';
+    const css = `
+      .badge-preview.minimal,
+      .badge-preview.premium,
+      .badge-preview.fun {
+        background: ${bg} !important;
+        color: ${text} !important;
+      }
+      .badge-preview .glyph { color: ${text} !important; filter: none !important; opacity: 1 !important; }
+      .badge-preview .badge-name { color: ${text} !important; }
+      .badge-preview.minimal .badge-name { color: ${minimalText} !important; }
+    `;
+    let style = document.getElementById('brand-theme');
+    if (!style) { style = document.createElement('style'); style.id = 'brand-theme'; document.head.appendChild(style); }
+    style.textContent = css;
+  }
+  function isLightHex(hex) {
+    const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+    if (!m) return true;
+    const r = parseInt(m[1].slice(0,2), 16);
+    const g = parseInt(m[1].slice(2,4), 16);
+    const b = parseInt(m[1].slice(4,6), 16);
+    return (0.299*r + 0.587*g + 0.114*b) > 160;
+  }
+  function darkenHex(hex, amount) {
+    const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+    if (!m) return hex;
+    const r = Math.max(0, Math.round(parseInt(m[1].slice(0,2), 16) * (1 - amount)));
+    const g = Math.max(0, Math.round(parseInt(m[1].slice(2,4), 16) * (1 - amount)));
+    const b = Math.max(0, Math.round(parseInt(m[1].slice(4,6), 16) * (1 - amount)));
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  function lightenHex(hex, amount) {
+    // Mix hex toward white by `amount` (0..1). Mirrors darkenHex so the two
+    // together give shades of a picked color rather than arbitrary greys.
+    const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+    if (!m) return hex;
+    const mix = (c) => Math.min(255, Math.round(c + (255 - c) * amount));
+    const r = mix(parseInt(m[1].slice(0,2), 16));
+    const g = mix(parseInt(m[1].slice(2,4), 16));
+    const b = mix(parseInt(m[1].slice(4,6), 16));
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  function persistState() {
+    // Read-then-merge so brand/company/selectedBundles/logo/etc. survive.
+    // Before this was a bare `{ styles, badgeSelections, ... }` write that
+    // silently wiped every other top-level field on every badge click.
+    let fresh = {};
+    try { fresh = JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch (e) { console.warn('[persistState] read failed', e); }
+    const out = {
+      ...fresh,
+      styles,
+      badgeSelections: Object.fromEntries(
+        Object.entries(badgeSelections).map(([k, set]) => [k, Array.from(set)])
+      ),
+      badgeNames,
+      badgeCustomizations,
+    };
+    // badgeStyles was the legacy per-badge → style map used before compound
+    // keys. Compound `styleId|badgeId` selections make it redundant; drop the
+    // stale entries so a later reload doesn't re-migrate to conflicting values.
+    if (out.badgeStyles) delete out.badgeStyles;
+    try { sessionStorage.setItem(PERSIST_KEY, JSON.stringify(out)); }
+    catch (e) { console.warn('[persistState] write failed', e); }
+  }
+
+  function escapeAttr(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  const VARIANTS_PER_BUNDLE = 22;
+  const TIERS = ['I', 'II', 'III', 'IV', 'V'];
+  // Override the glyph for specific (bundle, style, badge-id) combos with a real sample image.
+  const SAMPLE_OVERRIDES = {
+    'monetary|premium|monetary-0-0': 'Samples/Award/Premium/Monetary_Premium_02.svg',
+    'monetary|premium|monetary-0-1': 'Samples/Award/Premium/Monetary_Premium_03.svg',
+    'monetary|premium|monetary-0-2': 'Samples/Award/Premium/Monetary_premium_04.svg',
+    'monetary|premium|monetary-0-3': 'Samples/Award/Premium/Monetary_Premium_07.svg',
+    'monetary|premium|monetary-0-4': 'Samples/Award/Premium/Monetary_Premium_08.svg',
+    'monetary|premium|monetary-1-0': 'Samples/Award/Premium/Monetary_Premium_09.svg',
+    'monetary|premium|monetary-1-1': 'Samples/Award/Premium/Monetary_Premium_11.svg',
+    'monetary|premium|monetary-1-2': 'Samples/Award/Premium/Monetary_Premium_15.svg',
+    'monetary|premium|monetary-1-3': 'Samples/Award/Premium/Monetary_Premium_16.svg',
+    'monetary|premium|monetary-1-4': 'Samples/Award/Premium/Monetary_Premium_17.svg',
+    'monetary|premium|monetary-2-0': 'Samples/Award/Premium/Monetary_Premium_18.svg',
+    'monetary|premium|monetary-2-1': 'Samples/Award/Premium/Monetary_Premium_19.svg',
+    'monetary|premium|monetary-2-2': 'Samples/Award/Premium/Monetary_Premium_20.svg',
+    'monetary|premium|monetary-2-3': 'Samples/Award/Premium/Monetary_Premium_21.svg',
+    'monetary|minimal|monetary-0-0': 'Samples/Award/Minimal/Monetary_minimal_01.svg',
+    'monetary|minimal|monetary-0-1': 'Samples/Award/Minimal/Monetary_minimal_02.svg',
+    'monetary|minimal|monetary-0-2': 'Samples/Award/Minimal/Monetary_minimal_03.svg',
+    'monetary|minimal|monetary-0-3': 'Samples/Award/Minimal/Monetary_minimal_04.svg',
+    'monetary|minimal|monetary-0-4': 'Samples/Award/Minimal/Monetary_minimal_05.svg',
+    'monetary|minimal|monetary-1-0': 'Samples/Award/Minimal/Monetary_minimal_07.svg',
+    'monetary|minimal|monetary-1-1': 'Samples/Award/Minimal/Monetary_minimal_08.svg',
+    'monetary|minimal|monetary-1-2': 'Samples/Award/Minimal/Monetary_minimal_09.svg',
+    'monetary|minimal|monetary-1-3': 'Samples/Award/Minimal/Monetary_minimal_10.svg',
+    'monetary|minimal|monetary-1-4': 'Samples/Award/Minimal/Monetary_minimal_11.svg',
+    'monetary|minimal|monetary-2-0': 'Samples/Award/Minimal/Monetary_minimal_12.svg',
+    'monetary|minimal|monetary-2-1': 'Samples/Award/Minimal/Monetary_minimal_13.svg',
+    'monetary|fun|monetary-0-0': 'Samples/Award/Fun & Playful/Monetary_fun_01.svg',
+    'monetary|fun|monetary-0-1': 'Samples/Award/Fun & Playful/Monetary_fun_02.svg',
+    'monetary|fun|monetary-0-2': 'Samples/Award/Fun & Playful/Monetary_fun_03.svg',
+    'monetary|fun|monetary-0-3': 'Samples/Award/Fun & Playful/Monetary_fun_04.svg',
+    'monetary|fun|monetary-0-4': 'Samples/Award/Fun & Playful/Monetary_fun_05.svg',
+    'monetary|fun|monetary-1-0': 'Samples/Award/Fun & Playful/Monetary_fun_06.svg',
+    'monetary|fun|monetary-1-1': 'Samples/Award/Fun & Playful/Monetary_fun_07.svg',
+    'monetary|fun|monetary-1-2': 'Samples/Award/Fun & Playful/Monetary_fun_08.svg',
+    'lsa|premium|lsa-0-0': 'Samples/LSA/Premium/LSA_Premium_01.svg',
+    'lsa|premium|lsa-0-1': 'Samples/LSA/Premium/LSA_Premium_02.svg',
+    'lsa|premium|lsa-0-2': 'Samples/LSA/Premium/LSA_Premium_03.svg',
+    'lsa|premium|lsa-0-3': 'Samples/LSA/Premium/LSA_Premium_04.svg',
+    'lsa|premium|lsa-0-4': 'Samples/LSA/Premium/LSA_Premium_05.svg',
+    'lsa|premium|lsa-1-0': 'Samples/LSA/Premium/LSA_Premium_06.svg',
+    'lsa|premium|lsa-1-1': 'Samples/LSA/Premium/LSA_Premium_07.svg',
+    'lsa|premium|lsa-1-2': 'Samples/LSA/Premium/LSA_Premium_08.svg',
+    'lsa|premium|lsa-1-3': 'Samples/LSA/Premium/LSA_Premium_09.svg',
+    'lsa|premium|lsa-1-4': 'Samples/LSA/Premium/LSA_Premium_10.svg',
+    'lsa|premium|lsa-2-0': 'Samples/LSA/Premium/LSA_Premium_11.svg',
+    'lsa|premium|lsa-2-1': 'Samples/LSA/Premium/LSA_Premium_12.svg',
+    'lsa|minimal|lsa-0-0': 'Samples/LSA/Minimal/LSA_minimal_01.svg',
+    'lsa|minimal|lsa-0-1': 'Samples/LSA/Minimal/LSA_minimal_02.svg',
+    'lsa|minimal|lsa-0-2': 'Samples/LSA/Minimal/LSA_minimal_03.svg',
+    'lsa|minimal|lsa-0-3': 'Samples/LSA/Minimal/LSA_minimal_04.svg',
+    'lsa|minimal|lsa-0-4': 'Samples/LSA/Minimal/LSA_minimal_05.svg',
+    'lsa|minimal|lsa-1-0': 'Samples/LSA/Minimal/LSA_minimal_06.svg',
+    'lsa|minimal|lsa-1-1': 'Samples/LSA/Minimal/LSA_minimal_07.svg',
+    'lsa|minimal|lsa-1-2': 'Samples/LSA/Minimal/LSA_minimal_08.svg',
+    'lsa|minimal|lsa-1-3': 'Samples/LSA/Minimal/LSA_minimal_09.svg',
+    'lsa|minimal|lsa-1-4': 'Samples/LSA/Minimal/LSA_minimal_10.svg',
+    'lsa|minimal|lsa-2-0': 'Samples/LSA/Minimal/LSA_minimal_11.svg',
+    'lsa|minimal|lsa-2-1': 'Samples/LSA/Minimal/LSA_minimal_12.svg',
+    'lsa|fun|lsa-0-0': 'Samples/LSA/Fun & Playful/LSA_fun_01.svg',
+    'lsa|fun|lsa-0-1': 'Samples/LSA/Fun & Playful/LSA_fun_02.svg',
+    'lsa|fun|lsa-0-2': 'Samples/LSA/Fun & Playful/LSA_fun_03.svg',
+    'lsa|fun|lsa-0-3': 'Samples/LSA/Fun & Playful/LSA_fun_04.svg',
+    'lsa|fun|lsa-0-4': 'Samples/LSA/Fun & Playful/LSA_fun_05.svg',
+    'lsa|fun|lsa-1-0': 'Samples/LSA/Fun & Playful/LSA_fun_06.svg',
+    'lsa|fun|lsa-1-1': 'Samples/LSA/Fun & Playful/LSA_fun_07.svg',
+    'lsa|fun|lsa-1-2': 'Samples/LSA/Fun & Playful/LSA_fun_08.svg',
+    'lsa|fun|lsa-1-3': 'Samples/LSA/Fun & Playful/LSA_fun_09.svg',
+    'lsa|fun|lsa-1-4': 'Samples/LSA/Fun & Playful/LSA_fun_10.svg',
+    'lsa|fun|lsa-2-0': 'Samples/LSA/Fun & Playful/LSA_fun_11.svg',
+    'lsa|fun|lsa-2-1': 'Samples/LSA/Fun & Playful/LSA_fun_12.svg',
+    // Order rule: portrait samples first, horizontal ones last.
+    'feed-banner|premium|feed-banner-0-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-03.svg',
+    'feed-banner|premium|feed-banner-0-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-04.svg',
+    'feed-banner|premium|feed-banner-0-2': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-05.png',
+    'feed-banner|premium|feed-banner-0-3': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-06.svg',
+    'feed-banner|premium|feed-banner-0-4': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-12.png',
+    'feed-banner|premium|feed-banner-1-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-13.png',
+    'feed-banner|premium|feed-banner-1-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-14.png',
+    'feed-banner|premium|feed-banner-1-2': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-15.png',
+    'feed-banner|premium|feed-banner-1-3': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-16.png',
+    'feed-banner|premium|feed-banner-1-4': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-17.png',
+    'feed-banner|premium|feed-banner-2-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-01.png',
+    'feed-banner|premium|feed-banner-2-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-02.png',
+    'feed-banner|minimal|feed-banner-0-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-6.svg',
+    'feed-banner|minimal|feed-banner-0-1': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-7.png',
+    'feed-banner|minimal|feed-banner-0-2': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-8.png',
+    'feed-banner|minimal|feed-banner-0-3': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-11.png',
+    'feed-banner|minimal|feed-banner-0-4': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-12.png',
+    'feed-banner|minimal|feed-banner-1-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-13.png',
+    'feed-banner|minimal|feed-banner-1-1': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-1.png',
+    'feed-banner|minimal|feed-banner-1-2': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-2.png',
+    'feed-banner|minimal|feed-banner-1-3': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-3.png',
+    'feed-banner|minimal|feed-banner-1-4': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-4.png',
+    'feed-banner|minimal|feed-banner-2-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-5.png',
+    'feed-banner|fun|feed-banner-0-0': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-2.svg',
+    'feed-banner|fun|feed-banner-0-1': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-3.svg',
+    'feed-banner|fun|feed-banner-0-2': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-4.svg',
+    'feed-banner|fun|feed-banner-0-3': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-5.png',
+    'feed-banner|fun|feed-banner-0-4': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-1.png',
+    'teaser|minimal|teaser-0-0': 'Samples/Teaser/Minimal/teaser_minimal_1.png',
+    'teaser|minimal|teaser-0-1': 'Samples/Teaser/Minimal/teaser_minimal_2.png',
+    'teaser|minimal|teaser-0-2': 'Samples/Teaser/Minimal/teaser_minimal_3.png',
+    'teaser|minimal|teaser-0-3': 'Samples/Teaser/Minimal/teaser_minimal_5.png',
+    'teaser|minimal|teaser-0-4': 'Samples/Teaser/Minimal/teaser_minimal_5.png',
+    'teaser|minimal|teaser-1-0': 'Samples/Teaser/Minimal/teaser_minimal_6.png',
+    'teaser|minimal|teaser-1-1': 'Samples/Teaser/Minimal/teaser_minimal_7.png',
+    'teaser|premium|teaser-0-0': 'Samples/Teaser/Premium/teaser_premium_1.png',
+    'teaser|premium|teaser-0-1': 'Samples/Teaser/Premium/teaser_premium_2.png',
+    'teaser|premium|teaser-0-2': 'Samples/Teaser/Premium/teaser_premium_3.png',
+    'teaser|premium|teaser-0-3': 'Samples/Teaser/Premium/teaser_premium_4.png',
+    'teaser|premium|teaser-0-4': 'Samples/Teaser/Premium/teaser_premium_5.png',
+    'teaser|premium|teaser-1-0': 'Samples/Teaser/Premium/teaser_premium_6.png',
+    'teaser|premium|teaser-1-1': 'Samples/Teaser/Premium/teaser_premium_7.png',
+    'teaser|fun|teaser-0-0': 'Samples/Teaser/Fun/teaser_fun_1.png',
+    'teaser|fun|teaser-0-1': 'Samples/Teaser/Fun/teaser_fun_2.png',
+    'teaser|fun|teaser-0-2': 'Samples/Teaser/Fun/teaser_fun_3.png',
+    'teaser|fun|teaser-0-3': 'Samples/Teaser/Fun/teaser_fun_4.png',
+    'teaser|fun|teaser-0-4': 'Samples/Teaser/Fun/teaser_fun_5.png',
+    'certificate|minimal|certificate-0-0': 'Samples/Certificate/Minimal/Minimal-01.svg',
+    'certificate|minimal|certificate-0-1': 'Samples/Certificate/Minimal/Minimal-01 copy.svg',
+    'certificate|minimal|certificate-0-2': 'Samples/Certificate/Minimal/Minimal-02.svg',
+    'certificate|minimal|certificate-0-3': 'Samples/Certificate/Minimal/Minimal-02 copy.svg',
+    'certificate|minimal|certificate-0-4': 'Samples/Certificate/Minimal/Minimal-03.svg',
+    'certificate|minimal|certificate-1-0': 'Samples/Certificate/Minimal/Minimal-03 copy.svg',
+    'certificate|premium|certificate-0-0': 'Samples/Certificate/Premium/Premium-07.svg',
+    'certificate|premium|certificate-0-1': 'Samples/Certificate/Premium/Premium-07 copy.svg',
+    'certificate|premium|certificate-0-2': 'Samples/Certificate/Premium/Premium-08.svg',
+    'certificate|premium|certificate-0-3': 'Samples/Certificate/Premium/Premium-08 copy.svg',
+    'certificate|premium|certificate-0-4': 'Samples/Certificate/Premium/Premium-09.svg',
+    'certificate|premium|certificate-1-0': 'Samples/Certificate/Premium/Premium-09 copy.svg',
+    'certificate|fun|certificate-0-0': 'Samples/Certificate/Fun/Fun-04.svg',
+    'certificate|fun|certificate-0-1': 'Samples/Certificate/Fun/Fun-04 copy.svg',
+    'certificate|fun|certificate-0-2': 'Samples/Certificate/Fun/Fun-05.svg',
+    'certificate|fun|certificate-0-3': 'Samples/Certificate/Fun/Fun-05 copy.svg',
+    'certificate|fun|certificate-0-4': 'Samples/Certificate/Fun/Fun-06.svg',
+    'certificate|fun|certificate-1-0': 'Samples/Certificate/Fun/Fun-06 copy.svg',
+    'non-monetary|minimal|non-monetary-0-0': 'Samples/Badge/Minimal/Badge_minimal_01.svg',
+    'non-monetary|minimal|non-monetary-0-1': 'Samples/Badge/Minimal/Badge_minimal_02.svg',
+    'non-monetary|minimal|non-monetary-0-2': 'Samples/Badge/Minimal/Badge_minimal_03.svg',
+    'non-monetary|minimal|non-monetary-0-3': 'Samples/Badge/Minimal/Badge_minimal_04.svg',
+    'non-monetary|minimal|non-monetary-0-4': 'Samples/Badge/Minimal/Badge_minimal_05.svg',
+    'non-monetary|minimal|non-monetary-1-0': 'Samples/Badge/Minimal/Badge_minimal_06.svg',
+    'non-monetary|minimal|non-monetary-1-1': 'Samples/Badge/Minimal/Badge_minimal_07.svg',
+    'non-monetary|minimal|non-monetary-1-2': 'Samples/Badge/Minimal/Badge_minimal_08.svg',
+    'non-monetary|minimal|non-monetary-1-3': 'Samples/Badge/Minimal/Badge_minimal_09.svg',
+    'non-monetary|minimal|non-monetary-1-4': 'Samples/Badge/Minimal/Badge_minimal_10.svg',
+    'non-monetary|minimal|non-monetary-2-0': 'Samples/Badge/Minimal/Badge_minimal_11.svg',
+    'non-monetary|minimal|non-monetary-2-1': 'Samples/Badge/Minimal/Badge_minimal_12.svg',
+    'non-monetary|minimal|non-monetary-2-2': 'Samples/Badge/Minimal/Badge_minimal_13.svg',
+    'non-monetary|minimal|non-monetary-2-3': 'Samples/Badge/Minimal/Badge_minimal_14.svg',
+    'non-monetary|minimal|non-monetary-2-4': 'Samples/Badge/Minimal/Badge_minimal_15.svg',
+    'non-monetary|minimal|non-monetary-3-0': 'Samples/Badge/Minimal/Badge_minimal_16.svg',
+    'non-monetary|minimal|non-monetary-3-1': 'Samples/Badge/Minimal/Badge_minimal_17.svg',
+    'non-monetary|minimal|non-monetary-3-2': 'Samples/Badge/Minimal/Badge_minimal_18.svg',
+    'non-monetary|minimal|non-monetary-3-3': 'Samples/Badge/Minimal/Badge_minimal_19.svg',
+    'non-monetary|minimal|non-monetary-3-4': 'Samples/Badge/Minimal/Badge_minimal_20.svg',
+    'non-monetary|premium|non-monetary-0-0': 'Samples/Badge/Premium/Badge_Premium_01.svg',
+    'non-monetary|premium|non-monetary-0-1': 'Samples/Badge/Premium/Badge_Premium_02.svg',
+    'non-monetary|premium|non-monetary-0-2': 'Samples/Badge/Premium/Badge_Premium_03.svg',
+    'non-monetary|premium|non-monetary-0-3': 'Samples/Badge/Premium/Badge_Premium_04.svg',
+    'non-monetary|premium|non-monetary-0-4': 'Samples/Badge/Premium/Badge_Premium_05.svg',
+    'non-monetary|premium|non-monetary-1-0': 'Samples/Badge/Premium/Badge_Premium_06.svg',
+    'non-monetary|premium|non-monetary-1-1': 'Samples/Badge/Premium/Badge_Premium_07.svg',
+    'non-monetary|premium|non-monetary-1-2': 'Samples/Badge/Premium/Badge_Premium_08.svg',
+    'non-monetary|premium|non-monetary-1-3': 'Samples/Badge/Premium/Badge_Premium_09.svg',
+    'non-monetary|premium|non-monetary-1-4': 'Samples/Badge/Premium/Badge_Premium_10.svg',
+    'non-monetary|premium|non-monetary-2-0': 'Samples/Badge/Premium/Badge_Premium_11.svg',
+    'non-monetary|premium|non-monetary-2-1': 'Samples/Badge/Premium/Badge_Premium_12.svg',
+    'non-monetary|premium|non-monetary-2-2': 'Samples/Badge/Premium/Badge_Premium_13.svg',
+    'non-monetary|premium|non-monetary-2-3': 'Samples/Badge/Premium/Badge_Premium_14.svg',
+    'non-monetary|premium|non-monetary-2-4': 'Samples/Badge/Premium/Badge_Premium_16.svg',
+    'non-monetary|premium|non-monetary-3-0': 'Samples/Badge/Premium/Badge_Premium_16.svg',
+    'non-monetary|premium|non-monetary-3-1': 'Samples/Badge/Premium/Badge_Premium_17.svg',
+    'non-monetary|premium|non-monetary-3-2': 'Samples/Badge/Premium/Badge_Premium_18.svg',
+    'non-monetary|premium|non-monetary-3-3': 'Samples/Badge/Premium/Badge_Premium_19.svg',
+    'non-monetary|premium|non-monetary-3-4': 'Samples/Badge/Premium/Badge_Premium_20.svg',
+    'non-monetary|premium|non-monetary-4-0': 'Samples/Badge/Premium/Badge_Premium_21.svg',
+    'non-monetary|premium|non-monetary-4-1': 'Samples/Badge/Premium/Badge_Premium_22.svg',
+    'non-monetary|fun|non-monetary-0-0': 'Samples/Badge/Fun & Playful/Badge_fun_01.svg',
+    'non-monetary|fun|non-monetary-0-1': 'Samples/Badge/Fun & Playful/Badge_fun_02.svg',
+    'non-monetary|fun|non-monetary-0-2': 'Samples/Badge/Fun & Playful/Badge_fun_03.svg',
+    'non-monetary|fun|non-monetary-0-3': 'Samples/Badge/Fun & Playful/Badge_fun_04.svg',
+    'non-monetary|fun|non-monetary-0-4': 'Samples/Badge/Fun & Playful/Badge_fun_05.svg',
+    'non-monetary|fun|non-monetary-1-0': 'Samples/Badge/Fun & Playful/Badge_fun_06.svg',
+    'non-monetary|fun|non-monetary-1-1': 'Samples/Badge/Fun & Playful/Badge_fun_07.svg',
+    'non-monetary|fun|non-monetary-1-2': 'Samples/Badge/Fun & Playful/Badge_fun_08.svg',
+    'non-monetary|fun|non-monetary-1-3': 'Samples/Badge/Fun & Playful/Badge_fun_09.svg',
+    'non-monetary|fun|non-monetary-1-4': 'Samples/Badge/Fun & Playful/Badge_fun_10.svg',
+    'non-monetary|fun|non-monetary-2-0': 'Samples/Badge/Fun & Playful/Badge_fun_11.svg',
+    'non-monetary|fun|non-monetary-2-1': 'Samples/Badge/Fun & Playful/Badge_fun_12.svg',
+    'non-monetary|fun|non-monetary-2-2': 'Samples/Badge/Fun & Playful/Badge_fun_13.svg',
+    'non-monetary|fun|non-monetary-2-3': 'Samples/Badge/Fun & Playful/Badge_fun_14.svg',
+    'non-monetary|fun|non-monetary-2-4': 'Samples/Badge/Fun & Playful/Badge_fun_15.svg',
+    'non-monetary|fun|non-monetary-3-0': 'Samples/Badge/Fun & Playful/Badge_fun_16.svg',
+    'non-monetary|fun|non-monetary-3-1': 'Samples/Badge/Fun & Playful/Badge_fun_17.svg',
+    'non-monetary|fun|non-monetary-3-2': 'Samples/Badge/Fun & Playful/Badge_fun_18.svg',
+    'non-monetary|fun|non-monetary-3-3': 'Samples/Badge/Fun & Playful/Badge_fun_19.svg',
+    'non-monetary|fun|non-monetary-3-4': 'Samples/Badge/Fun & Playful/Badge_fun_20.svg',
+    'non-monetary|fun|non-monetary-4-0': 'Samples/Badge/Fun & Playful/Badge_fun_21.svg',
+    'launch-mailer|minimal|launch-mailer-0-0': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_01.png',
+    'launch-mailer|minimal|launch-mailer-0-1': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_02.png',
+    'launch-mailer|minimal|launch-mailer-0-2': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_03.png',
+    'launch-mailer|premium|launch-mailer-0-0': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_01.png',
+    'launch-mailer|premium|launch-mailer-0-1': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_02.png',
+    'launch-mailer|premium|launch-mailer-0-2': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_03.png',
+    'launch-mailer|premium|launch-mailer-0-3': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_04.png',
+    'launch-mailer|fun|launch-mailer-0-0': 'Samples/Launch Mailer/Fun & Playful/LaunchMailer_fun_01.png',
+    'launch-mailer|fun|launch-mailer-0-1': 'Samples/Launch Mailer/Fun & Playful/LaunchMailer_fun_02.png',
+    'login-banner|minimal|login-banner-0-0': 'Samples/Login Banner/Minimal/Login banner-Minimal-01.png',
+    'login-banner|minimal|login-banner-0-1': 'Samples/Login Banner/Minimal/Login banner-Minimal-02.png',
+    'login-banner|premium|login-banner-0-0': 'Samples/Login Banner/Premium/Login banner-Premium-01.png',
+    'login-banner|premium|login-banner-0-1': 'Samples/Login Banner/Premium/Login banner-Premium-02.png',
+    'login-banner|fun|login-banner-0-0': 'Samples/Login Banner/Fun & Playful/Login banner-Fun-01.png',
+    'login-banner|fun|login-banner-0-1': 'Samples/Login Banner/Fun & Playful/Login banner-Fun-02.png',
+  };
+  function buildVariants(bundleKey) {
+    const base = BADGE_VARIANTS[bundleKey] || [];
+    if (!base.length) return [];
+    const out = [];
+    for (let baseIdx = 0; baseIdx < base.length && out.length < VARIANTS_PER_BUNDLE; baseIdx++) {
+      for (let t = 0; t < TIERS.length && out.length < VARIANTS_PER_BUNDLE; t++) {
+        const v = base[baseIdx];
+        out.push({
+          id: `${bundleKey}-${baseIdx}-${t}`,
+          label: '',
+          icon: v.icon,
+          sub: v.sub,
+        });
+      }
+    }
+    return out;
+  }
+  const initialBundleParam = params.get('bundle');
+  const initialBundle = initialBundleParam && activeBundles.find(b => b.key === initialBundleParam);
+  let activeKey = initialBundle ? initialBundle.key : activeBundles[0].key;
+
+  const tabsEl = document.getElementById('tabs');
+  const questionnaireEl = document.getElementById('questionnaire');
+  const progNum = document.getElementById('progNum');
+  const progTotal = document.getElementById('progTotal');
+  const nextBtn = document.getElementById('nextBtn');
+  const nextLabel = document.getElementById('nextLabel');
+
+  progTotal.textContent = activeBundles.length;
+
+  function renderTabs() {
+    tabsEl.innerHTML = '';
+    tabsEl.classList.toggle('centered', activeBundles.length < 7);
+    activeBundles.forEach(b => {
+      const t = document.createElement('button');
+      t.className = 'tab';
+      if (b.key === activeKey) t.classList.add('active');
+      const sel = badgeSelections[b.key];
+      const selSize = sel ? sel.size : 0;
+      if (selSize > 0) t.classList.add('complete');
+      t.innerHTML = `
+        <span class="tab-icon">${b.icon}</span>
+        <span>${b.name}</span>
+        <span class="tab-count ${selSize > 0 ? 'has-selections' : ''}">${selSize > 0 ? '✓' : selSize}</span>
+        <span class="tab-check">✓</span>
+      `;
+      t.addEventListener('click', () => { activeKey = b.key; render(); });
+      tabsEl.appendChild(t);
+    });
+    updateTabsArrows();
+  }
+
+  const tabsArrowLeft = document.getElementById('tabsArrowLeft');
+  const tabsArrowRight = document.getElementById('tabsArrowRight');
+  function updateTabsArrows() {
+    if (!tabsEl || !tabsArrowLeft || !tabsArrowRight) return;
+    const overflowing = tabsEl.scrollWidth - tabsEl.clientWidth > 1;
+    tabsArrowLeft.classList.toggle('visible', overflowing);
+    tabsArrowRight.classList.toggle('visible', overflowing);
+    if (overflowing) {
+      tabsArrowLeft.disabled = tabsEl.scrollLeft <= 1;
+      tabsArrowRight.disabled = tabsEl.scrollLeft + tabsEl.clientWidth >= tabsEl.scrollWidth - 1;
+    }
+  }
+  if (tabsArrowLeft) tabsArrowLeft.addEventListener('click', () => {
+    tabsEl.scrollBy({ left: -180, behavior: 'smooth' });
+  });
+  if (tabsArrowRight) tabsArrowRight.addEventListener('click', () => {
+    tabsEl.scrollBy({ left: 180, behavior: 'smooth' });
+  });
+  if (tabsEl) tabsEl.addEventListener('scroll', updateTabsArrows);
+  window.addEventListener('resize', updateTabsArrows);
+
+  function renderQuestionnaire() {
+    const b = activeBundles.find(x => x.key === activeKey);
+    const chosen = styles[activeKey];
+    if (chosen) {
+      renderBadgeGallery(b, chosen);
+    } else {
+      renderStylePicker(b);
+    }
+  }
+
+  function setGalleryTitle(styleName) {
+    const el = document.getElementById('galleryTitle');
+    const styleHead = document.getElementById('styleHead');
+    if (!el) return;
+    if (!styleName) {
+      el.hidden = true; el.innerHTML = '';
+      if (styleHead) styleHead.hidden = false;
+      return;
+    }
+    el.hidden = false;
+    el.innerHTML = `Pick the designs you want in your <span class="style-tag">${styleName}</span> style`;
+    if (styleHead) styleHead.hidden = true;
+  }
+
+  function renderStylePicker(b) {
+    setGalleryTitle(null);
+    questionnaireEl.innerHTML = `
+      <div class="style-grid">
+        ${STYLES.map(s => `
+          <div class="style-card" data-style="${s.id}">
+            <div class="check">✓</div>
+            <div class="preview ${s.previewClass}"></div>
+            <div class="meta">
+              <h4>${s.name}</h4>
+              <p>${s.desc}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    questionnaireEl.querySelectorAll('.style-card').forEach(card => {
+      card.addEventListener('click', () => {
+        styles[activeKey] = card.getAttribute('data-style');
+        persistState();
+        render();
+      });
+    });
+  }
+
+  function renderBadgeGallery(b, styleId) {
+    const style = STYLES.find(s => s.id === styleId);
+    const allVariants = buildVariants(b.key);
+    const variants = allVariants.filter(v => !!SAMPLE_OVERRIDES[`${b.key}|${styleId}|${v.id}`]).slice(0, 22);
+    const selected = badgeSelections[b.key] || (badgeSelections[b.key] = new Set());
+    // Selection is compound (`styleId|badgeId`) so the same v.id can be
+    // selected under multiple styles as separate awards.
+    const compound = (id) => styleId + '|' + id;
+    const totalForBundle = selected.size;
+    const inThisStyle = Array.from(selected).filter(k => k.startsWith(styleId + '|')).length;
+    // Sub-tabs let the user browse different styles for the same bundle
+    // without navigating away — selections persist across styles.
+    const styleTabsHtml = STYLES.map(s => {
+      const count = Array.from(selected).filter(k => k.startsWith(s.id + '|')).length;
+      const isActive = s.id === styleId;
+      return `<button type="button" class="style-subtab${isActive ? ' active' : ''}" data-style="${s.id}">
+        <span>${s.name}</span>
+        ${count > 0 ? `<span class="style-subtab-count">${count}</span>` : ''}
+      </button>`;
+    }).join('');
+    setGalleryTitle(style.name);
+    questionnaireEl.innerHTML = `
+      <div class="gallery-controls">
+        <div class="style-subtabs" role="tablist">${styleTabsHtml}</div>
+        <div class="badge-toolbar">
+          <button class="fc-clear" id="clearBundleSelections" type="button"${totalForBundle === 0 ? ' hidden' : ''}>Unselect all</button>
+        </div>
+      </div>
+      <div class="badge-grid" data-bundle="${b.key}">
+        ${variants.map((v, idx) => {
+          const key = compound(v.id);
+          const name = badgeNames[key] != null ? badgeNames[key] : v.label;
+          const sampleSrc = SAMPLE_OVERRIDES[`${b.key}|${styleId}|${v.id}`];
+          const glyphMarkup = sampleSrc
+            ? `<img class="glyph-img" src="${sampleSrc.replace(/ /g, '%20')}" alt="" onerror="this.closest('.badge-card').remove()">`
+            : `<span class="glyph">${v.icon}</span>`;
+          const hiddenCls = idx >= 16 ? ' hidden' : '';
+          const isCustomized = !!badgeCustomizations[key];
+          return `
+          <div class="badge-card${selected.has(key) ? ' selected' : ''}${hiddenCls}" data-badge-id="${v.id}" data-bundle="${b.key}">
+            <div class="check" aria-hidden="true">✓</div>
+            <div class="badge-preview ${styleId}">
+              ${glyphMarkup}
+            </div>
+            <button type="button" class="badge-customize-btn is-locked${isCustomized ? ' is-customized' : ''}" data-badge-id="${v.id}" aria-label="Customize this badge (coming soon)" disabled aria-disabled="true">
+              <span class="pencil" aria-hidden="true">✏️</span>
+              <span>${isCustomized ? 'Customized' : 'Customize'}</span>
+              <span class="coming-soon-tip" aria-hidden="true">Coming soon</span>
+            </button>
+          </div>
+        `;}).join('')}
+      </div>
+      ${variants.length > 16 ? `
+      <div class="view-more-wrap">
+        <button class="view-more-btn" id="viewMoreBtn" type="button">View more</button>
+      </div>` : ''}
+    `;
+    // Wire style sub-tabs — switching only re-renders; selections in other
+    // styles remain in badgeSelections and stay visible via the count pills.
+    questionnaireEl.querySelectorAll('.style-subtab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const nextStyle = tab.getAttribute('data-style');
+        if (nextStyle === styleId) return;
+        styles[b.key] = nextStyle;
+        persistState();
+        renderQuestionnaire();
+        renderProgress();
+      });
+    });
+    const viewMoreBtn = document.getElementById('viewMoreBtn');
+    if (viewMoreBtn) {
+      viewMoreBtn.addEventListener('click', () => {
+        questionnaireEl.querySelectorAll('.badge-card.hidden').forEach(c => c.classList.remove('hidden'));
+        viewMoreBtn.parentElement.remove();
+      });
+    }
+    const countEl = document.getElementById('badgeCount');
+    const clearBtn = document.getElementById('clearBundleSelections');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if (!selected.size) return;
+        selected.clear();
+        badgeSelections[b.key] = selected;
+        persistState();
+        renderQuestionnaire();
+        renderTabs();
+        renderProgress();
+      });
+    }
+    function syncClearBtn() {
+      if (!clearBtn) return;
+      clearBtn.hidden = selected.size === 0;
+    }
+    questionnaireEl.querySelectorAll('.badge-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        // Customize button has its own handler — don't also toggle selection.
+        if (e.target.closest('.badge-customize-btn')) return;
+        const id = card.getAttribute('data-badge-id');
+        const key = compound(id);
+        if (selected.has(key)) {
+          selected.delete(key);
+          card.classList.remove('selected');
+        } else {
+          selected.add(key);
+          card.classList.add('selected');
+        }
+        const inStyleNow = Array.from(selected).filter(k => k.startsWith(styleId + '|')).length;
+        if (countEl) countEl.textContent = `${selected.size} design${selected.size === 1 ? '' : 's'} picked`;
+        syncClearBtn();
+        // Refresh the style sub-tab counters too.
+        questionnaireEl.querySelectorAll('.style-subtab').forEach(t => {
+          const s = t.getAttribute('data-style');
+          const c = Array.from(selected).filter(k => k.startsWith(s + '|')).length;
+          const countBadge = t.querySelector('.style-subtab-count');
+          if (c > 0) {
+            if (countBadge) countBadge.textContent = c;
+            else t.insertAdjacentHTML('beforeend', `<span class="style-subtab-count">${c}</span>`);
+          } else if (countBadge) {
+            countBadge.remove();
+          }
+        });
+        persistState();
+        renderTabs();
+        renderProgress();
+        applyFilters();
+      });
+    });
+    questionnaireEl.querySelectorAll('.badge-customize-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (btn.disabled || btn.classList.contains('is-locked')) return;
+        const id = btn.getAttribute('data-badge-id');
+        const key = compound(id);
+        // Pre-select if not selected so customize.html finds the badge in
+        // badgeSelections when it saves back.
+        if (!selected.has(key)) {
+          selected.add(key);
+          const cardEl = btn.closest('.badge-card');
+          if (cardEl) cardEl.classList.add('selected');
+          const inStyleNow = Array.from(selected).filter(k => k.startsWith(styleId + '|')).length;
+          if (countEl) countEl.textContent = `${selected.size} design${selected.size === 1 ? '' : 's'} picked`;
+        syncClearBtn();
+          persistState();
+          renderTabs();
+          renderProgress();
+          applyFilters();
+        }
+        const selectedQs = (new URLSearchParams(location.search).get('selected')) || '';
+        const qs = new URLSearchParams({
+          bundle: activeKey,
+          style: styleId,
+          badge: id,
+          selected: selectedQs,
+        });
+        location.href = 'customize.html?' + qs.toString();
+      });
+    });
+  }
+
+  function activeIndex() {
+    return activeBundles.findIndex(b => b.key === activeKey);
+  }
+
+  function renderProgress() {
+    const count = Object.values(badgeSelections).filter(s => s && s.size > 0).length;
+    progNum.textContent = count;
+    const idx = activeIndex();
+    const isLast = idx === activeBundles.length - 1;
+    nextLabel.textContent = isLast ? 'Finish' : 'Next';
+    const curSel = badgeSelections[activeKey];
+    nextBtn.disabled = !(curSel && curSel.size > 0);
+  }
+
+  /* Filter card state and logic (per-bundle) */
+  const filterState = {}; // bundleKey -> { colors, shapes: Set, status: 'all'|..., query }
+  function getFilters(key) {
+    if (!filterState[key]) {
+      filterState[key] = { colors: new Set(), shapes: new Set(), status: 'all', query: '' };
+    }
+    return filterState[key];
+  }
+  function activeFilterCount(f) {
+    return f.colors.size + f.shapes.size + (f.status !== 'all' ? 1 : 0) + (f.query ? 1 : 0);
+  }
+  // Derive color + shape tags from the badge id so the filters have something to work on.
+  function badgeTags(id) {
+    const parts = id.split('-');
+    const baseIdx = parseInt(parts[parts.length - 2], 10) || 0;
+    const tier = parseInt(parts[parts.length - 1], 10) || 0;
+    return {
+      color: ['gold', 'silver'][baseIdx % 2],
+      shape: ['circle', 'hexagon'][tier % 2],
+    };
+  }
+  function applyFilters() {
+    const card = document.getElementById('filterCard');
+    if (!card) return;
+    const onGallery = !!styles[activeKey];
+    card.hidden = !onGallery;
+    if (!onGallery) return;
+    const f = getFilters(activeKey);
+    const sel = badgeSelections[activeKey] || new Set();
+    const currentStyle = styles[activeKey] || 'minimal';
+    const q = (f.query || '').trim().toLowerCase();
+    questionnaireEl.querySelectorAll('.badge-card').forEach(badge => {
+      const id = badge.getAttribute('data-badge-id');
+      const { color, shape } = badgeTags(id);
+      const colorOk = f.colors.size === 0 || f.colors.has(color);
+      const shapeOk = f.shapes.size === 0 || f.shapes.has(shape);
+      // Selection is compound (styleId|badgeId), so match by (currentStyle, id).
+      const isSelected = sel.has(currentStyle + '|' + id);
+      const statusOk = f.status === 'all'
+        || (f.status === 'selected' && isSelected)
+        || (f.status === 'unselected' && !isSelected);
+      const name = (badge.querySelector('.badge-name')?.textContent || '').toLowerCase();
+      const queryOk = !q || name.includes(q);
+      badge.classList.toggle('filtered-out', !(colorOk && shapeOk && statusOk && queryOk));
+    });
+    card.querySelectorAll('.fc-chip[data-color]').forEach(chip => {
+      chip.classList.toggle('active', f.colors.has(chip.dataset.color));
+    });
+    card.querySelectorAll('.fc-chip[data-shape]').forEach(chip => {
+      chip.classList.toggle('active', f.shapes.has(chip.dataset.shape));
+    });
+    card.querySelectorAll('input[name="fcStatus"]').forEach(r => {
+      r.checked = r.value === f.status;
+      r.closest('.fc-radio').classList.toggle('checked', r.checked);
+    });
+    const count = activeFilterCount(f);
+    const cntEl = document.getElementById('fcCount');
+    if (cntEl) cntEl.textContent = count > 0 ? `(${count})` : '';
+    const clear = document.getElementById('fcClearAll');
+    if (clear) clear.hidden = count === 0;
+  }
+
+  (function bindFilterCard() {
+    const card = document.getElementById('filterCard');
+    if (!card) return;
+    card.querySelectorAll('.fc-chip[data-color]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const f = getFilters(activeKey);
+        const c = chip.dataset.color;
+        if (f.colors.has(c)) f.colors.delete(c); else f.colors.add(c);
+        applyFilters();
+      });
+    });
+    card.querySelectorAll('.fc-chip[data-shape]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const f = getFilters(activeKey);
+        const s = chip.dataset.shape;
+        if (f.shapes.has(s)) f.shapes.delete(s); else f.shapes.add(s);
+        applyFilters();
+      });
+    });
+    card.querySelectorAll('input[name="fcStatus"]').forEach(r => {
+      r.addEventListener('change', () => {
+        if (r.checked) { getFilters(activeKey).status = r.value; applyFilters(); }
+      });
+    });
+    const search = document.getElementById('fcSearch');
+    if (search) search.addEventListener('input', () => {
+      getFilters(activeKey).query = search.value;
+      applyFilters();
+    });
+    const clear = document.getElementById('fcClearAll');
+    if (clear) clear.addEventListener('click', () => {
+      filterState[activeKey] = { colors: new Set(), shapes: new Set(), status: 'all', query: '' };
+      const s = document.getElementById('fcSearch');
+      if (s) s.value = '';
+      applyFilters();
+    });
+  })();
+
+  function render() {
+    applyBrandColors();
+    renderTabs();
+    renderQuestionnaire();
+    renderProgress();
+    applyFilters();
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (nextBtn.disabled) return;
+    const i = activeIndex();
+    if (i < activeBundles.length - 1) {
+      activeKey = activeBundles[i + 1].key;
+      render();
+    } else {
+      // Last bundle finished — head to the catalogue view.
+      location.href = 'catalogue.html' + location.search;
+    }
+  });
+
+
+  render();
+</script>
+
+<a href="bundles.html" class="back-fab" id="pageBackFab" aria-label="Back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</a>
+<script>
+  (function() {
+    var fab = document.getElementById('pageBackFab');
+    if (!fab) return;
+    // Preserve the current query string so bundle/company/selected context
+    // isn't lost when the user pops back a step.
+    var base = fab.getAttribute('href');
+    fab.setAttribute('href', base + (location.search || ''));
+  })();
+</script>
+</body>
+</html>

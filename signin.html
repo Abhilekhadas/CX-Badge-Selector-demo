@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Interactive Catalogue</title>
+<style>
+  :root {
+    --alabaster: #DCDCDD;
+    --pale-slate: #C5C3C6;
+    --iron: #46494C;
+    --blue-slate: #4C5C68;
+    --cyan: #FF6D05;
+    --cyan-soft: #FFE6D4;
+    --ink: #1F2125;
+    --muted: #6B6E72;
+    --line: #ECECEE;
+    --bg: #F7F7F8;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; background-color: #ffffff; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background-color: transparent;
+        background-attachment: fixed;
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 120px; max-width: none; margin: 0;
+  }
+  .nav-left { display: flex; align-items: center; gap: 18px; }
+  .brand-logo { display: inline-flex; align-items: center; text-decoration: none; }
+  .brand-logo img { height: 24px; width: auto; display: block; }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 8px 14px; border-radius: 100px; transition: background 0.2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,0.6); color: var(--cyan); }
+  .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--cyan); }
+
+  .auth-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 68px);
+  }
+  .auth-left {
+    padding: 36px 120px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .auth-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 24px 0;
+    gap: 22.6px;
+  }
+  .preview-stage {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1260px, calc((100vw - 48px) * 0.9));
+    margin-top: 32px;
+    padding: 0 0 10px;
+  }
+  .preview-stage::before {
+    content: "";
+    position: absolute;
+    top: 40px; left: 5%; right: 5%; bottom: -20px;
+    background: radial-gradient(ellipse at center, rgba(25,133,161,0.18), transparent 65%),
+                radial-gradient(ellipse at 30% 60%, rgba(240,184,110,0.14), transparent 60%);
+    filter: blur(40px);
+    z-index: 0;
+  }
+  .laptop-mockup {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .auth-grid, nav.top { position: relative; z-index: 1; }
+
+  .auth-form {
+    width: 100%;
+    max-width: 1040px;
+    padding: 36px 44px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 14px 36px rgba(70,73,76,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+  .form-head {
+    width: 100%;
+    max-width: 78vw;
+    text-align: center;
+    margin: -3vh 0 0;
+    transform: translateY(7%);
+  }
+  .form-head h1 {
+    font-size: 40px; font-weight: 500; letter-spacing: -0.5px;
+    margin-bottom: 14px; color: var(--ink);
+  }
+  .form-head h1 .accent { color: var(--cyan); }
+  .form-head p {
+    color: var(--muted); font-size: 15px; line-height: 1.55;
+    max-width: 600px; margin: 0 auto;
+  }
+  .form-body { display: flex; flex-direction: column; gap: 24px; }
+  .form-actions {
+    position: fixed;
+    right: 32px; bottom: 84px;
+    z-index: 9999;
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 12px 10px 22px;
+    background: #FFFFFF;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 100px;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.14), 0 2px 6px rgba(70,73,76,0.06);
+  }
+  .form-actions .btn-primary { justify-content: center; }
+  @media (max-width: 720px) {
+    .form-actions { right: 16px; bottom: 16px; padding: 8px 10px; }
+  }
+  .auth-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: var(--muted); padding-top: 18px;
+  }
+  .auth-foot-links { display: flex; gap: 22px; }
+  .auth-foot a { color: var(--muted); text-decoration: none; }
+  .auth-foot a:hover { color: var(--ink); }
+
+  .auth-right {
+    padding: 72px 120px 72px 24px;
+    display: flex; align-items: center; justify-content: flex-end;
+  }
+  .auth-pitch { max-width: 520px; text-align: center; }
+  .auth-pitch h2 {
+    font-size: 40px; font-weight: 500; line-height: 1.15;
+    letter-spacing: -0.6px; margin-bottom: 22px; color: var(--ink);
+  }
+  .auth-pitch h2 .accent { color: var(--cyan); }
+  .auth-pitch > p {
+    color: var(--iron); font-size: 16px; line-height: 1.6;
+  }
+  .testimonial {
+    border-left: 3px solid var(--cyan);
+    padding: 6px 0 6px 20px;
+    margin: 0;
+  }
+  .testimonial p {
+    font-size: 15px; line-height: 1.55; color: var(--ink); margin-bottom: 14px;
+  }
+  .testimonial footer {
+    display: flex; flex-direction: column; gap: 2px; font-size: 13px;
+  }
+  .testimonial footer strong { color: var(--ink); font-weight: 700; }
+  .testimonial footer span { color: var(--muted); }
+
+  @media (max-width: 980px) {
+    .auth-grid { grid-template-columns: 1fr; min-height: 0; }
+    .auth-right { display: none; }
+    .auth-left { padding: 28px 24px; }
+  }
+
+  .field { display: flex; flex-direction: column; gap: 10px; }
+  .field-label { font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: 0.2px; }
+  .field-hint { font-size: 12px; color: var(--muted); }
+
+  .field input[type="text"], .field input[type="url"] {
+    width: 100%; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 10px;
+    font-family: inherit; font-size: 14px; color: var(--ink); background: var(--white);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .field input[type="text"]:focus,
+  .field input[type="url"]:focus {
+    border-color: #29294C; box-shadow: 0 0 0 3px rgba(41,41,76,0.10);
+  }
+
+  .drop {
+    position: relative;
+    border: 1.5px dashed var(--alabaster);
+    border-radius: 14px;
+    background: #FAFAFA;
+    padding: 28px 18px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .drop:hover { border-color: #29294C; background: #F4F5F8; }
+  .drop.dragover { border-color: #29294C; background: #F0F2F8; }
+  .drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .drop-icon {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: #EDEDEF; color: var(--iron);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .drop-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .drop-sub { font-size: 12px; color: var(--muted); }
+
+  .file-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: #F4F5F7; border-radius: 10px;
+    font-size: 13px; color: var(--ink);
+  }
+  .file-pill .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-pill button {
+    border: none; background: transparent; cursor: pointer;
+    color: var(--muted); font-size: 16px; line-height: 1;
+  }
+  .file-pill button:hover { color: var(--ink); }
+
+  .logo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    align-items: stretch;
+  }
+  .logo-grid > .drop { grid-column: 1; grid-row: 1; }
+  .logo-grid > .logo-preview { grid-column: 2; grid-row: 1; }
+  .logo-grid > #logoFilePill { grid-column: 1; grid-row: 2; }
+  .logo-grid > #logoFilePill:empty { display: none; }
+  .logo-grid > .extracted { grid-column: 2; grid-row: 2; margin-top: 0; }
+  @media (max-width: 720px) { .logo-grid { grid-template-columns: 1fr; } }
+
+  .logo-preview {
+    width: 100%; aspect-ratio: 16 / 9;
+    border-radius: 12px; background: #F4F5F7;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; margin-top: 10px;
+  }
+  .logo-grid .logo-preview { margin-top: 0; aspect-ratio: auto; height: 100%; }
+  .logo-preview img { max-width: 80%; max-height: 80%; object-fit: contain; }
+  .logo-preview img[src*="Preview.svg"] { max-width: 24%; max-height: 24%; opacity: 0.1; }
+
+  .extracted {
+    margin-top: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #F4F5F7;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: var(--ink);
+  }
+  .extracted h4 {
+    font-size: 13px; font-weight: 600; letter-spacing: 0;
+    text-transform: none; color: var(--ink); margin: 0;
+  }
+  .extracted-swatches { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .ext-swatch {
+    display: inline-flex; flex-direction: row; align-items: center; gap: 6px;
+  }
+  .ext-swatch .ext-color {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+  }
+  .ext-swatch .hex {
+    font-size: 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    color: var(--muted); white-space: nowrap;
+  }
+
+  .urls-list { display: flex; flex-direction: column; gap: 8px; }
+  .urls-list:empty { display: none; }
+  .url-row { display: flex; gap: 8px; align-items: center; }
+  .url-row input[type="url"] {
+    flex: 1;
+    padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 10px;
+    font-family: inherit; font-size: 14px; color: var(--ink); background: var(--white);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .url-row input[type="url"]:focus {
+    border-color: #29294C; box-shadow: 0 0 0 3px rgba(41,41,76,0.10);
+  }
+  .url-row .remove-url {
+    border: none; background: transparent; cursor: pointer;
+    color: var(--muted); font-size: 18px; line-height: 1;
+    padding: 8px 10px; border-radius: 8px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .url-row .remove-url:hover { color: var(--ink); background: #F4F5F7; }
+  .add-url-btn {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 100px;
+    border: 1px dashed var(--alabaster); background: transparent;
+    color: var(--iron); font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .add-url-btn:hover { color: var(--ink); border-color: #29294C; }
+
+  .docs-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .docs-list:empty { display: none; }
+  .doc-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: #F4F5F7; border-radius: 10px;
+    font-size: 13px; color: var(--ink);
+  }
+  .doc-pill .doc-icon { flex: 0 0 auto; font-size: 15px; }
+  .doc-pill .doc-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .doc-pill .doc-size { color: var(--muted); font-size: 12px; flex: 0 0 auto; }
+  .doc-pill .doc-remove {
+    border: none; background: transparent; cursor: pointer;
+    color: var(--muted); font-size: 16px; line-height: 1;
+  }
+  .doc-pill .doc-remove:hover { color: var(--ink); }
+
+  .skip-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--iron);
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .skip-link:hover { color: var(--ink); border-color: var(--alabaster); background: var(--bg); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px;
+    border-radius: 12px; border: none;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-primary { background: #1F2125; color: var(--white); }
+  .btn-primary:hover:not(:disabled) { background: #29294C; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .page-bg img {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    will-change: transform;
+    animation: pageBgDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes pageBgDrift {
+    0%   { transform: translate(0, 0) scale(1.05); }
+    100% { transform: translate(-1.8%, -1.5%) scale(1.10); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-bg img { animation: none; }
+  }
+
+
+
+  .back-fab {
+    position: fixed;
+    left: 32px; bottom: 84px;
+    z-index: 9999;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px;
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    color: var(--iron);
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.10), 0 2px 6px rgba(70,73,76,0.05);
+    transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-fab:hover { color: var(--ink); border-color: var(--iron); transform: translateY(-1px); }
+  .back-fab svg { display: block; }
+
+</style>
+</head>
+<body>
+<div class="page-bg" aria-hidden="true"><img src="Background.svg" alt=""></div>
+
+
+<nav class="top">
+  <div class="nav-left">
+    <a href="https://www.vantagecircle.com" class="brand-logo" aria-label="Vantage Circle home" target="_blank" rel="noopener"><img src="Images/vc-logo-new.png" alt="Vantage Circle"></a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How it works</a></li>
+  </ul>
+</nav>
+
+<main class="auth-grid">
+
+  <section class="auth-left">
+    <div class="auth-stage">
+    <div class="form-head">
+      <h1>Create your <span class="accent">profile</span></h1>
+      <p>Tell us a bit about your brand so we can tailor the catalogue to your look and feel.</p>
+    </div>
+    <div class="auth-form">
+      <div class="form-body">
+        <div class="field">
+          <label class="field-label" for="company">Company name</label>
+          <input id="company" type="text" placeholder="e.g. Vantage Circle" autocomplete="organization" required>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Company logo</div>
+          <div class="field-hint">PNG, JPG, or SVG — we'll extract your brand colors from it.</div>
+          <div class="logo-grid">
+            <label class="drop" id="logoDrop">
+              <div class="drop-icon">⬆</div>
+              <div class="drop-title">Drag &amp; drop or click to upload</div>
+              <div class="drop-sub">PNG · JPG · SVG · up to 4 MB</div>
+              <input type="file" id="logoInput" accept="image/png,image/jpeg,image/svg+xml">
+            </label>
+            <div class="logo-preview" id="logoPreview">
+              <img id="logoImg" src="Icons/Preview.svg" alt="Logo preview">
+            </div>
+            <div id="logoFilePill"></div>
+            <div class="extracted" id="extractedBox" hidden>
+              <div class="extracted-swatches" id="extractedSwatches"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="website">Website</label>
+          <div class="field-hint">Your company's primary URL — we'll pull brand cues from it.</div>
+          <input id="website" type="url" placeholder="https://vantagecircle.com" autocomplete="url">
+        </div>
+
+        <div class="field">
+          <div class="field-label">Additional links</div>
+          <div class="field-hint">LinkedIn, careers page, product pages — anything that shows your brand voice.</div>
+          <div class="urls-list" id="urlsList"></div>
+          <button type="button" class="add-url-btn" id="addUrlBtn">+ Add link</button>
+        </div>
+
+        <div class="field">
+          <div class="field-label">Brand documents</div>
+          <div class="field-hint">PDF, DOC, or images — brand guidelines, decks, style guides (up to 8 MB each).</div>
+          <label class="drop" id="docDrop">
+            <div class="drop-icon">📎</div>
+            <div class="drop-title">Drag &amp; drop or click to upload</div>
+            <div class="drop-sub">PDF · DOC · PPT · PNG · JPG · up to 8 MB · multiple files</div>
+            <input type="file" id="docInput" accept=".pdf,.doc,.docx,.ppt,.pptx,image/png,image/jpeg" multiple>
+          </label>
+          <div class="docs-list" id="docsList"></div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="skip-link" id="skipBtn">Skip</button>
+        <button type="button" class="skip-link" id="clearBtn">Clear</button>
+        <button type="button" class="btn btn-primary" id="continueBtn" disabled>
+          Create
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    </div>
+
+    <footer class="auth-foot">
+      <span>© 2026 Vantage Circle</span>
+      <span class="auth-foot-links">
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy</a>
+      </span>
+    </footer>
+  </section>
+
+
+</main>
+
+<script>
+  const PERSIST_KEY = 'cxBadge.designState.v1';
+  const persisted = (() => {
+    try { return JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch { return {}; }
+  })();
+  const brand = persisted.brand || {};
+
+  // Company name
+  const companyInput = document.getElementById('company');
+  if (persisted.company) companyInput.value = persisted.company;
+
+  const continueBtn = document.getElementById('continueBtn');
+  function updateContinueState() {
+    continueBtn.disabled = !companyInput.value.trim();
+  }
+  updateContinueState();
+  companyInput.addEventListener('input', () => { updateContinueState(); autoSave(); });
+
+  // Restore logo
+  if (brand.logoDataUrl) renderLogo(brand.logoDataUrl, brand.logoName || 'logo');
+  if (Array.isArray(brand.colors) && brand.colors.length) renderExtracted(brand.colors);
+
+  // --- Website
+  const websiteInput = document.getElementById('website');
+  if (brand.website) websiteInput.value = brand.website;
+  websiteInput.addEventListener('input', () => {
+    brand.website = websiteInput.value.trim();
+    autoSave();
+  });
+
+  // --- Additional links
+  const urlsList = document.getElementById('urlsList');
+  if (!Array.isArray(brand.urls)) brand.urls = [];
+  function renderUrls() {
+    urlsList.innerHTML = brand.urls.map((u, i) => `
+      <div class="url-row">
+        <input type="url" data-idx="${i}" value="${escapeHtml(u)}" placeholder="https://…">
+        <button type="button" class="remove-url" data-idx="${i}" aria-label="Remove">×</button>
+      </div>`).join('');
+    urlsList.querySelectorAll('input[type="url"]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        brand.urls[+e.target.dataset.idx] = e.target.value.trim();
+        autoSave();
+      });
+    });
+    urlsList.querySelectorAll('.remove-url').forEach(btn => {
+      btn.addEventListener('click', e => {
+        brand.urls.splice(+e.currentTarget.dataset.idx, 1);
+        renderUrls();
+        autoSave();
+      });
+    });
+  }
+  renderUrls();
+  document.getElementById('addUrlBtn').addEventListener('click', () => {
+    brand.urls.push('');
+    renderUrls();
+    const inputs = urlsList.querySelectorAll('input[type="url"]');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+    autoSave();
+  });
+
+  // --- Brand documents (multi-file)
+  const docInput = document.getElementById('docInput');
+  const docDrop = document.getElementById('docDrop');
+  const docsList = document.getElementById('docsList');
+  if (!Array.isArray(brand.docs)) brand.docs = [];
+  function humanSize(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+    return (n / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+  function renderDocs() {
+    docsList.innerHTML = brand.docs.map((d, i) => `
+      <div class="doc-pill">
+        <span class="doc-icon">📄</span>
+        <span class="doc-name">${escapeHtml(d.name)}</span>
+        <span class="doc-size">${humanSize(d.size)}</span>
+        <button type="button" class="doc-remove" data-idx="${i}" aria-label="Remove">×</button>
+      </div>`).join('');
+    docsList.querySelectorAll('.doc-remove').forEach(btn => {
+      btn.addEventListener('click', e => {
+        brand.docs.splice(+e.currentTarget.dataset.idx, 1);
+        renderDocs();
+        autoSave();
+      });
+    });
+  }
+  renderDocs();
+  function handleDocFiles(fileList) {
+    const files = Array.from(fileList || []);
+    files.forEach(file => {
+      if (file.size > 8 * 1024 * 1024) { alert(`"${file.name}" exceeds 8 MB — skipped.`); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        brand.docs.push({ name: file.name, size: file.size, type: file.type, dataUrl: e.target.result });
+        renderDocs();
+        autoSave();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  ['dragenter','dragover'].forEach(ev => docDrop.addEventListener(ev, e => {
+    e.preventDefault(); docDrop.classList.add('dragover');
+  }));
+  ['dragleave','drop'].forEach(ev => docDrop.addEventListener(ev, e => {
+    e.preventDefault(); docDrop.classList.remove('dragover');
+  }));
+  docDrop.addEventListener('drop', e => {
+    if (e.dataTransfer && e.dataTransfer.files) handleDocFiles(e.dataTransfer.files);
+  });
+  docInput.addEventListener('change', () => {
+    if (docInput.files && docInput.files.length) handleDocFiles(docInput.files);
+    docInput.value = '';
+  });
+
+  // --- Logo handling
+  const logoInput = document.getElementById('logoInput');
+  const logoDrop = document.getElementById('logoDrop');
+  setupDrop(logoDrop, logoInput, handleLogoFile);
+  logoInput.addEventListener('change', () => {
+    if (logoInput.files && logoInput.files[0]) handleLogoFile(logoInput.files[0]);
+  });
+  function handleLogoFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    if (file.size > 4 * 1024 * 1024) { alert('Logo must be under 4 MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const dataUrl = e.target.result;
+      brand.logoDataUrl = dataUrl;
+      brand.logoName = file.name;
+      renderLogo(dataUrl, file.name);
+      autoSave();
+      extractColors(dataUrl).then(colors => {
+        brand.colors = colors;
+        if (colors[0]) {
+          brand.awardBg = darkenHex(colors[0], 0.45);
+          brand.monetaryAwardBg = darkenHex(brand.awardBg, 0.35);
+        }
+        renderExtracted(colors);
+        autoSave();
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // --- Auto-save on every change
+  function autoSave() {
+    let fresh = {};
+    try { fresh = JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch (e) { console.warn('[signin autoSave] read failed', e); }
+    const next = { ...fresh, brand, company: companyInput.value.trim() };
+    try { sessionStorage.setItem(PERSIST_KEY, JSON.stringify(next)); }
+    catch (e) { console.warn('[signin autoSave] write failed', e); }
+  }
+
+  function renderLogo(dataUrl, name) {
+    const img = document.getElementById('logoImg');
+    img.src = dataUrl;
+    document.getElementById('logoFilePill').innerHTML = `
+      <div class="file-pill">
+        <span>🖼</span>
+        <span class="name">${escapeHtml(name)}</span>
+        <button type="button" id="removeLogo" aria-label="Remove">×</button>
+      </div>`;
+    document.getElementById('removeLogo').addEventListener('click', () => {
+      brand.logoDataUrl = null; brand.logoName = null; brand.colors = [];
+      img.src = 'Icons/Preview.svg';
+      document.getElementById('logoFilePill').innerHTML = '';
+      document.getElementById('extractedBox').hidden = true;
+      logoInput.value = '';
+      autoSave();
+    });
+  }
+
+  // --- Color extraction (canvas sampling + 4-bit per-channel histogram)
+  async function extractColors(dataUrl) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const max = 160;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(img, 0, 0, w, h);
+        let data;
+        try { data = ctx.getImageData(0, 0, w, h).data; }
+        catch (err) { resolve([]); return; }
+        const buckets = new Map();
+        for (let i = 0; i < data.length; i += 4) {
+          const a = data[i + 3];
+          if (a < 128) continue;
+          const r = data[i], g = data[i + 1], b = data[i + 2];
+          const max3 = Math.max(r, g, b), min3 = Math.min(r, g, b);
+          if (max3 > 240 && min3 > 240) continue;
+          if (max3 < 25) continue;
+          const key = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
+          const slot = buckets.get(key) || { r: 0, g: 0, b: 0, n: 0 };
+          slot.r += r; slot.g += g; slot.b += b; slot.n += 1;
+          buckets.set(key, slot);
+        }
+        const sorted = [...buckets.values()].sort((a, b) => b.n - a.n);
+        const MAX_COLORS = 3;
+        const MIN_COLORS = 2;
+        const picked = [];
+        function tryAdd(r, g, bl, h, sat, l, n, minSat, lMin, lMax, hueGap) {
+          if (sat < minSat) return false;
+          if (l < lMin || l > lMax) return false;
+          const dup = picked.find(p => hueDistance(p.hue, h) < hueGap);
+          if (dup) return false;
+          const hex = '#' + [r, g, bl].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+          picked.push({ hex, hue: h, sat, l, n });
+          return true;
+        }
+        // Pass 1 — vibrant colors
+        for (const s of sorted) {
+          if (picked.length >= MAX_COLORS) break;
+          const r = Math.round(s.r / s.n), g = Math.round(s.g / s.n), bl = Math.round(s.b / s.n);
+          const [h, sat, l] = rgbToHsl(r, g, bl);
+          tryAdd(r, g, bl, h, sat, l, s.n, 0.45, 0.12, 0.92, 25);
+        }
+        // Pass 2 — fallback: include neutrals/darks so we always return 2–3 swatches
+        for (const s of sorted) {
+          if (picked.length >= MIN_COLORS) break;
+          const r = Math.round(s.r / s.n), g = Math.round(s.g / s.n), bl = Math.round(s.b / s.n);
+          const [h, sat, l] = rgbToHsl(r, g, bl);
+          tryAdd(r, g, bl, h, sat, l, s.n, 0, 0.05, 0.95, 15);
+        }
+        resolve(picked.map(p => p.hex));
+      };
+      img.onerror = () => resolve([]);
+      img.src = dataUrl;
+    });
+  }
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    let h = 0, s = 0;
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
+        case g: h = ((b - r) / d + 2); break;
+        case b: h = ((r - g) / d + 4); break;
+      }
+      h *= 60;
+    }
+    return [h, s, l];
+  }
+  function hueDistance(a, b) {
+    const d = Math.abs(a - b) % 360;
+    return d > 180 ? 360 - d : d;
+  }
+  function darkenHex(hex, amount) {
+    const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+    if (!m) return hex;
+    const r = Math.max(0, Math.round(parseInt(m[1].slice(0,2), 16) * (1 - amount)));
+    const g = Math.max(0, Math.round(parseInt(m[1].slice(2,4), 16) * (1 - amount)));
+    const b = Math.max(0, Math.round(parseInt(m[1].slice(4,6), 16) * (1 - amount)));
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  function renderExtracted(colors) {
+    const box = document.getElementById('extractedBox');
+    const row = document.getElementById('extractedSwatches');
+    if (!colors || !colors.length) {
+      box.hidden = true; row.innerHTML = '';
+      return;
+    }
+    box.hidden = false;
+    row.innerHTML = colors.map(c =>
+      `<div class="ext-swatch"><div class="ext-color" style="background:${c};"></div><span class="hex">${c}</span></div>`
+    ).join('');
+  }
+
+  // --- Drag & drop helper
+  function setupDrop(zone, input, onFile) {
+    ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => {
+      e.preventDefault(); zone.classList.add('dragover');
+    }));
+    ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, e => {
+      e.preventDefault(); zone.classList.remove('dragover');
+    }));
+    zone.addEventListener('drop', e => {
+      const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) onFile(f);
+    });
+  }
+
+  // --- Save and navigate
+  document.getElementById('skipBtn').addEventListener('click', () => {
+    saveAndGo(true);
+  });
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    try {
+      const fresh = JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}');
+      delete fresh.brand;
+      delete fresh.company;
+      sessionStorage.setItem(PERSIST_KEY, JSON.stringify(fresh));
+    } catch (e) { console.warn('[signin clear] failed', e); }
+    location.reload();
+  });
+  continueBtn.addEventListener('click', () => {
+    if (continueBtn.disabled) return;
+    saveAndGo(false);
+  });
+  // Back-to-landing must NOT nuke the saved session on ordinary navigation.
+  // Reset is now an opt-in confirm() — only fires when the user clicks nav back
+  // while also holding the Shift key, and confirms the destructive action.
+  // Regular clicks just navigate.
+  const navBackEl = document.getElementById('navBackLanding');
+  if (navBackEl) navBackEl.addEventListener('click', (e) => {
+    if (!e.shiftKey) return;
+    if (!confirm('Start over? This will erase your company name, brand colors, uploaded logo, and every award customization.')) {
+      e.preventDefault();
+      return;
+    }
+    try { sessionStorage.removeItem(PERSIST_KEY); }
+    catch (e) { console.warn('[signin reset] removeItem failed', e); }
+  });
+  function saveAndGo(skipped) {
+    const company = companyInput.value.trim();
+    brand.skipped = !!skipped;
+    let fresh = {};
+    try { fresh = JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch (e) { console.warn('[signin saveAndGo] read failed', e); }
+    const next = { ...fresh, brand, company };
+    try { sessionStorage.setItem(PERSIST_KEY, JSON.stringify(next)); }
+    catch (e) { console.warn('[signin saveAndGo] write failed', e); }
+    location.href = 'bundles.html' + (company ? '?company=' + encodeURIComponent(company) : '');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, m => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[m]));
+  }
+</script>
+<a href="landing.html" class="back-fab" id="pageBackFab" aria-label="Back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</a>
+<script>
+  (function() {
+    var fab = document.getElementById('pageBackFab');
+    if (!fab) return;
+    // Preserve the current query string so bundle/company/selected context
+    // isn't lost when the user pops back a step.
+    var base = fab.getAttribute('href');
+    fab.setAttribute('href', base + (location.search || ''));
+  })();
+</script>
+</body>
+</html>

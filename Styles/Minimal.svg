@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 762 502">
+  <!-- Generator: Adobe Illustrator 30.7.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 114)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #f7f7f8;
+      }
+
+      .st1 {
+        isolation: isolate;
+      }
+
+      .st2 {
+        fill: none;
+        stroke: #a0a0a0;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <g id="H58YDg.tif">
+    <image id="Layer_0" class="st1" width="792" height="667" transform="translate(165.3 66.3) scale(.5)" xlink:href="Minimal-1.png"/>
+  </g>
+  <rect class="st0" x="-8.8" y="-10" width="779.5" height="522"/>
+  <polygon class="st2" points="381 150 406.1 227.2 487.2 227.2 421.6 274.8 446.6 352 381 304.3 315.4 352 340.4 274.8 274.8 227.2 355.9 227.2 381 150"/>
+</svg>

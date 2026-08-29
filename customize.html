@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customize badge — Interactive Catalogue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Roboto:wght@500;700&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,600&family=Lora:ital,wght@0,600;1,600&family=Oswald:wght@500;700&family=Poppins:wght@500;600;700&family=Raleway:wght@500;600;700&family=Nunito:wght@500;600;700&family=Merriweather:wght@700&family=Bebas+Neue&family=Pacifico&family=Caveat:wght@500;700&family=Kalam:wght@400;700&family=Dancing+Script:wght@600;700&family=Cinzel:wght@500;700&family=DM+Serif+Display&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --alabaster: #DCDCDD;
+    --iron: #46494C;
+    --cyan: #FF6D05;
+    --cyan-soft: #FFE6D4;
+    --ink: #1F2125;
+    --muted: #6B6E72;
+    --line: #ECECEE;
+    --bg: #F7F7F8;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background-color: transparent;
+        background-attachment: fixed;
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: none; margin: 0; padding: 0 120px; }
+
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 120px; max-width: none; margin: 0;
+  }
+  .nav-left { display: flex; align-items: center; gap: 18px; }
+  .brand-logo { display: inline-flex; align-items: center; text-decoration: none; }
+  .brand-logo img { height: 24px; width: auto; display: block; }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 8px 14px; border-radius: 100px; transition: background 0.2s;
+    background: transparent; border: none; cursor: pointer; font-family: inherit;
+  }
+  .nav-back:hover { background: rgba(255,255,255,0.6); color: var(--ink); }
+  .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; margin: 0; padding: 0; }
+  .nav-links a { color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-links a.nav-cta-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #29294c; color: var(--white);
+    padding: 9px 18px; border-radius: 100px;
+    font-size: 13px; font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .nav-links a.nav-cta-btn:hover {
+    color: var(--white); background: #1F1F3D;
+    transform: translateY(-1px); box-shadow: 0 6px 16px rgba(41,41,76,0.22);
+  }
+  .nav-links a.nav-cta-btn svg { display: block; }
+  .nav-links a.nav-profile {
+    display: none; align-items: center; gap: 8px;
+    padding: 4px 14px 4px 4px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 100px;
+    color: var(--ink); font-size: 13px; font-weight: 600;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .nav-links a.nav-profile:hover {
+    color: var(--ink); border-color: var(--alabaster);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(70,73,76,0.06);
+  }
+  .nav-links a.nav-profile.show { display: inline-flex; }
+  .nav-profile-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--cyan-soft); color: var(--cyan);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; overflow: hidden; flex: 0 0 auto;
+  }
+  .nav-profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .nav-profile-name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .page-head {
+    text-align: center;
+    padding: 6vh 0 3vh;
+    width: 100%;
+    max-width: 60vw;
+    margin: 0 auto;
+  }
+  .page-head h1 {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .page-head h1 .accent { color: var(--cyan); }
+  .page-head p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* STEPPER — 50% smaller version of the reference design */
+  .stepper { display: flex; justify-content: center; margin: 0 auto 32px; max-width: 720px; position: relative; }
+  .stepper .step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+  .stepper .step:not(:last-child)::after {
+    content: ""; position: absolute; top: 7px; left: 50%; width: 100%; height: 1.5px;
+    background: var(--alabaster); z-index: 0;
+  }
+  .stepper .step.done:not(:last-child)::after { background: #29294c; }
+  .stepper .step[data-href] { cursor: pointer; }
+  .stepper .step[data-href]:hover .circle { transform: scale(1.05); }
+  .stepper .step[data-href]:hover .step-label { color: var(--ink); }
+  .stepper .circle {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--white); border: 1.5px solid var(--alabaster); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700; position: relative; z-index: 1;
+    transition: all 0.2s ease;
+  }
+  .stepper .step.done .circle { background: #29294c; border-color: #29294c; color: var(--white); }
+  .stepper .step.active .circle {
+    background: #29294c; border-color: #29294c; color: var(--white);
+    box-shadow: 0 0 0 2px rgba(41,41,76,0.15);
+  }
+  .stepper .step-label { font-size: 10px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+  .stepper .step.active .step-label { color: var(--ink); font-weight: 700; }
+  .stepper .step.done .step-label { color: var(--iron); font-weight: 600; }
+
+  .panel-card {
+    background: var(--white); border: 1px solid var(--line); border-radius: 24px; padding: 28px;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 12px 32px rgba(70,73,76,0.05);
+  }
+
+  .layout-grid {
+    display: grid;
+    grid-template-columns: 0.7fr 1.02fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* LEFT — badge preview + controls */
+  .badge-stage {
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .badge-tile {
+    display: none;
+    width: 100%; max-width: 680px; aspect-ratio: 1 / 1;
+    border-radius: 18px;
+    background: #F0F1F3;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    transition: background 0.25s ease;
+  }
+  .badge-tile-meta { display: none; }
+  .badge-tile .glyph-img { width: 84%; height: auto; max-height: 84%; object-fit: contain; display: block; }
+  .badge-tile .glyph { font-size: 88px; line-height: 1; }
+  /* Feed Banner samples are portrait rectangles — match tile aspect to the sample so no letterbox */
+  .badge-tile[data-sample^="Feed Banner_"] { aspect-ratio: 142 / 200; }
+  .badge-tile[data-sample^="Feed Banner_"] .glyph-img,
+  .mockup-badge[data-sample^="Feed Banner_"] .glyph-img { width: 100%; height: 100%; max-height: 100%; object-fit: cover; transform: none; }
+  /* Feed Banner mockup: the sample IS the banner — drop the "Congratulations {name}" title card and Award Name overlay */
+  .mockup-badge[data-sample^="Feed Banner_"] .title-img,
+  .mockup-badge[data-sample^="Feed Banner_"] .label-overlay,
+  .mockup-badge[data-sample^="Feed Banner_"] .congrats,
+  .mockup-badge[data-sample^="Feed Banner_"] .recipient { display: none; }
+  /* Reposition the overlay to sit inside the sidebar feedbanner placeholder
+     (SVG rect x=1071.6 y=187 w=288.1 h=405.6 rx=10.4 in the 1440×1424.2 viewBox).
+     Corner radius (~3.6% of the rect's width) and shadow scaled down so the box
+     matches the tiny sidebar frame instead of the large monetary award slot. */
+  .mockup-badge[data-sample^="Feed Banner_"] {
+    left: 74.42%;
+    top: 13.13%;
+    width: 20.01%;
+    height: 28.48%;
+    border-radius: 3.6%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  /* Live "Program name" overlay for feed-banner samples — separate from
+     .label-overlay (which is tuned for circular monetary badges). Hidden by
+     default; shown only when the surface carries a Feed Banner sample. */
+  .banner-label-overlay {
+    display: none;
+    position: absolute;
+    left: 8%; right: 8%;
+    top: 22%;
+    text-align: left;
+    color: #FFFFFF;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    pointer-events: none;
+    z-index: 2;
+    /* Long names wrap; anything past ~4 lines is clipped so the banner
+       artwork below the text zone stays visible. */
+    max-height: 45%;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+  }
+  .badge-tile[data-sample^="Feed Banner_"] .banner-label-overlay,
+  .mockup-badge[data-sample^="Feed Banner_"] .banner-label-overlay {
+    display: block;
+  }
+  /* Tile is the big working preview; mockup-badge is ~0.35× — mirrors the
+     0.35 multiplier the flat label-overlay uses in applyState(). */
+  .badge-tile[data-sample^="Feed Banner_"] .banner-label-overlay { font-size: 22px; }
+  .mockup-badge[data-sample^="Feed Banner_"] .banner-label-overlay { font-size: 9px; }
+  /* Per-sample outliers: baked-in "PROGRAM" text isn't at the default ~22%.
+     Positions taken from each SVG's <text transform="translate(x y)"> anchor. */
+  .badge-tile[data-sample="Feed Banner_Premium-Feedbanner-05"] .banner-label-overlay,
+  .mockup-badge[data-sample="Feed Banner_Premium-Feedbanner-05"] .banner-label-overlay,
+  .badge-tile[data-sample="Feed Banner_Premium-Feedbanner-07"] .banner-label-overlay,
+  .mockup-badge[data-sample="Feed Banner_Premium-Feedbanner-07"] .banner-label-overlay {
+    top: 66%;
+  }
+  .badge-tile[data-sample="Feed Banner_Fun-Feedbanner-3"] .banner-label-overlay,
+  .mockup-badge[data-sample="Feed Banner_Fun-Feedbanner-3"] .banner-label-overlay {
+    top: 12%;
+  }
+  .badge-tile .label-overlay {
+    position: absolute; left: 22%; right: 22%; top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.4px;
+    color: var(--ink);
+    pointer-events: none;
+    line-height: 1.2;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    /* Clamp to keep the label inside the badge tile */
+    max-height: 60%;
+    overflow: visible;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+  .badge-tile.has-img .label-overlay {
+    /* When showing the SVG sample, position label in the inner crest area. */
+    top: 72%;
+    max-width: 34.3%; left: 32.85%; right: 32.85%;
+    font-size: 12px;
+    -webkit-line-clamp: 3;
+  }
+  /* Per-sample alignment override: Monetary_Premium_01 has its visual center
+     lower/more centered, so middle-align the label only for this badge. */
+  .badge-tile[data-sample="Monetary_Premium_01"].has-img .label-overlay {
+    top: 50%;
+    left: 30%; right: 30%; max-width: 40%;
+  }
+  /* Monetary_Premium_02's shield plate sits higher than the generic default —
+     lift only for this sample. */
+  .badge-tile[data-sample="Monetary_Premium_02"].has-img .label-overlay {
+    top: 62%;
+  }
+  .mockup-badge[data-sample="Monetary_Premium_02"].has-img .label-overlay {
+    top: 63%;
+  }
+  /* Monetary_Premium_03: circular gold medal — plate sits higher. */
+  .badge-tile[data-sample="Monetary_Premium_03"].has-img .label-overlay {
+    top: 69%;
+  }
+  /* Monetary_minimal_04: wide rectangular gold-bordered plate across the
+     middle; label sits centered on the plate and must stay on ONE line. */
+  .badge-tile[data-sample="Monetary_minimal_04"].has-img .label-overlay {
+    top: 61%;
+    left: 22%; right: 22%; max-width: 56%;
+    -webkit-line-clamp: 1;
+  }
+  .mockup-badge[data-sample="Monetary_minimal_04"].has-img .label-overlay {
+    top: 61%;
+    left: 22%; right: 22%; max-width: 56%;
+    -webkit-line-clamp: 1;
+  }
+  /* Monetary_fun_01: blue circle with a wavy ribbon banner at the TOP and
+     a handshake below. Label sits on the ribbon near the top of the badge. */
+  .badge-tile[data-sample="Monetary_fun_01"].has-img .label-overlay,
+  .mockup-badge[data-sample="Monetary_fun_01"].has-img .label-overlay {
+    top: 52%;
+    left: 29.5%; right: 34.5%; max-width: 36%;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+  }
+  /* Monetary_fun_02: blue outer ring + white middle ring + green center disc.
+     Label sits centered on the green disc. */
+  .badge-tile[data-sample="Monetary_fun_02"].has-img .label-overlay,
+  .mockup-badge[data-sample="Monetary_fun_02"].has-img .label-overlay {
+    top: 60%;
+  }
+  /* Monetary_fun_03: yellow banner across the middle with 3 stars above and
+     green ribbons on the sides; label sits centered on the yellow banner as
+     ONE line. */
+  .badge-tile[data-sample="Monetary_fun_03"].has-img .label-overlay,
+  .mockup-badge[data-sample="Monetary_fun_03"].has-img .label-overlay {
+    top: 70%;
+    left: 12%; right: 12%; max-width: 76%;
+    white-space: nowrap;
+    -webkit-line-clamp: 1;
+  }
+  /* Monetary_fun_04: blue-and-green rosette with red ribbons at the bottom.
+     Label sits centered inside the green disc — lifted 5% from the generic
+     has-img default. `!important` because a later generic rule further down
+     was clobbering the per-sample override. */
+  .badge-tile[data-sample="Monetary_fun_04"].has-img .label-overlay {
+    top: 5% !important;
+  }
+  .mockup-badge[data-sample="Monetary_fun_04"].has-img .label-overlay {
+    top: -3% !important;
+  }
+  /* Monetary_fun_05: orange scalloped badge with a full-width green ribbon
+     banner across the middle; label sits centered on the ribbon and stays
+     on ONE line. */
+  .badge-tile[data-sample="Monetary_fun_05"].has-img .label-overlay,
+  .mockup-badge[data-sample="Monetary_fun_05"].has-img .label-overlay {
+    top: 61%;
+    left: 12%; right: 12%; max-width: 76%;
+    -webkit-line-clamp: 1;
+  }
+  /* Monetary_fun_07: orange scalloped/sun-ray badge with a navy banner across
+     the middle; label sits centered on the banner as ONE line. */
+  .badge-tile[data-sample="Monetary_fun_07"].has-img .label-overlay,
+  .mockup-badge[data-sample="Monetary_fun_07"].has-img .label-overlay {
+    top: 66%;
+    left: 12%; right: 12%; max-width: 76%;
+    white-space: nowrap;
+    -webkit-line-clamp: 1;
+  }
+  /* Monetary_fun_08: orange circle with trophy and a navy banner across the
+     middle; label sits centered on the banner as ONE line. */
+  .badge-tile[data-sample="Monetary_fun_08"].has-img .label-overlay,
+  .mockup-badge[data-sample="Monetary_fun_08"].has-img .label-overlay {
+    top: 70%;
+    left: 12%; right: 12%; max-width: 76%;
+    white-space: nowrap;
+    -webkit-line-clamp: 1;
+  }
+  /* Mirror on the mockup-badge in case that's the surface being viewed. */
+  .mockup-badge[data-sample="Monetary_Premium_03"].has-img .label-overlay {
+    top: 62%;
+  }
+  /* Arc-text overlay — used only by samples whose label rides a ribbon
+     curve rather than sitting in a flat plate (e.g. Monetary_Premium_07).
+     Absolutely positioned inside the tile; the SVG stretches to the tile
+     bounds and paints text along an SVG path via <textPath>. */
+  .arc-label-overlay {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    display: none;
+  }
+  .arc-label-overlay svg {
+    width: 100%; height: 100%;
+    overflow: visible;
+  }
+  /* When an arc overlay is active, hide the flat label so we don't paint
+     both at once. */
+  .badge-tile.has-arc .label-overlay,
+  .mockup-badge.has-arc .label-overlay { display: none; }
+
+  /* Monetary_premium_04: light-gold circular with side ribbons. */
+  .badge-tile[data-sample="Monetary_premium_04"].has-img .label-overlay {
+    top: 73%;
+  }
+  .mockup-badge[data-sample="Monetary_premium_04"].has-img .label-overlay {
+    top: 66%;
+  }
+  /* Monetary_Premium_07: orange scalloped/sun-ray badge with a gold rim and
+     inner laurel wreath. Flat label sits below the wreath's midline. */
+  .badge-tile[data-sample="Monetary_Premium_07"].has-img .label-overlay,
+  .mockup-badge[data-sample="Monetary_Premium_07"].has-img .label-overlay {
+    top: 63%;
+  }
+  .badge-tile-meta {
+    font-size: 13px; color: var(--muted);
+  }
+  .badge-tile-meta strong { color: var(--iron); font-weight: 600; }
+
+  /* CONTROLS */
+  .controls { display: flex; flex-direction: column; gap: 0; margin-top: 6px; }
+  .ctrl-section {
+    display: flex; flex-direction: column; gap: 14px;
+    padding: 18px 0;
+  }
+  .ctrl-section:first-child { padding-top: 4px; }
+  .ctrl-section:last-child { padding-bottom: 4px; }
+  .ctrl-section-title {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    letter-spacing: 0.6px; text-transform: uppercase;
+    margin-bottom: 2px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .soon-pill {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #FFF3E0;
+    color: #B76A00;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.4px; text-transform: uppercase;
+  }
+  .ctrl-section.is-coming-soon .ctrl { opacity: 0.55; pointer-events: none; }
+  .ctrl-section.is-coming-soon .ctrl input,
+  .ctrl-section.is-coming-soon .ctrl select,
+  .ctrl-section.is-coming-soon .ctrl button { cursor: not-allowed; }
+  .ctrl { display: flex; flex-direction: column; gap: 8px; }
+  .ctrl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  @media (max-width: 720px) { .ctrl-row { grid-template-columns: 1fr; } }
+  .ctrl label { font-size: 12px; font-weight: 600; color: var(--iron); letter-spacing: 0.3px; text-transform: uppercase; }
+  .ctrl input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 14px; font-family: inherit; color: var(--ink);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .ctrl input[type="text"]:focus { border-color: #29294c; box-shadow: 0 0 0 3px rgba(41,41,76,0.10); }
+  .name-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .suggest-chip {
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--white);
+    color: var(--iron);
+    font-family: inherit; font-size: 12px; font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .suggest-chip:hover { background: var(--bg); border-color: var(--alabaster); color: var(--ink); }
+  .ctrl select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 14px; font-family: inherit; color: var(--ink);
+    background: var(--white);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .ctrl select:focus { border-color: #29294c; box-shadow: 0 0 0 3px rgba(41,41,76,0.10); }
+  .ctrl input[type="range"] {
+    width: 100%; accent-color: #29294c;
+  }
+  .range-row { display: flex; align-items: center; gap: 12px; }
+  .range-row input[type="range"] { flex: 1; }
+  .range-value {
+    min-width: 44px; text-align: right;
+    font-size: 13px; font-weight: 600; color: var(--iron);
+    font-variant-numeric: tabular-nums;
+  }
+  .hex-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 13px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    color: var(--ink); background: var(--white);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    text-transform: uppercase;
+  }
+  .hex-input:focus { border-color: #29294c; box-shadow: 0 0 0 3px rgba(41,41,76,0.10); }
+  .hex-input.invalid { border-color: #D14343; box-shadow: 0 0 0 3px rgba(209,67,67,0.12); }
+  .ctrl-note {
+    font-size: 12px; color: var(--muted);
+    line-height: 1.5;
+    margin-top: 2px;
+  }
+  .ctrl-warn {
+    font-size: 12px; color: #D14343; font-weight: 600;
+    margin-top: 2px;
+    min-height: 16px;
+    opacity: 0; transition: opacity 0.2s ease;
+  }
+  .ctrl-warn.show { opacity: 1; }
+
+  .swatch-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .swatch:hover { transform: scale(1.08); }
+  .swatch.active { border-color: var(--ink); }
+
+  /* BG pattern chips — preview the pattern on top of the current BG color */
+  .pattern-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .pattern-chip {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    background-color: #29294c;
+    background-repeat: repeat;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.10);
+    transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .pattern-chip:hover { transform: scale(1.06); }
+  .pattern-chip.active { border-color: var(--ink); }
+  .pattern-chip.none::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(45deg, transparent calc(50% - 1px), rgba(255,255,255,0.6) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px));
+  }
+  .swatch.transparent {
+    background: linear-gradient(135deg, #fff 50%, #ddd 50%);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
+  }
+  .color-picker {
+    width: 32px; height: 32px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0;
+    cursor: pointer;
+    background: var(--white);
+  }
+  .color-picker::-webkit-color-swatch-wrapper { padding: 2px; }
+  .color-picker::-webkit-color-swatch { border: none; border-radius: 6px; }
+
+  /* RIGHT — platform mockup */
+  .mockup-column {
+    position: sticky; top: 24px;
+  }
+  .mockup-stage {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 14px;
+  }
+  .mockup-frame { position: relative; border-radius: 12px; overflow: hidden; }
+  .mockup-stage img { width: 100%; height: auto; display: block; border-radius: 12px; }
+  .mockup-caption { font-size: 12px; color: var(--muted); margin-bottom: 10px; text-align: right; }
+
+  /* Live badge overlay positioned over the placeholder rect in the Static mockup
+     (SVG viewBox 1440×1420; rect x=430 y=596.6 w=580 h=580). */
+  .mockup-badge {
+    position: absolute;
+    left: 29.86%;
+    top: 32.01%;
+    width: 40.28%;
+    height: 50.85%;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    transition: background 0.25s ease;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+  }
+  .mockup-badge .glyph-img {
+    width: 56%; height: auto; max-height: 56%; object-fit: contain; display: block; transform: translateY(25%);
+  }
+  .mockup-badge .title-img {
+    position: absolute;
+    top: 11%; left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    max-height: 28%;
+    object-fit: contain;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .mockup-badge .glyph {
+    font-size: clamp(20px, 4.5vw, 48px); line-height: 1; transform: translateY(8%);
+  }
+  .mockup-badge .congrats {
+    position: absolute; top: 12%; left: 8%; right: 8%;
+    text-align: center;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--white);
+    pointer-events: none;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mockup-badge .recipient {
+    position: absolute; top: 20%; left: 8%; right: 8%;
+    text-align: center;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    pointer-events: none;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mockup-badge .label-overlay {
+    /* Mirrors .badge-tile .label-overlay so the badge-to-textbox ratio matches the working preview. */
+    position: absolute;
+    left: 22%; right: 22%; top: 61%;
+    transform: translateY(-50%);
+    text-align: center;
+    color: var(--white);
+    pointer-events: none;
+    line-height: 1.2;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-height: 60%;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+  .mockup-badge.has-img .label-overlay {
+    top: 64%;
+    max-width: 22.86%; left: 38.57%; right: 38.57%;
+    -webkit-line-clamp: 3;
+  }
+  /* Per-sample alignment override for the mockup badge: Monetary_Premium_01. */
+  .mockup-badge[data-sample="Monetary_Premium_01"].has-img .label-overlay {
+    top: 60.5%;
+    max-width: 28%; left: 36%; right: 36%;
+  }
+
+  /* FOOT */
+  .panel-foot {
+    position: fixed;
+    right: 32px; bottom: 84px;
+    z-index: 9999;
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 12px 10px 22px;
+    background: #FFFFFF;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 100px;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.14), 0 2px 6px rgba(70,73,76,0.06);
+  }
+  .panel-card { padding-bottom: 100px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px;
+    border-radius: 100px; border: none;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-ghost { background: var(--white); color: var(--iron); border: 1px solid var(--line); }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--alabaster); background: var(--bg); }
+  .btn-primary { background: var(--cyan); color: var(--white); }
+  .btn-primary:hover { background: var(--iron); transform: translateY(-1px); }
+
+  @media (max-width: 900px) {
+    .layout-grid { grid-template-columns: 1fr; }
+    .mockup-column { position: static; }
+  }
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .page-bg img {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    will-change: transform;
+    animation: pageBgDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes pageBgDrift {
+    0%   { transform: translate(0, 0) scale(1.05); }
+    100% { transform: translate(-1.8%, -1.5%) scale(1.10); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-bg img { animation: none; }
+  }
+
+
+</style>
+</head>
+<body>
+<div class="page-bg" aria-hidden="true"><img src="Background.svg" alt=""></div>
+
+<nav class="top">
+  <div class="nav-left">
+    <a href="https://www.vantagecircle.com" class="brand-logo" aria-label="Vantage Circle home" target="_blank" rel="noopener"><img src="Images/vc-logo-new.png" alt="Vantage Circle"></a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How it works</a></li>
+    <li><a href="profile.html" class="nav-profile" id="navProfile" aria-label="View your profile">
+      <span class="nav-profile-avatar" id="navProfileAvatar"></span>
+      <span class="nav-profile-name" id="navProfileName"></span>
+    </a></li>
+  </ul>
+</nav>
+<script>
+  (function() {
+    try {
+      var ps = JSON.parse(sessionStorage.getItem('cxBadge.designState.v1') || '{}');
+      var company = (ps.company || '').trim();
+      if (!company) return;
+      var chip = document.getElementById('navProfile');
+      var avatar = document.getElementById('navProfileAvatar');
+      var nameEl = document.getElementById('navProfileName');
+      if (!chip || !avatar || !nameEl) return;
+      nameEl.textContent = 'Profile';
+      var colors = (ps.brand && ps.brand.colors) || [];
+      var primary = colors[0];
+      if (primary) {
+        avatar.style.background = primary;
+        avatar.style.color = 'transparent';
+        avatar.textContent = '';
+      } else {
+        avatar.textContent = company.charAt(0).toUpperCase();
+      }
+      chip.classList.add('show');
+    } catch (e) {}
+  })();
+</script>
+
+<main class="wrap">
+  <div class="panel-card">
+    <div class="layout-grid">
+      <!-- LEFT -->
+      <div class="badge-stage">
+        <div class="badge-tile-meta">
+          <strong id="metaStyle">Premium</strong> award
+        </div>
+        <div class="badge-tile" id="badgeTile">
+          <span class="label-overlay" id="labelOverlay"></span>
+          <span class="banner-label-overlay" id="tileBannerLabel"></span>
+        </div>
+
+        <div class="controls">
+          <div class="ctrl-section" style="transform: translateY(4%);">
+            <div class="ctrl-row">
+              <div class="ctrl" id="bgColorCtrl">
+                <label>Background color</label>
+                <div class="swatch-row" id="bgSwatches"></div>
+              </div>
+
+              <div class="ctrl" id="fgColorCtrl">
+                <label>Award Name Colour</label>
+                <div class="swatch-row" id="fgSwatches"></div>
+              </div>
+            </div>
+            <div class="ctrl" id="bgHexCtrl" style="margin-top: 10px;">
+              <input class="hex-input" type="text" id="bgHexInput" placeholder="Add your company hex code" maxlength="7">
+              <div class="ctrl-note">Pick a swatch or enter a hex code. Text color auto-adjusts so the award name stays readable on whatever background you choose.</div>
+              <div class="ctrl-warn" id="bgWarn">Enter a valid 6-digit hex.</div>
+            </div>
+            <div class="ctrl" id="bgPatternCtrl" style="margin-top: 14px; transform: translateY(-16%);">
+              <label>Background pattern</label>
+              <div class="pattern-row" id="bgPatterns"></div>
+            </div>
+          </div>
+
+          <div class="ctrl-section is-coming-soon" id="typographySection">
+            <div class="ctrl-section-title">Typography <span class="soon-pill">Coming soon</span></div>
+            <div class="ctrl">
+              <label for="textInput" id="textLabel">Award name</label>
+              <input id="textInput" type="text" maxlength="40" placeholder="Write your award name here" disabled>
+              <div class="name-suggestions" id="nameSuggestions">
+                <button type="button" class="suggest-chip" data-name="Spot Award" disabled>Spot Award</button>
+                <button type="button" class="suggest-chip" data-name="Awesome Team" disabled>Awesome Team</button>
+                <button type="button" class="suggest-chip" data-name="Standout Performer" disabled>Standout Performer</button>
+              </div>
+              <div class="ctrl-note" id="textNote">Up to 40 characters. Text is clamped inside the badge tile.</div>
+            </div>
+
+            <div class="ctrl">
+              <label for="fontFamilyInput">Font family</label>
+            <select id="fontFamilyInput" disabled>
+              <optgroup label="Sans-serif">
+                <option value="Inter">Inter</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Raleway">Raleway</option>
+                <option value="Nunito">Nunito (rounded)</option>
+              </optgroup>
+              <optgroup label="Display">
+                <option value="Oswald">Oswald (condensed)</option>
+                <option value="Bebas Neue">Bebas Neue (tall caps)</option>
+                <option value="Cinzel">Cinzel (engraved)</option>
+                <option value="DM Serif Display">DM Serif Display</option>
+              </optgroup>
+              <optgroup label="Serif">
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Lora">Lora (italic)</option>
+                <option value="Merriweather">Merriweather</option>
+              </optgroup>
+              <optgroup label="Script / Handwritten">
+                <option value="Pacifico">Pacifico (script)</option>
+                <option value="Dancing Script">Dancing Script</option>
+                <option value="Caveat">Caveat (handwritten)</option>
+                <option value="Kalam">Kalam (casual)</option>
+              </optgroup>
+              <optgroup label="Mono">
+                <option value="Space Mono">Space Mono</option>
+              </optgroup>
+            </select>
+              <div class="ctrl-note">This applies only to the award name font and does not affect the "Congratulations text."</div>
+            </div>
+
+            <div class="ctrl">
+              <label for="fontSizeInput">Font size</label>
+              <div class="range-row">
+                <input id="fontSizeInput" type="range" min="10" max="50" step="1" value="32" disabled>
+                <span class="range-value" id="fontSizeValue">32px</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="mockup-column">
+        <div class="mockup-caption">How this badge appears in the Vantage Circle feed</div>
+        <div class="mockup-stage">
+          <div class="mockup-frame">
+            <img id="mockupImg" alt="Platform mockup">
+            <div class="mockup-badge" id="mockupBadge">
+              <img class="title-img" src="Layout%20Mockup/Name_award_badge.svg" alt="">
+              <span class="label-overlay" id="mockupLabel"></span>
+              <span class="banner-label-overlay" id="mockupBannerLabel"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="resetBtn" type="button">Reset</button>
+      <button class="btn btn-primary" id="saveBtn" type="button">Save and continue</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  const PERSIST_KEY = 'cxBadge.designState.v1';
+
+  const BUNDLES = [
+    { key: 'monetary',      name: 'Monetary Awards',     icon: '💰' },
+    { key: 'non-monetary',  name: 'Non-Monetary Awards', icon: '⭐' },
+    { key: 'lsa',           name: 'LSA',                  icon: '🏆' },
+    { key: 'feed-banner',   name: 'Feed Banner',          icon: '📢' },
+    { key: 'certificate',   name: 'Certificate',          icon: '📜' },
+    { key: 'teaser',        name: 'Teaser',               icon: '✨' },
+    { key: 'launch-mailer', name: 'Launch Mailer',        icon: '✉️' },
+    { key: 'login-banner',  name: 'Login Banner',         icon: '🔐' },
+  ];
+  const STYLES = {
+    minimal: 'Minimal',
+    premium: 'Premium',
+    fun:     'Fun & Colorful',
+  };
+  const SAMPLE_OVERRIDES = {
+    'monetary|premium|monetary-0-0': 'Samples/Award/Premium/Monetary_Premium_02.svg',
+    'monetary|premium|monetary-0-1': 'Samples/Award/Premium/Monetary_Premium_03.svg',
+    'monetary|premium|monetary-0-2': 'Samples/Award/Premium/Monetary_premium_04.svg',
+    'monetary|premium|monetary-0-3': 'Samples/Award/Premium/Monetary_Premium_07.svg',
+    'monetary|premium|monetary-0-4': 'Samples/Award/Premium/Monetary_Premium_08.svg',
+    'monetary|premium|monetary-1-0': 'Samples/Award/Premium/Monetary_Premium_09.svg',
+    'monetary|premium|monetary-1-1': 'Samples/Award/Premium/Monetary_Premium_11.svg',
+    'monetary|premium|monetary-1-2': 'Samples/Award/Premium/Monetary_Premium_15.svg',
+    'monetary|premium|monetary-1-3': 'Samples/Award/Premium/Monetary_Premium_16.svg',
+    'monetary|premium|monetary-1-4': 'Samples/Award/Premium/Monetary_Premium_17.svg',
+    'monetary|premium|monetary-2-0': 'Samples/Award/Premium/Monetary_Premium_18.svg',
+    'monetary|premium|monetary-2-1': 'Samples/Award/Premium/Monetary_Premium_19.svg',
+    'monetary|premium|monetary-2-2': 'Samples/Award/Premium/Monetary_Premium_20.svg',
+    'monetary|premium|monetary-2-3': 'Samples/Award/Premium/Monetary_Premium_21.svg',
+    'monetary|minimal|monetary-0-0': 'Samples/Award/Minimal/Monetary_minimal_01.svg',
+    'monetary|minimal|monetary-0-1': 'Samples/Award/Minimal/Monetary_minimal_02.svg',
+    'monetary|minimal|monetary-0-2': 'Samples/Award/Minimal/Monetary_minimal_03.svg',
+    'monetary|minimal|monetary-0-3': 'Samples/Award/Minimal/Monetary_minimal_04.svg',
+    'monetary|minimal|monetary-0-4': 'Samples/Award/Minimal/Monetary_minimal_05.svg',
+    'monetary|minimal|monetary-1-0': 'Samples/Award/Minimal/Monetary_minimal_07.svg',
+    'monetary|minimal|monetary-1-1': 'Samples/Award/Minimal/Monetary_minimal_08.svg',
+    'monetary|minimal|monetary-1-2': 'Samples/Award/Minimal/Monetary_minimal_09.svg',
+    'monetary|minimal|monetary-1-3': 'Samples/Award/Minimal/Monetary_minimal_10.svg',
+    'monetary|minimal|monetary-1-4': 'Samples/Award/Minimal/Monetary_minimal_11.svg',
+    'monetary|minimal|monetary-2-0': 'Samples/Award/Minimal/Monetary_minimal_12.svg',
+    'monetary|minimal|monetary-2-1': 'Samples/Award/Minimal/Monetary_minimal_13.svg',
+    'monetary|fun|monetary-0-0': 'Samples/Award/Fun & Playful/Monetary_fun_01.svg',
+    'monetary|fun|monetary-0-1': 'Samples/Award/Fun & Playful/Monetary_fun_02.svg',
+    'monetary|fun|monetary-0-2': 'Samples/Award/Fun & Playful/Monetary_fun_03.svg',
+    'monetary|fun|monetary-0-3': 'Samples/Award/Fun & Playful/Monetary_fun_04.svg',
+    'monetary|fun|monetary-0-4': 'Samples/Award/Fun & Playful/Monetary_fun_05.svg',
+    'monetary|fun|monetary-1-0': 'Samples/Award/Fun & Playful/Monetary_fun_06.svg',
+    'monetary|fun|monetary-1-1': 'Samples/Award/Fun & Playful/Monetary_fun_07.svg',
+    'monetary|fun|monetary-1-2': 'Samples/Award/Fun & Playful/Monetary_fun_08.svg',
+    'lsa|premium|lsa-0-0': 'Samples/LSA/Premium/LSA_Premium_01.svg',
+    'lsa|premium|lsa-0-1': 'Samples/LSA/Premium/LSA_Premium_02.svg',
+    'lsa|premium|lsa-0-2': 'Samples/LSA/Premium/LSA_Premium_03.svg',
+    'lsa|premium|lsa-0-3': 'Samples/LSA/Premium/LSA_Premium_04.svg',
+    'lsa|premium|lsa-0-4': 'Samples/LSA/Premium/LSA_Premium_05.svg',
+    'lsa|premium|lsa-1-0': 'Samples/LSA/Premium/LSA_Premium_06.svg',
+    'lsa|premium|lsa-1-1': 'Samples/LSA/Premium/LSA_Premium_07.svg',
+    'lsa|premium|lsa-1-2': 'Samples/LSA/Premium/LSA_Premium_08.svg',
+    'lsa|premium|lsa-1-3': 'Samples/LSA/Premium/LSA_Premium_09.svg',
+    'lsa|premium|lsa-1-4': 'Samples/LSA/Premium/LSA_Premium_10.svg',
+    'lsa|premium|lsa-2-0': 'Samples/LSA/Premium/LSA_Premium_11.svg',
+    'lsa|premium|lsa-2-1': 'Samples/LSA/Premium/LSA_Premium_12.svg',
+    'lsa|minimal|lsa-0-0': 'Samples/LSA/Minimal/LSA_minimal_01.svg',
+    'lsa|minimal|lsa-0-1': 'Samples/LSA/Minimal/LSA_minimal_02.svg',
+    'lsa|minimal|lsa-0-2': 'Samples/LSA/Minimal/LSA_minimal_03.svg',
+    'lsa|minimal|lsa-0-3': 'Samples/LSA/Minimal/LSA_minimal_04.svg',
+    'lsa|minimal|lsa-0-4': 'Samples/LSA/Minimal/LSA_minimal_05.svg',
+    'lsa|minimal|lsa-1-0': 'Samples/LSA/Minimal/LSA_minimal_06.svg',
+    'lsa|minimal|lsa-1-1': 'Samples/LSA/Minimal/LSA_minimal_07.svg',
+    'lsa|minimal|lsa-1-2': 'Samples/LSA/Minimal/LSA_minimal_08.svg',
+    'lsa|minimal|lsa-1-3': 'Samples/LSA/Minimal/LSA_minimal_09.svg',
+    'lsa|minimal|lsa-1-4': 'Samples/LSA/Minimal/LSA_minimal_10.svg',
+    'lsa|minimal|lsa-2-0': 'Samples/LSA/Minimal/LSA_minimal_11.svg',
+    'lsa|minimal|lsa-2-1': 'Samples/LSA/Minimal/LSA_minimal_12.svg',
+    'lsa|fun|lsa-0-0': 'Samples/LSA/Fun & Playful/LSA_fun_01.svg',
+    'lsa|fun|lsa-0-1': 'Samples/LSA/Fun & Playful/LSA_fun_02.svg',
+    'lsa|fun|lsa-0-2': 'Samples/LSA/Fun & Playful/LSA_fun_03.svg',
+    'lsa|fun|lsa-0-3': 'Samples/LSA/Fun & Playful/LSA_fun_04.svg',
+    'lsa|fun|lsa-0-4': 'Samples/LSA/Fun & Playful/LSA_fun_05.svg',
+    'lsa|fun|lsa-1-0': 'Samples/LSA/Fun & Playful/LSA_fun_06.svg',
+    'lsa|fun|lsa-1-1': 'Samples/LSA/Fun & Playful/LSA_fun_07.svg',
+    'lsa|fun|lsa-1-2': 'Samples/LSA/Fun & Playful/LSA_fun_08.svg',
+    'lsa|fun|lsa-1-3': 'Samples/LSA/Fun & Playful/LSA_fun_09.svg',
+    'lsa|fun|lsa-1-4': 'Samples/LSA/Fun & Playful/LSA_fun_10.svg',
+    'lsa|fun|lsa-2-0': 'Samples/LSA/Fun & Playful/LSA_fun_11.svg',
+    'lsa|fun|lsa-2-1': 'Samples/LSA/Fun & Playful/LSA_fun_12.svg',
+    // Order rule: portrait samples first, horizontal ones last.
+    'feed-banner|premium|feed-banner-0-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-03.svg',
+    'feed-banner|premium|feed-banner-0-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-04.svg',
+    'feed-banner|premium|feed-banner-0-2': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-05.png',
+    'feed-banner|premium|feed-banner-0-3': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-06.svg',
+    'feed-banner|premium|feed-banner-0-4': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-12.png',
+    'feed-banner|premium|feed-banner-1-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-13.png',
+    'feed-banner|premium|feed-banner-1-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-14.png',
+    'feed-banner|premium|feed-banner-1-2': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-15.png',
+    'feed-banner|premium|feed-banner-1-3': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-16.png',
+    'feed-banner|premium|feed-banner-1-4': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-17.png',
+    'feed-banner|premium|feed-banner-2-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-01.png',
+    'feed-banner|premium|feed-banner-2-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-02.png',
+    'feed-banner|minimal|feed-banner-0-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-6.svg',
+    'feed-banner|minimal|feed-banner-0-1': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-7.png',
+    'feed-banner|minimal|feed-banner-0-2': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-8.png',
+    'feed-banner|minimal|feed-banner-0-3': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-11.png',
+    'feed-banner|minimal|feed-banner-0-4': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-12.png',
+    'feed-banner|minimal|feed-banner-1-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-13.png',
+    'feed-banner|minimal|feed-banner-1-1': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-1.png',
+    'feed-banner|minimal|feed-banner-1-2': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-2.png',
+    'feed-banner|minimal|feed-banner-1-3': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-3.png',
+    'feed-banner|minimal|feed-banner-1-4': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-4.png',
+    'feed-banner|minimal|feed-banner-2-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-5.png',
+    'feed-banner|fun|feed-banner-0-0': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-2.svg',
+    'feed-banner|fun|feed-banner-0-1': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-3.svg',
+    'feed-banner|fun|feed-banner-0-2': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-4.svg',
+    'feed-banner|fun|feed-banner-0-3': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-5.png',
+    'feed-banner|fun|feed-banner-0-4': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-1.png',
+    'teaser|minimal|teaser-0-0': 'Samples/Teaser/Minimal/teaser_minimal_1.png',
+    'teaser|minimal|teaser-0-1': 'Samples/Teaser/Minimal/teaser_minimal_2.png',
+    'teaser|minimal|teaser-0-2': 'Samples/Teaser/Minimal/teaser_minimal_3.png',
+    'teaser|minimal|teaser-0-3': 'Samples/Teaser/Minimal/teaser_minimal_4.png',
+    'teaser|minimal|teaser-0-4': 'Samples/Teaser/Minimal/teaser_minimal_5.png',
+    'teaser|minimal|teaser-1-0': 'Samples/Teaser/Minimal/teaser_minimal_6.png',
+    'teaser|minimal|teaser-1-1': 'Samples/Teaser/Minimal/teaser_minimal_7.png',
+    'teaser|premium|teaser-0-0': 'Samples/Teaser/Premium/teaser_premium_1.png',
+    'teaser|premium|teaser-0-1': 'Samples/Teaser/Premium/teaser_premium_2.png',
+    'teaser|premium|teaser-0-2': 'Samples/Teaser/Premium/teaser_premium_3.png',
+    'teaser|premium|teaser-0-3': 'Samples/Teaser/Premium/teaser_premium_4.png',
+    'teaser|premium|teaser-0-4': 'Samples/Teaser/Premium/teaser_premium_5.png',
+    'teaser|premium|teaser-1-0': 'Samples/Teaser/Premium/teaser_premium_6.png',
+    'teaser|premium|teaser-1-1': 'Samples/Teaser/Premium/teaser_premium_7.png',
+    'teaser|fun|teaser-0-0': 'Samples/Teaser/Fun/teaser_fun_1.png',
+    'teaser|fun|teaser-0-1': 'Samples/Teaser/Fun/teaser_fun_2.png',
+    'teaser|fun|teaser-0-2': 'Samples/Teaser/Fun/teaser_fun_3.png',
+    'teaser|fun|teaser-0-3': 'Samples/Teaser/Fun/teaser_fun_4.png',
+    'teaser|fun|teaser-0-4': 'Samples/Teaser/Fun/teaser_fun_5.png',
+    'certificate|minimal|certificate-0-0': 'Samples/Certificate/Minimal/Minimal-01.svg',
+    'certificate|minimal|certificate-0-1': 'Samples/Certificate/Minimal/Minimal-01 copy.svg',
+    'certificate|minimal|certificate-0-2': 'Samples/Certificate/Minimal/Minimal-02.svg',
+    'certificate|minimal|certificate-0-3': 'Samples/Certificate/Minimal/Minimal-02 copy.svg',
+    'certificate|minimal|certificate-0-4': 'Samples/Certificate/Minimal/Minimal-03.svg',
+    'certificate|minimal|certificate-1-0': 'Samples/Certificate/Minimal/Minimal-03 copy.svg',
+    'certificate|premium|certificate-0-0': 'Samples/Certificate/Premium/Premium-07.svg',
+    'certificate|premium|certificate-0-1': 'Samples/Certificate/Premium/Premium-07 copy.svg',
+    'certificate|premium|certificate-0-2': 'Samples/Certificate/Premium/Premium-08.svg',
+    'certificate|premium|certificate-0-3': 'Samples/Certificate/Premium/Premium-08 copy.svg',
+    'certificate|premium|certificate-0-4': 'Samples/Certificate/Premium/Premium-09.svg',
+    'certificate|premium|certificate-1-0': 'Samples/Certificate/Premium/Premium-09 copy.svg',
+    'certificate|fun|certificate-0-0': 'Samples/Certificate/Fun/Fun-04.svg',
+    'certificate|fun|certificate-0-1': 'Samples/Certificate/Fun/Fun-04 copy.svg',
+    'certificate|fun|certificate-0-2': 'Samples/Certificate/Fun/Fun-05.svg',
+    'certificate|fun|certificate-0-3': 'Samples/Certificate/Fun/Fun-05 copy.svg',
+    'certificate|fun|certificate-0-4': 'Samples/Certificate/Fun/Fun-06.svg',
+    'certificate|fun|certificate-1-0': 'Samples/Certificate/Fun/Fun-06 copy.svg',
+    'non-monetary|minimal|non-monetary-0-0': 'Samples/Badge/Minimal/Badge_minimal_01.svg',
+    'non-monetary|minimal|non-monetary-0-1': 'Samples/Badge/Minimal/Badge_minimal_02.svg',
+    'non-monetary|minimal|non-monetary-0-2': 'Samples/Badge/Minimal/Badge_minimal_03.svg',
+    'non-monetary|minimal|non-monetary-0-3': 'Samples/Badge/Minimal/Badge_minimal_04.svg',
+    'non-monetary|minimal|non-monetary-0-4': 'Samples/Badge/Minimal/Badge_minimal_05.svg',
+    'non-monetary|minimal|non-monetary-1-0': 'Samples/Badge/Minimal/Badge_minimal_06.svg',
+    'non-monetary|minimal|non-monetary-1-1': 'Samples/Badge/Minimal/Badge_minimal_07.svg',
+    'non-monetary|minimal|non-monetary-1-2': 'Samples/Badge/Minimal/Badge_minimal_08.svg',
+    'non-monetary|minimal|non-monetary-1-3': 'Samples/Badge/Minimal/Badge_minimal_09.svg',
+    'non-monetary|minimal|non-monetary-1-4': 'Samples/Badge/Minimal/Badge_minimal_10.svg',
+    'non-monetary|minimal|non-monetary-2-0': 'Samples/Badge/Minimal/Badge_minimal_11.svg',
+    'non-monetary|minimal|non-monetary-2-1': 'Samples/Badge/Minimal/Badge_minimal_12.svg',
+    'non-monetary|minimal|non-monetary-2-2': 'Samples/Badge/Minimal/Badge_minimal_13.svg',
+    'non-monetary|minimal|non-monetary-2-3': 'Samples/Badge/Minimal/Badge_minimal_14.svg',
+    'non-monetary|minimal|non-monetary-2-4': 'Samples/Badge/Minimal/Badge_minimal_15.svg',
+    'non-monetary|minimal|non-monetary-3-0': 'Samples/Badge/Minimal/Badge_minimal_16.svg',
+    'non-monetary|minimal|non-monetary-3-1': 'Samples/Badge/Minimal/Badge_minimal_17.svg',
+    'non-monetary|minimal|non-monetary-3-2': 'Samples/Badge/Minimal/Badge_minimal_18.svg',
+    'non-monetary|minimal|non-monetary-3-3': 'Samples/Badge/Minimal/Badge_minimal_19.svg',
+    'non-monetary|minimal|non-monetary-3-4': 'Samples/Badge/Minimal/Badge_minimal_20.svg',
+    'non-monetary|premium|non-monetary-0-0': 'Samples/Badge/Premium/Badge_Premium_01.svg',
+    'non-monetary|premium|non-monetary-0-1': 'Samples/Badge/Premium/Badge_Premium_02.svg',
+    'non-monetary|premium|non-monetary-0-2': 'Samples/Badge/Premium/Badge_Premium_03.svg',
+    'non-monetary|premium|non-monetary-0-3': 'Samples/Badge/Premium/Badge_Premium_04.svg',
+    'non-monetary|premium|non-monetary-0-4': 'Samples/Badge/Premium/Badge_Premium_05.svg',
+    'non-monetary|premium|non-monetary-1-0': 'Samples/Badge/Premium/Badge_Premium_06.svg',
+    'non-monetary|premium|non-monetary-1-1': 'Samples/Badge/Premium/Badge_Premium_07.svg',
+    'non-monetary|premium|non-monetary-1-2': 'Samples/Badge/Premium/Badge_Premium_08.svg',
+    'non-monetary|premium|non-monetary-1-3': 'Samples/Badge/Premium/Badge_Premium_09.svg',
+    'non-monetary|premium|non-monetary-1-4': 'Samples/Badge/Premium/Badge_Premium_10.svg',
+    'non-monetary|premium|non-monetary-2-0': 'Samples/Badge/Premium/Badge_Premium_11.svg',
+    'non-monetary|premium|non-monetary-2-1': 'Samples/Badge/Premium/Badge_Premium_12.svg',
+    'non-monetary|premium|non-monetary-2-2': 'Samples/Badge/Premium/Badge_Premium_13.svg',
+    'non-monetary|premium|non-monetary-2-3': 'Samples/Badge/Premium/Badge_Premium_14.svg',
+    'non-monetary|premium|non-monetary-2-4': 'Samples/Badge/Premium/Badge_Premium_15.svg',
+    'non-monetary|premium|non-monetary-3-0': 'Samples/Badge/Premium/Badge_Premium_16.svg',
+    'non-monetary|premium|non-monetary-3-1': 'Samples/Badge/Premium/Badge_Premium_17.svg',
+    'non-monetary|premium|non-monetary-3-2': 'Samples/Badge/Premium/Badge_Premium_18.svg',
+    'non-monetary|premium|non-monetary-3-3': 'Samples/Badge/Premium/Badge_Premium_19.svg',
+    'non-monetary|premium|non-monetary-3-4': 'Samples/Badge/Premium/Badge_Premium_20.svg',
+    'non-monetary|premium|non-monetary-4-0': 'Samples/Badge/Premium/Badge_Premium_21.svg',
+    'non-monetary|premium|non-monetary-4-1': 'Samples/Badge/Premium/Badge_Premium_22.svg',
+    'non-monetary|fun|non-monetary-0-0': 'Samples/Badge/Fun & Playful/Badge_fun_01.svg',
+    'non-monetary|fun|non-monetary-0-1': 'Samples/Badge/Fun & Playful/Badge_fun_02.svg',
+    'non-monetary|fun|non-monetary-0-2': 'Samples/Badge/Fun & Playful/Badge_fun_03.svg',
+    'non-monetary|fun|non-monetary-0-3': 'Samples/Badge/Fun & Playful/Badge_fun_04.svg',
+    'non-monetary|fun|non-monetary-0-4': 'Samples/Badge/Fun & Playful/Badge_fun_05.svg',
+    'non-monetary|fun|non-monetary-1-0': 'Samples/Badge/Fun & Playful/Badge_fun_06.svg',
+    'non-monetary|fun|non-monetary-1-1': 'Samples/Badge/Fun & Playful/Badge_fun_07.svg',
+    'non-monetary|fun|non-monetary-1-2': 'Samples/Badge/Fun & Playful/Badge_fun_08.svg',
+    'non-monetary|fun|non-monetary-1-3': 'Samples/Badge/Fun & Playful/Badge_fun_09.svg',
+    'non-monetary|fun|non-monetary-1-4': 'Samples/Badge/Fun & Playful/Badge_fun_10.svg',
+    'non-monetary|fun|non-monetary-2-0': 'Samples/Badge/Fun & Playful/Badge_fun_11.svg',
+    'non-monetary|fun|non-monetary-2-1': 'Samples/Badge/Fun & Playful/Badge_fun_12.svg',
+    'non-monetary|fun|non-monetary-2-2': 'Samples/Badge/Fun & Playful/Badge_fun_13.svg',
+    'non-monetary|fun|non-monetary-2-3': 'Samples/Badge/Fun & Playful/Badge_fun_14.svg',
+    'non-monetary|fun|non-monetary-2-4': 'Samples/Badge/Fun & Playful/Badge_fun_15.svg',
+    'non-monetary|fun|non-monetary-3-0': 'Samples/Badge/Fun & Playful/Badge_fun_16.svg',
+    'non-monetary|fun|non-monetary-3-1': 'Samples/Badge/Fun & Playful/Badge_fun_17.svg',
+    'non-monetary|fun|non-monetary-3-2': 'Samples/Badge/Fun & Playful/Badge_fun_18.svg',
+    'non-monetary|fun|non-monetary-3-3': 'Samples/Badge/Fun & Playful/Badge_fun_19.svg',
+    'non-monetary|fun|non-monetary-3-4': 'Samples/Badge/Fun & Playful/Badge_fun_20.svg',
+    'non-monetary|fun|non-monetary-4-0': 'Samples/Badge/Fun & Playful/Badge_fun_21.svg',
+    'launch-mailer|minimal|launch-mailer-0-0': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_01.png',
+    'launch-mailer|minimal|launch-mailer-0-1': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_02.png',
+    'launch-mailer|minimal|launch-mailer-0-2': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_03.png',
+    'launch-mailer|premium|launch-mailer-0-0': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_01.png',
+    'launch-mailer|premium|launch-mailer-0-1': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_02.png',
+    'launch-mailer|premium|launch-mailer-0-2': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_03.png',
+    'launch-mailer|premium|launch-mailer-0-3': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_04.png',
+    'launch-mailer|fun|launch-mailer-0-0': 'Samples/Launch Mailer/Fun & Playful/LaunchMailer_fun_01.png',
+    'launch-mailer|fun|launch-mailer-0-1': 'Samples/Launch Mailer/Fun & Playful/LaunchMailer_fun_02.png',
+    'login-banner|minimal|login-banner-0-0': 'Samples/Login Banner/Minimal/Login banner-Minimal-01.png',
+    'login-banner|minimal|login-banner-0-1': 'Samples/Login Banner/Minimal/Login banner-Minimal-02.png',
+    'login-banner|premium|login-banner-0-0': 'Samples/Login Banner/Premium/Login banner-Premium-01.png',
+    'login-banner|premium|login-banner-0-1': 'Samples/Login Banner/Premium/Login banner-Premium-02.png',
+    'login-banner|fun|login-banner-0-0': 'Samples/Login Banner/Fun & Playful/Login banner-Fun-01.png',
+    'login-banner|fun|login-banner-0-1': 'Samples/Login Banner/Fun & Playful/Login banner-Fun-02.png',
+  };
+  const MOCKUP_BY_BUNDLE = {
+    'monetary':     'Layout%20Mockup/VC_page_monetary_mockup.svg',
+    'non-monetary': 'Layout%20Mockup/VC_page_Nonmonetary_mockup.svg',
+    'lsa':          'Layout%20Mockup/VC_page_LSA_mockup.svg',
+    'teaser':       'Layout%20Mockup/VC_page_Teaser_mockup.svg',
+    'launch-mailer':'Layout%20Mockup/VC_page_Launch%20Mailer_mockup.svg',
+    'feed-banner':  'Layout%20Mockup/VC_page_feedbanner_mockup.svg',
+    'certificate':  'Layout%20Mockup/VC_page_Certtificate_mockup.svg',
+    'login-banner': 'Layout%20Mockup/VC_page_Loginbanner_mockup.svg',
+  };
+  const DEFAULT_MOCKUP = 'Layout%20Mockup/VC_page_award-badge_preview.svg';
+
+  const DEFAULT_BG_SWATCHES = ['#29294C', '#1A1A2E', '#14213D', '#0F3D3E', '#1B2C40', '#2D1B3D'];
+  const DEFAULT_FG_SWATCHES = ['#FFFFFF', '#FAFAFA', '#F4F5F7', '#FFF9E7', '#FFF0EA', '#EAF7FE'];
+  // Amounts used to derive a readable text color from the primary brand color.
+  // Kept in one const so catalogue/design-style previews stay consistent.
+  const FG_LIGHTEN_AMOUNT = 0.85;
+  const FG_DARKEN_AMOUNT  = 0.80;
+
+  // Optional pattern overlay on top of the BG color. Each pattern is a tiny
+  // SVG data URI tuned to look subtle on dark monetary BGs.
+  const BG_PATTERNS = [
+    { id: 'none',     name: 'None',           css: 'none' },
+    { id: 'dots',     name: 'Dots',           css: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><circle cx='8' cy='8' r='1.4' fill='rgba(255,255,255,0.08)'/></svg>")` },
+    { id: 'diagonal', name: 'Diagonal lines', css: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><path d='M0 12 L12 0' stroke='rgba(255,255,255,0.06)' stroke-width='1'/></svg>")` },
+    { id: 'grid',     name: 'Grid',           css: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18'><path d='M0 0 H18 M0 0 V18' stroke='rgba(255,255,255,0.05)' stroke-width='1' fill='none'/></svg>")` },
+    { id: 'plus',     name: 'Plus',           css: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><path d='M10 7 V13 M7 10 H13' stroke='rgba(255,255,255,0.09)' stroke-width='1.2' stroke-linecap='round'/></svg>")` },
+    { id: 'waves',    name: 'Waves',          css: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='20'><path d='M0 10 Q10 0 20 10 T40 10' stroke='rgba(255,255,255,0.07)' stroke-width='1' fill='none'/></svg>")` },
+  ];
+  function getPattern(id) { return BG_PATTERNS.find(p => p.id === id) || BG_PATTERNS[0]; }
+
+  const TIERS = ['I', 'II', 'III', 'IV', 'V'];
+  const BADGE_ICONS = {
+    'non-monetary': '🌟', 'monetary': '💵', 'lsa': '🥇',
+    'teaser': '✨', 'launch-mailer': '📨', 'feed-banner': '📣',
+    'certificate': '📜', 'login-banner': '🔐',
+  };
+
+  // Read URL params + persisted state
+  const params = new URLSearchParams(location.search);
+  const bundleKey = params.get('bundle') || '';
+  const styleId = params.get('style') || '';
+  const badgeId = params.get('badge') || '';
+  const selectedQs = params.get('selected') || '';
+  // Compound key groups per-badge state by (style, badge) so the same badge
+  // template can be customized independently under each style.
+  const badgeKey = styleId ? styleId + '|' + badgeId : badgeId;
+
+  const persisted = (() => {
+    try { return JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch { return {}; }
+  })();
+  const badgeNames = persisted.badgeNames || {};
+  const badgeCustomizations = persisted.badgeCustomizations || {};
+
+  const bundle = BUNDLES.find(b => b.key === bundleKey) || BUNDLES[0];
+  const styleName = STYLES[styleId] || 'Style';
+
+  // Per-bundle copy for the name field. Feed banner reads as a "program", not an "award".
+  if (bundleKey === 'feed-banner') {
+    const labelEl = document.getElementById('textLabel');
+    const inputEl = document.getElementById('textInput');
+    const noteEl = document.getElementById('textNote');
+    const chipSuggestions = ['Kudos', 'Reward & Recognition', 'Celebrations'];
+    if (labelEl) labelEl.textContent = 'Program name';
+    if (inputEl) inputEl.setAttribute('placeholder', 'Write your program name here');
+    if (noteEl) noteEl.textContent = 'Up to 40 characters. Text is clamped inside the banner.';
+    document.querySelectorAll('#nameSuggestions .suggest-chip').forEach((chip, i) => {
+      const label = chipSuggestions[i];
+      if (label == null) { chip.remove(); return; }
+      chip.dataset.name = label;
+      chip.textContent = label;
+    });
+  } else if (bundleKey === 'lsa') {
+    const labelEl = document.getElementById('textLabel');
+    const inputEl = document.getElementById('textInput');
+    const noteEl = document.getElementById('textNote');
+    const chipSuggestions = ['5', '10', '20'];
+    if (labelEl) labelEl.textContent = 'Milestone year';
+    if (inputEl) inputEl.setAttribute('placeholder', 'Write your milestone year here');
+    if (noteEl) noteEl.textContent = 'Up to 40 characters. Text is clamped inside the badge tile.';
+    document.querySelectorAll('#nameSuggestions .suggest-chip').forEach((chip, i) => {
+      const label = chipSuggestions[i];
+      if (label == null) { chip.remove(); return; }
+      chip.dataset.name = label;
+      chip.textContent = label;
+    });
+    ['bgColorCtrl', 'bgHexCtrl', 'bgPatternCtrl', 'fgColorCtrl'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+  }
+  const sampleSrc = SAMPLE_OVERRIDES[`${bundleKey}|${styleId}|${badgeId}`];
+
+  // Derive sample number suffix (e.g. "01") from badge id position.
+  function badgeNumberSuffix(id) {
+    const m = id.match(/-(\d+)-(\d+)$/);
+    if (!m) return '';
+    const idx = parseInt(m[1], 10) * TIERS.length + parseInt(m[2], 10) + 1;
+    return String(idx).padStart(2, '0');
+  }
+  const defaultLabel = 'Award Name';
+  const currentName = defaultLabel;
+  // Prefer the compound-key entry; fall back to the legacy bare-badgeId entry
+  // once so old customizations still hydrate on the first visit.
+  const existing = badgeCustomizations[badgeKey] || badgeCustomizations[badgeId] || {};
+
+  // Default bg/fg from the uploaded brand logo so customize matches what the user
+  // saw on the award selection page. Monetary bundle uses a darker shade.
+  const brandColors = (persisted.brand && persisted.brand.colors) || [];
+  function darkenHex(hex, amount) {
+    const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+    if (!m) return hex;
+    const r = Math.max(0, Math.round(parseInt(m[1].slice(0,2), 16) * (1 - amount)));
+    const g = Math.max(0, Math.round(parseInt(m[1].slice(2,4), 16) * (1 - amount)));
+    const b = Math.max(0, Math.round(parseInt(m[1].slice(4,6), 16) * (1 - amount)));
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  function lightenHex(hex, amount) {
+    // Mix hex toward white by `amount` (0..1). Mirrors darkenHex so the two
+    // together give shades of a picked color rather than arbitrary greys.
+    const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+    if (!m) return hex;
+    const mix = (c) => Math.min(255, Math.round(c + (255 - c) * amount));
+    const r = mix(parseInt(m[1].slice(0,2), 16));
+    const g = mix(parseInt(m[1].slice(2,4), 16));
+    const b = mix(parseInt(m[1].slice(4,6), 16));
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  // UC2/UC3/UC4: read the persisted darker shade. Monetary has its own
+  // dedicated key so customize ↔ gallery stay perfectly in sync without
+  // the value compounding when written back.
+  const savedAwardBg = (persisted.brand && persisted.brand.awardBg) || '';
+  const savedMonetaryBg = (persisted.brand && persisted.brand.monetaryAwardBg) || '';
+  let brandBg;
+  if (bundleKey === 'monetary') {
+    brandBg = '#F7F7F7';
+  } else if (bundleKey === 'non-monetary') {
+    brandBg = '#F7F7F7';
+  } else if (bundleKey === 'lsa') {
+    brandBg = '#F0F1F2';
+  } else {
+    brandBg = savedAwardBg || (brandColors[0] ? darkenHex(brandColors[0], 0.45) : '');
+  }
+  const brandFg = brandColors[1] || '';
+
+  // Derive 6 dark BG swatches from the primary brand color. For monetary,
+  // anchor to the already-darkened brandBg so the first chip matches the gallery.
+  function generateBrandShades(baseHex) {
+    if (!baseHex) return null;
+    // Always base on the raw primary logo color so the swatches read as
+    // "shades of the brand" rather than shades of an already-darkened bg.
+    const base = brandColors[0] || baseHex;
+    const amounts = bundleKey === 'monetary'
+      ? [0.15, 0.30, 0.45, 0.60, 0.72, 0.85]  // lightly tinted → very dark, all derived from primary
+      : [0.45, 0.55, 0.65, 0.72, 0.80, 0.87];
+    return amounts.map(a => darkenHex(base, a));
+  }
+  const BG_SWATCHES = generateBrandShades(brandBg) || DEFAULT_BG_SWATCHES;
+
+  // Samples whose label sits on a light inner plate — the 3 lightened shades in
+  // the normal palette would be unreadable there, so the FG palette is 6 dark
+  // shades of the primary instead of the usual 3 light + 3 dark mix.
+  const DARK_FG_PALETTE_SAMPLES = new Set([
+    'Monetary_Premium_07',
+    'Monetary_Premium_08',
+    'Monetary_Premium_15',
+  ]);
+  // Samples whose plate is always dark — the 3 darkened shades in the normal
+  // palette would be unreadable, so the last 3 fg slots become brighter shades
+  // of the primary instead of dark ones.
+  const LIGHT_FG_PALETTE_SAMPLES = new Set([
+    'Monetary_Premium_02',
+  ]);
+  // FG swatches derived from the primary brand color: 3 light shades (for use on
+  // dark backgrounds) and 3 dark shades (for use on light backgrounds). Falls
+  // back to the neutral list only when there's no brand color at all.
+  function generateBrandFgShades() {
+    const primary = brandColors[0];
+    const sampleBase = sampleSrc ? sampleSrc.split('/').pop().replace(/\.svg$/i, '') : null;
+    // Samples with a light inner plate always need a dark-only palette, even
+    // when no brand primary has been extracted yet — otherwise the fallback
+    // palette is all light shades and the label is unreadable on the plate.
+    if (sampleBase && DARK_FG_PALETTE_SAMPLES.has(sampleBase)) {
+      if (!primary) return ['#000000', '#1F1F1F', '#333333', '#4A4A4A', '#5C5C5C', '#7A7A7A'];
+      return [
+        '#000000',
+        darkenHex(primary, 0.94),
+        darkenHex(primary, 0.88),
+        darkenHex(primary, 0.80),
+        darkenHex(primary, 0.72),
+        darkenHex(primary, 0.60),
+      ];
+    }
+    if (sampleBase && LIGHT_FG_PALETTE_SAMPLES.has(sampleBase)) {
+      if (!primary) return ['#FFFFFF', '#F4F5F7', '#E4E7EC', '#C7CBD1', '#A4AAB3', '#7C8592'];
+      return [
+        lightenHex(primary, 0.92),
+        lightenHex(primary, 0.85),
+        lightenHex(primary, 0.75),
+        lightenHex(primary, 0.60),
+        lightenHex(primary, 0.45),
+        lightenHex(primary, 0.30),
+      ];
+    }
+    if (!primary) return DEFAULT_FG_SWATCHES;
+    return [
+      lightenHex(primary, 0.92),
+      lightenHex(primary, 0.85),
+      lightenHex(primary, 0.75),
+      lightenHex(primary, 0.60),
+      lightenHex(primary, 0.45),
+      lightenHex(primary, 0.30),
+    ];
+  }
+  const FG_SWATCHES = generateBrandFgShades();
+
+  // Compute the auto-contrast text color for a given bg: lighter shade of the
+  // primary on dark bg, darker shade on light bg. Never introduces a color that
+  // isn't a shade of brandColors[0].
+  function autoFgFor(bg) {
+    const primary = brandColors[0];
+    if (!primary) return isDarkColor(bg) ? '#FFFFFF' : '#1F2125';
+    const bgIsDark = isDarkColor(bg);
+    const candidate = bgIsDark
+      ? lightenHex(primary, FG_LIGHTEN_AMOUNT)
+      : darkenHex(primary, FG_DARKEN_AMOUNT);
+    // Safety net: if the derived shade still doesn't contrast (e.g. primary
+    // was already a mid-tone and the mix didn't push it far enough), fall
+    // back to plain white / near-black. Preserves readability without
+    // introducing a random unrelated color.
+    if (bgIsDark && !isDarkColor(candidate)) return candidate;
+    if (!bgIsDark && isDarkColor(candidate)) return candidate;
+    return bgIsDark ? '#FFFFFF' : '#1F2125';
+  }
+  // Samples whose inner plate is DARK (silver rim + black/near-black inner
+  // area). Default text on these must be a LIGHT shade of the primary so it
+  // reads against the dark plate. Everything else assumes a light plate.
+  const DARK_PLATE_SAMPLES = new Set([
+    'Monetary_minimal_07',
+  ]);
+  // Samples whose label area demands a pure-white default (e.g. a colored
+  // ribbon banner where a lightened primary would still read too muddy).
+  const WHITE_TEXT_SAMPLES = new Set([
+    'Monetary_fun_05',
+    'Monetary_fun_01',
+    'Monetary_fun_07',
+    'Monetary_Premium_02',
+    'Monetary_Premium_03',
+    'Monetary_Premium_09',
+    'Monetary_Premium_11',
+  ]);
+  // Samples whose label area demands a pure-black default (e.g. a white
+  // ribbon banner where a darkened primary would still read too muddy). All
+  // light-plate Minimal-style samples live here so their metallic backgrounds
+  // stay readable — Monetary_minimal_07 stays in DARK_PLATE_SAMPLES because
+  // its plate is a dark chrome disc that needs light text instead.
+  const BLACK_TEXT_SAMPLES = new Set([
+    'Monetary_Premium_07',
+    'Monetary_Premium_08',
+    'Monetary_Premium_15',
+    'Monetary_minimal_01',
+    'Monetary_minimal_02',
+    'Monetary_minimal_03',
+    'Monetary_minimal_04',
+    'Monetary_minimal_05',
+    'Monetary_minimal_08',
+    'Monetary_minimal_09',
+  ]);
+  // Samples whose label must stay on a single line regardless of font size —
+  // typically because the label area is a wide horizontal plate/ribbon.
+  const SINGLE_LINE_SAMPLES = new Set([
+    'Monetary_minimal_04',
+    'Monetary_fun_03',
+    'Monetary_fun_05',
+    'Monetary_fun_07',
+    'Monetary_fun_08',
+  ]);
+  // Samples whose label must break into two lines regardless of font size —
+  // typically because the label area is a compact / narrow plate.
+  const FORCE_TWO_LINE_SAMPLES = new Set([
+    'Monetary_fun_01',
+  ]);
+  // Wrapper used everywhere state.fg is auto-defaulted. When the tile is
+  // showing a sample SVG (has-img), the label sits over the medal's inner
+  // plate — which on most of these premium medals is LIGHT — so the default
+  // is a darker shade of the primary. For samples with a DARK plate
+  // (DARK_PLATE_SAMPLES) we invert and use a lighter shade instead.
+  // Falls through to autoFgFor(bg) for non-sample tiles.
+  function defaultFgForBg(bg) {
+    const primary = brandColors[0];
+    // Design-mandated defaults win regardless of whether a brand primary was
+    // extracted — otherwise a missing brandColors[0] silently falls through to
+    // autoFgFor and pins the wrong color on samples whose plate demands it.
+    if (sampleSrc) {
+      const sampleBase = sampleSrc.split('/').pop().replace(/\.svg$/i, '');
+      if (WHITE_TEXT_SAMPLES.has(sampleBase)) return '#FFFFFF';
+      if (BLACK_TEXT_SAMPLES.has(sampleBase)) return '#000000';
+      if (primary) {
+        return DARK_PLATE_SAMPLES.has(sampleBase)
+          ? lightenHex(primary, FG_LIGHTEN_AMOUNT)
+          : darkenHex(primary, FG_DARKEN_AMOUNT);
+      }
+    }
+    return autoFgFor(bg);
+  }
+
+  // Dark-color guard: relative luminance threshold (lower = darker).
+  function isDarkColor(hex) {
+    const m = String(hex || '').match(/^#?([0-9a-fA-F]{6})$/);
+    if (!m) return false;
+    const v = m[1];
+    const r = parseInt(v.slice(0, 2), 16);
+    const g = parseInt(v.slice(2, 4), 16);
+    const b = parseInt(v.slice(4, 6), 16);
+    // Perceived luminance (Rec. 601). 0–255. Threshold tuned so #3D3D3D passes, lighter slate fails.
+    return (0.299 * r + 0.587 * g + 0.114 * b) < 110;
+  }
+
+  // Any explicit saved fg counts as manual — including pure white. (The old
+  // guard here dropped fg === '#ffffff' as if it were a stale default and
+  // silently lost legit "text = white" picks on reopen.) savedBg is
+  // effectively unused because UC5 rebuilds state.bg from brandDerivedBg
+  // unconditionally, so we don't bother with a stale-default check here.
+  const savedBg = existing.bg || null;
+  const savedFg = existing.fg || null;
+  // Session-level carry-over: the last bg/fg the user picked on any award.
+  // Lets a fresh badge default to the prior badge's choice instead of resetting.
+  const lastBg = persisted.lastBadgeBg || null;
+  const lastFg = persisted.lastBadgeFg || null;
+  // UC3/UC5: ignore lastBg carry-over entirely so the customize default
+  // is ALWAYS the brand-derived darker shade for any fresh badge. Per-badge
+  // saved overrides still win above this (so explicit user choices persist).
+  const lastBgUsable = false;
+  // UC5: brandBg is the resolved current award BG (saved brand value or
+  // computed darker shade). Prefer it over BG_SWATCHES[0] which is recomputed
+  // from raw brandColors[0] and can drift from a user-changed brand.awardBg.
+  const brandDerivedBg = brandBg || (BG_SWATCHES && BG_SWATCHES[0]) || '#29294C';
+  let state = {
+    // Restore the previously saved text for THIS badge (per-badge persistence).
+    // New/untouched badges start empty so the placeholder shows.
+    // Ignore stale "Award sample -XX" values from older versions of the prototype.
+    text: (existing.text != null && !/^Award sample/i.test(existing.text)) ? existing.text : '',
+    // UC5: BG is ALWAYS the brand-derived darker shade. The user's BG choice
+    // is persisted globally via brand.awardBg / brand.monetaryAwardBg
+    // (written back below), not per-badge — so any stale per-badge bg from
+    // older sessions cannot shadow the brand color here.
+    bg: brandDerivedBg,
+    // Default text color = auto-contrast shade of the primary brand color.
+    // A saved / carried-over fg only wins when it actually contrasts against
+    // the current bg — otherwise it's a stale value (e.g. brandColors[1]
+    // was near-black and got baked in on an earlier session) and we drop it.
+    // has-img samples paint their own inner plate (typically LIGHT on these
+    // premium medals) — the label sits over the plate, not the tile bg —
+    // so default to a darker shade of the primary there regardless of
+    // whether the outer tile bg is dark or light.
+    // WHITE_TEXT_SAMPLES / BLACK_TEXT_SAMPLES declare a design-mandated default
+    // that must beat BOTH cross-badge lastFg carry-over AND any stale savedFg
+    // from an earlier version of this sample (e.g. before it was moved into
+    // BLACK_TEXT_SAMPLES) — otherwise the color THIS sample is designed to use
+    // is shadowed on reload. Users can still override with the swatches during
+    // the session; the write-back happens on Save & Continue.
+    fg: (sampleSrc && (function() {
+          const b = sampleSrc.split('/').pop().replace(/\.svg$/i, '');
+          return WHITE_TEXT_SAMPLES.has(b) || BLACK_TEXT_SAMPLES.has(b);
+        })())
+        ? defaultFgForBg(brandDerivedBg)
+        : (savedFg && (isDarkColor(savedFg) !== isDarkColor(brandDerivedBg)))
+          ? savedFg
+          : (lastFg && (isDarkColor(lastFg) !== isDarkColor(brandDerivedBg)))
+            ? lastFg
+            : defaultFgForBg(brandDerivedBg),
+    fontFamily: existing.fontFamily || 'Inter',
+    fontSize: existing.fontSize || 32,
+    pattern: existing.pattern || 'none',
+  };
+  // Track whether the current fg came from an explicit user pick vs. auto-
+  // contrast. Only mark manual if the saved value survived the contrast
+  // check above — an auto-defaulted fg is *not* manual, so a later bg change
+  // will still recompute it.
+  let fgManuallySet = !!(savedFg && (isDarkColor(savedFg) !== isDarkColor(brandDerivedBg)));
+  // Snapshot the state at hydration so autoSave can detect real user edits vs
+  // the initial applyState() call that fires during page setup.
+  const initialState = { ...state };
+  function flashWarn() {
+    const w = document.getElementById('bgWarn');
+    if (!w) return;
+    w.classList.add('show');
+    clearTimeout(flashWarn._t);
+    flashWarn._t = setTimeout(() => w.classList.remove('show'), 1800);
+  }
+
+  // Heading (headBundle removed from DOM; keep null-safe)
+  const headBundleEl = document.getElementById('headBundle');
+  if (headBundleEl) headBundleEl.textContent = bundle.name;
+  document.getElementById('metaStyle').textContent = styleName;
+
+  // Badge tile + mockup overlay (same glyph in both places)
+  const badgeTile = document.getElementById('badgeTile');
+  const labelOverlay = document.getElementById('labelOverlay');
+  const mockupBadge = document.getElementById('mockupBadge');
+  const mockupLabel = document.getElementById('mockupLabel');
+
+  // Samples whose label follows a curved ribbon rather than sitting flat.
+  // Each entry defines the Bezier path within a 100×100 viewBox — the SVG
+  // stretches to the tile bounds so the coordinates are effectively % of
+  // the tile. The `d` value here paints an arch (text baseline peaks in
+  // the middle, ends drop) suitable for a ribbon that swoops upward at
+  // its outer edges. Tune per-sample if a future asset needs a different
+  // curve.
+  const ARC_TEXT_SAMPLES = {
+  };
+  // Build arc-overlay elements once, one per rendering surface. Text /
+  // font / color update every applyState() run.
+  function makeArcOverlay(idSuffix) {
+    const wrap = document.createElement('div');
+    wrap.className = 'arc-label-overlay';
+    const pathId = 'ribbonPath-' + idSuffix;
+    wrap.innerHTML =
+      '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
+        '<defs><path id="' + pathId + '" d="" fill="none"/></defs>' +
+        '<text text-anchor="middle" font-weight="700">' +
+          '<textPath href="#' + pathId + '" startOffset="50%"></textPath>' +
+        '</text>' +
+      '</svg>';
+    return { el: wrap, pathId };
+  }
+  const tileArc   = makeArcOverlay('tile');
+  const mockupArc = makeArcOverlay('mockup');
+  badgeTile.appendChild(tileArc.el);
+  if (mockupBadge) mockupBadge.appendChild(mockupArc.el);
+  function applyArcOverlay(surface, arcRef, fontScale) {
+    const cfg = ARC_TEXT_SAMPLES[surface.getAttribute('data-sample')];
+    if (!cfg) {
+      surface.classList.remove('has-arc');
+      arcRef.el.style.display = 'none';
+      return;
+    }
+    surface.classList.add('has-arc');
+    arcRef.el.style.display = 'block';
+    const path = arcRef.el.querySelector('#' + arcRef.pathId);
+    if (path) path.setAttribute('d', cfg.d);
+    const textEl = arcRef.el.querySelector('text');
+    const tp = arcRef.el.querySelector('textPath');
+    if (textEl) {
+      textEl.setAttribute('fill', state.fg);
+      textEl.setAttribute('font-family', "'" + state.fontFamily + "', ui-sans-serif, system-ui, sans-serif");
+      // viewBox is 100x100 so font-size is % of tile side; scale from the
+      // real px font-size the client picked.
+      textEl.setAttribute('font-size', Math.max(3, Number(state.fontSize) * fontScale));
+    }
+    if (tp) tp.textContent = state.text && state.text.trim() ? state.text : '';
+  }
+  if (sampleSrc) {
+    badgeTile.classList.add('has-img');
+    mockupBadge.classList.add('has-img');
+    const sampleBase = sampleSrc.split('/').pop().replace(/\.svg$/i, '');
+    badgeTile.setAttribute('data-sample', sampleBase);
+    if (mockupBadge) mockupBadge.setAttribute('data-sample', sampleBase);
+    const img = document.createElement('img');
+    img.className = 'glyph-img';
+    img.src = sampleSrc.replace(/ /g, '%20');
+    img.alt = '';
+    badgeTile.insertBefore(img, labelOverlay);
+    const mImg = img.cloneNode(false);
+    mockupBadge.insertBefore(mImg, mockupLabel);
+  } else {
+    const glyph = BADGE_ICONS[bundleKey] || bundle.icon || '🏅';
+    const span = document.createElement('span');
+    span.className = 'glyph';
+    span.textContent = glyph;
+    badgeTile.insertBefore(span, labelOverlay);
+    const mSpan = document.createElement('span');
+    mSpan.className = 'glyph';
+    mSpan.textContent = glyph;
+    mockupBadge.insertBefore(mSpan, mockupLabel);
+  }
+
+  function applyState() {
+    const displayText = (state.text && state.text.trim()) ? state.text : '';
+    const patternCss = getPattern(state.pattern).css;
+    badgeTile.style.backgroundColor = state.bg;
+    badgeTile.style.backgroundImage = patternCss;
+    badgeTile.style.backgroundRepeat = 'repeat';
+    labelOverlay.style.color = state.fg;
+    labelOverlay.style.fontFamily = `'${state.fontFamily}', ui-sans-serif, system-ui, sans-serif`;
+    labelOverlay.style.fontSize = state.fontSize + 'px';
+    // Samples whose plate is wide enough (or design demands) that the label
+    // should stay on a single line regardless of font size.
+    const currentSample = badgeTile.getAttribute('data-sample');
+    const forceSingleLine = SINGLE_LINE_SAMPLES.has(currentSample);
+    const forceTwoLines = FORCE_TWO_LINE_SAMPLES.has(currentSample);
+    // At ≥35px in the working preview, force the award name into two lines by
+    // inserting a break at the middle space; below 35px stay on one line.
+    // FORCE_TWO_LINE_SAMPLES wrap regardless of font size; SINGLE_LINE_SAMPLES
+    // never wrap.
+    if ((forceTwoLines || state.fontSize >= 35) && !forceSingleLine) {
+      const words = String(displayText).trim().split(/\s+/);
+      if (words.length > 1) {
+        const mid = Math.ceil(words.length / 2);
+        labelOverlay.textContent = words.slice(0, mid).join(' ') + '\n' + words.slice(mid).join(' ');
+      } else {
+        labelOverlay.textContent = displayText;
+      }
+      labelOverlay.style.whiteSpace = 'pre-line';
+    } else {
+      labelOverlay.textContent = displayText;
+      labelOverlay.style.whiteSpace = 'nowrap';
+    }
+    // Mirror the live preview onto the platform mockup overlay.
+    if (mockupBadge) {
+      mockupBadge.style.backgroundColor = state.bg;
+      mockupBadge.style.backgroundImage = patternCss;
+      mockupBadge.style.backgroundRepeat = 'repeat';
+    }
+    // Arc-text samples paint their label along a Bezier path instead of the
+    // flat overlay. applyArcOverlay hides the flat overlay on those samples
+    // and syncs text/color/font size to the SVG textPath.
+    // fontScale = ratio of "1px in real font-size" to "1 unit in the SVG's
+    // 100-unit viewBox". badge-tile is roughly 680px wide so 1px ≈ 0.15
+    // viewBox units; mockup-badge is ~0.35× that.
+    applyArcOverlay(badgeTile, tileArc, 0.15);
+
+    if (mockupLabel) {
+      mockupLabel.style.color = state.fg;
+      mockupLabel.textContent = displayText;
+      mockupLabel.style.fontFamily = `'${state.fontFamily}', ui-sans-serif, system-ui, sans-serif`;
+      // Mockup overlay is ~0.35× the size of the working preview tile, so scale
+      // font-size proportionally to keep the badge-to-textbox ratio identical.
+      // NOTE: this feed-mockup preview is the reference the client compares
+      // catalogue.html's final card against — catalogue.html mirrors this
+      // exact multiplier (Math.max(7, fontSize * 0.35)) and the has-img
+      // position values below. If you change either here, update the same
+      // spot in catalogue.html or the two surfaces will drift apart.
+      mockupLabel.style.fontSize = Math.max(7, Math.round(state.fontSize * 0.35)) + 'px';
+    }
+    // Same arc overlay treatment on the mockup surface — smaller font
+    // scale because the mockup-badge itself is ~0.35× the tile.
+    if (mockupBadge) applyArcOverlay(mockupBadge, mockupArc, 0.052);
+    // Feed Banner live "Program name" overlay — mirrors state.text onto both the
+    // gallery tile and the sidebar mockup. Only surfaces carrying a Feed Banner
+    // sample show these (CSS gate on [data-sample^="Feed Banner_"]).
+    const isFeedBanner = (badgeTile.getAttribute('data-sample') || '').startsWith('Feed Banner_');
+    const tileBannerLabel = document.getElementById('tileBannerLabel');
+    const mockupBannerLabel = document.getElementById('mockupBannerLabel');
+    if (isFeedBanner) {
+      const bannerText = displayText === 'Award Name' ? 'Program Name' : displayText;
+      const bannerFont = `'${state.fontFamily}', ui-sans-serif, system-ui, sans-serif`;
+      if (tileBannerLabel) {
+        tileBannerLabel.textContent = bannerText;
+        tileBannerLabel.style.color = state.fg;
+        tileBannerLabel.style.fontFamily = bannerFont;
+      }
+      if (mockupBannerLabel) {
+        mockupBannerLabel.textContent = bannerText;
+        mockupBannerLabel.style.color = state.fg;
+        mockupBannerLabel.style.fontFamily = bannerFont;
+      }
+    }
+    // Keep the "Congratulations" header (mockup only) in sync with the chosen text color.
+    const mockupCongratsEl = document.getElementById('mockupCongrats');
+    if (mockupCongratsEl) mockupCongratsEl.style.color = state.fg;
+    const bgPickerEl = document.getElementById('bgPicker');
+    if (bgPickerEl) bgPickerEl.value = normalizeHex(state.bg) || '#29294C';
+    const fgPickerEl = document.getElementById('fgPicker');
+    if (fgPickerEl) fgPickerEl.value = normalizeHex(state.fg) || '#FFFFFF';
+    const hexInput = document.getElementById('bgHexInput');
+    if (hexInput && document.activeElement !== hexInput) {
+      const normalizedBg = normalizeHex(state.bg);
+      hexInput.value = (normalizedBg && normalizedBg !== '#29294c') ? normalizedBg.toUpperCase() : '';
+      hexInput.classList.remove('invalid');
+    }
+    const fs = document.getElementById('fontSizeInput');
+    const fsVal = document.getElementById('fontSizeValue');
+    if (fs) fs.value = state.fontSize;
+    if (fsVal) fsVal.textContent = state.fontSize + 'px';
+    const ff = document.getElementById('fontFamilyInput');
+    if (ff) ff.value = state.fontFamily;
+    refreshSwatchHighlights();
+    autoSave();
+  }
+
+  // Auto-save: once a logo has been uploaded earlier in the flow, every edit on this
+  // customize page is persisted to sessionStorage immediately (no need to click Save).
+  const autoSaveEnabled = !!(persisted.brand && persisted.brand.logoDataUrl);
+  function autoSave() {
+    if (!autoSaveEnabled) return;
+    let fresh = {};
+    try { fresh = JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch (e) { console.warn('[customize autoSave] read failed', e); }
+    const next = { ...fresh };
+    next.badgeNames = { ...(fresh.badgeNames || {}), [badgeKey]: state.text };
+    // autoSave marks the badge as customized once the user has actually
+    // changed something. Comparing against `initialState` (captured at page
+    // load, before any user input) means the initial applyState() call
+    // during hydration won't set the flag, but the first real edit will —
+    // so a badge whose user edited text/bg/font/pattern and then navigated
+    // away without hitting Save still shows up correctly in the catalogue.
+    const prevCustom = (fresh.badgeCustomizations || {})[badgeKey] || {};
+    const stateChanged = !!initialState && (
+      state.text !== initialState.text ||
+      state.bg !== initialState.bg ||
+      state.fg !== initialState.fg ||
+      state.fontFamily !== initialState.fontFamily ||
+      state.fontSize !== initialState.fontSize ||
+      state.pattern !== initialState.pattern
+    );
+    next.badgeCustomizations = {
+      ...(fresh.badgeCustomizations || {}),
+      [badgeKey]: {
+        text: state.text, bg: state.bg, fg: state.fg,
+        fontFamily: state.fontFamily, fontSize: state.fontSize, pattern: state.pattern,
+        ...((prevCustom.customized || stateChanged) ? { customized: true } : {}),
+      },
+    };
+    next.lastBadgeBg = state.bg;
+    next.lastBadgeFg = state.fg;
+    // autoSave used to add the current badge to badgeSelections[bundleKey]
+    // as a side effect. That caused badges the user merely opened (but
+    // never clicked Save on) to appear on the catalogue as empty "CUSTOM"
+    // cards. Selection is now only mutated by explicit Save / design-style
+    // clicks.
+    try { sessionStorage.setItem(PERSIST_KEY, JSON.stringify(next)); }
+    catch (e) { console.warn('[customize autoSave] write failed', e); }
+  }
+  function normalizeHex(c) {
+    if (!c) return null;
+    const m = c.trim().toLowerCase();
+    if (/^#[0-9a-f]{6}$/.test(m)) return m;
+    return null;
+  }
+
+  // Swatches
+  function renderSwatches(rowId, palette, key, picker) {
+    const row = document.getElementById(rowId);
+    row.innerHTML = '';
+    palette.forEach(c => {
+      const s = document.createElement('button');
+      s.className = 'swatch';
+      s.type = 'button';
+      s.style.background = c;
+      s.dataset.color = c;
+      s.addEventListener('click', () => {
+        // Any bg is allowed — autoFgFor picks a readable text shade for
+        // whatever bg the user chose. The old dark-only guard blocked
+        // legitimate light backgrounds and never let the auto-contrast run.
+        state[key] = c;
+        if (key === 'fg') fgManuallySet = true;
+        if (key === 'bg' && !fgManuallySet) state.fg = defaultFgForBg(c);
+        applyState();
+      });
+      row.appendChild(s);
+    });
+    if (picker) {
+      picker.addEventListener('input', () => {
+        const v = picker.value;
+        state[key] = v;
+        if (key === 'fg') fgManuallySet = true;
+        if (key === 'bg' && !fgManuallySet) state.fg = defaultFgForBg(v);
+        applyState();
+      });
+    }
+  }
+  function refreshSwatchHighlights() {
+    document.querySelectorAll('#bgSwatches .swatch').forEach(s => {
+      s.classList.toggle('active', s.dataset.color.toLowerCase() === String(state.bg).toLowerCase());
+    });
+    document.querySelectorAll('#fgSwatches .swatch').forEach(s => {
+      s.classList.toggle('active', s.dataset.color.toLowerCase() === String(state.fg).toLowerCase());
+    });
+    document.querySelectorAll('#bgPatterns .pattern-chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.pattern === state.pattern);
+      // Mirror the live BG color into each chip so chips preview against the current BG.
+      c.style.backgroundColor = state.bg;
+    });
+  }
+  renderSwatches('bgSwatches', BG_SWATCHES, 'bg', document.getElementById('bgPicker'));
+  renderSwatches('fgSwatches', FG_SWATCHES, 'fg', document.getElementById('fgPicker'));
+
+  function renderPatternChips() {
+    const row = document.getElementById('bgPatterns');
+    if (!row) return;
+    row.innerHTML = '';
+    BG_PATTERNS.forEach(p => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'pattern-chip' + (p.id === 'none' ? ' none' : '');
+      chip.dataset.pattern = p.id;
+      chip.title = p.name;
+      chip.setAttribute('aria-label', p.name);
+      chip.style.backgroundColor = state.bg;
+      if (p.id !== 'none') chip.style.backgroundImage = p.css;
+      chip.addEventListener('click', () => {
+        state.pattern = p.id;
+        applyState();
+      });
+      row.appendChild(chip);
+    });
+  }
+  renderPatternChips();
+
+  // Text input
+  const textInput = document.getElementById('textInput');
+  textInput.value = state.text;
+  textInput.addEventListener('input', () => {
+    state.text = textInput.value;
+    applyState();
+  });
+  document.querySelectorAll('#nameSuggestions .suggest-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const name = chip.dataset.name || chip.textContent.trim();
+      state.text = name;
+      textInput.value = name;
+      applyState();
+    });
+  });
+
+  // BG hex input — any valid 6-digit hex is accepted; autoFgFor picks a
+  // readable text color against whatever bg the user typed in.
+  const bgHexInput = document.getElementById('bgHexInput');
+  function commitHex() {
+    const raw = bgHexInput.value.trim();
+    const v = raw.startsWith('#') ? raw : ('#' + raw);
+    const normalized = normalizeHex(v);
+    if (!normalized) { bgHexInput.classList.add('invalid'); flashWarn(); return; }
+    bgHexInput.classList.remove('invalid');
+    state.bg = normalized;
+    if (!fgManuallySet) state.fg = defaultFgForBg(normalized);
+    applyState();
+  }
+  bgHexInput.addEventListener('change', commitHex);
+  bgHexInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { commitHex(); bgHexInput.blur(); } });
+
+  // Font size slider
+  const fontSizeInput = document.getElementById('fontSizeInput');
+  const fontSizeValue = document.getElementById('fontSizeValue');
+  fontSizeInput.value = state.fontSize;
+  fontSizeValue.textContent = state.fontSize + 'px';
+  fontSizeInput.addEventListener('input', () => {
+    state.fontSize = Number(fontSizeInput.value);
+    applyState();
+  });
+
+  // Font family select
+  const fontFamilyInput = document.getElementById('fontFamilyInput');
+  fontFamilyInput.value = state.fontFamily;
+  fontFamilyInput.addEventListener('change', () => {
+    state.fontFamily = fontFamilyInput.value;
+    applyState();
+  });
+
+  // Mockup — feed-banner uses its own page mockup (the banner IS the collateral);
+  // every other bundle stays on the neutral award-badge preview so the badge sits in a plain feed context.
+  document.getElementById('mockupImg').src = bundleKey === 'feed-banner'
+    ? MOCKUP_BY_BUNDLE['feed-banner']
+    : DEFAULT_MOCKUP;
+
+  applyState();
+
+  // Back / Reset / Save
+  function backUrl() {
+    const parts = ['from=customize'];
+    if (selectedQs) parts.push('selected=' + selectedQs);
+    if (bundleKey) parts.push('bundle=' + encodeURIComponent(bundleKey));
+    return 'design-style.html?' + parts.join('&');
+  }
+  const navBackBtn = document.getElementById('navBack');
+  if (navBackBtn) navBackBtn.addEventListener('click', () => {
+    location.href = backUrl();
+  });
+  // Forward ?selected & ?company on the catalogue button (preserves the flow context).
+  const _catBtn = document.getElementById('viewCatalogueBtn');
+  if (_catBtn) _catBtn.href = 'catalogue.html' + location.search;
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    const bg = brandDerivedBg || '#29294C';
+    state = { text: '', bg, fg: defaultFgForBg(bg), fontFamily: 'Inter', fontSize: 32, pattern: 'none' };
+    fgManuallySet = false;
+    textInput.value = state.text;
+    applyState();
+  });
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    // Read fresh sessionStorage (auto-save may have written newer data since load).
+    let fresh = {};
+    try { fresh = JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch (e) { console.warn('[customize save] read failed', e); }
+    const next = { ...fresh };
+    next.badgeNames = { ...(fresh.badgeNames || {}), [badgeKey]: state.text };
+    next.badgeCustomizations = {
+      ...(fresh.badgeCustomizations || {}),
+      // customized:true is the intentional-save marker. autoSave() intentionally
+      // omits this flag so merely opening the customize screen never marks a
+      // badge as customized — only clicking Save does.
+      [badgeKey]: { text: state.text, bg: state.bg, fg: state.fg, fontFamily: state.fontFamily, fontSize: state.fontSize, pattern: state.pattern, customized: true },
+    };
+    next.lastBadgeBg = state.bg;
+    next.lastBadgeFg = state.fg;
+    // Auto-select the customized (style, badge) pair. Selections use the
+    // compound `styleId|badgeId` key so a badge picked under one style is
+    // independent from the same badge picked under another.
+    const prevSel = (fresh.badgeSelections && fresh.badgeSelections[bundleKey]) || [];
+    const nextSel = prevSel.includes(badgeKey) ? prevSel : [...prevSel, badgeKey];
+    next.badgeSelections = {
+      ...(fresh.badgeSelections || {}),
+      [bundleKey]: nextSel,
+    };
+    try { sessionStorage.setItem(PERSIST_KEY, JSON.stringify(next)); }
+    catch (e) { console.warn('[customize save] write failed', e); }
+    // After Save, return the client to the award selection page. Carry forward
+    // ?selected= (and any other existing params) so the same bundles stay active.
+    const back = new URLSearchParams(location.search);
+    back.delete('bundle');
+    back.delete('badge');
+    const qs = back.toString();
+    location.href = 'design-style.html' + (qs ? '?' + qs : '');
+  });
+  function flashSaved() {
+    const btn = document.getElementById('saveBtn');
+    if (!btn) return;
+    const orig = btn.textContent;
+    btn.textContent = 'Saved ✓';
+    btn.disabled = true;
+    clearTimeout(flashSaved._t);
+    flashSaved._t = setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1200);
+  }
+
+  // Stepper click navigation
+  document.querySelectorAll('.stepper .step[data-href]').forEach(s => {
+    s.addEventListener('click', () => { location.href = s.dataset.href; });
+  });
+</script>
+
+</body>
+</html>

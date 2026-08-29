@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ce851b;
+        font-family: OpenSansRoman-SemiBold, 'Open Sans';
+        font-size: 51.31px;
+        font-variation-settings: 'wght' 600, 'wdth' 100;
+        font-weight: 600;
+      }
+
+      .cls-2 {
+        fill: #f48e6e;
+      }
+
+      .cls-3 {
+        fill: #efa630;
+      }
+
+      .cls-4 {
+        fill: #ffe5b1;
+      }
+
+      .cls-5 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <circle class="cls-2" cx="256.84" cy="266.7" r="223"/>
+  <circle class="cls-4" cx="256.34" cy="266.2" r="196"/>
+  <path class="cls-3" d="M150.84,66.7c0-19.88,16.12-36,36-36h139c19.88,0,36,16.12,36,36v86.5c0,58.27-47.23,105.5-105.5,105.5s-105.5-47.23-105.5-105.5v-86.5Z"/>
+  <path class="cls-5" d="M267.74,68.06l12.8,22.11c2.43,4.2,6.98,7.08,12.15,7.71l27.26,3.33c13.04,1.59,18.65,15.95,9.5,24.3l-19.14,17.46c-3.63,3.32-5.2,8.06-4.18,12.69l5.36,24.38c2.56,11.65-10.74,20.67-22.52,15.26l-24.63-11.32c-4.68-2.15-10.19-2.1-14.73.13l-23.95,11.74c-11.45,5.61-25.29-3.17-23.42-14.86l3.91-24.46c.74-4.64-1.1-9.36-4.93-12.61l-20.16-17.12c-9.64-8.19-4.88-22.63,8.05-24.45l27.05-3.8c5.14-.72,9.51-3.68,11.69-7.92l11.49-22.32c5.49-10.67,22.27-10.82,28.39-.25Z"/>
+  <text class="cls-1" transform="translate(174.05 317.07)"><tspan x="0" y="0">BADGE</tspan><tspan x="10.6" y="61.57">NAME</tspan></text>
+</svg>

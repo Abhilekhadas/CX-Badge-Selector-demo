@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        fill: none;
+      }
+
+      .cls-4 {
+        fill: url(#linear-gradient-3);
+      }
+
+      .cls-5 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-2 {
+        stroke: url(#Degradado_sin_nombre_2-6);
+        stroke-width: 1.87px;
+      }
+
+      .cls-2, .cls-3, .cls-6 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-7 {
+        font-size: 49.67px;
+        letter-spacing: .09em;
+      }
+
+      .cls-8 {
+        fill: #fff;
+        font-family: Alegreya-Regular, Alegreya;
+      }
+
+      .cls-9 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-10 {
+        fill: url(#Degradado_sin_nombre_2-12);
+      }
+
+      .cls-11 {
+        fill: url(#Degradado_sin_nombre_2-11);
+      }
+
+      .cls-12 {
+        fill: url(#Degradado_sin_nombre_2-10);
+      }
+
+      .cls-13 {
+        clip-path: url(#clippath-1);
+      }
+
+      .cls-3 {
+        stroke: url(#Degradado_sin_nombre_2-7);
+      }
+
+      .cls-14 {
+        fill: url(#Degradado_sin_nombre_2-8);
+      }
+
+      .cls-15 {
+        fill: url(#Degradado_sin_nombre_2-9);
+      }
+
+      .cls-16 {
+        fill: url(#Degradado_sin_nombre_2-4);
+      }
+
+      .cls-17 {
+        fill: url(#Degradado_sin_nombre_2-3);
+      }
+
+      .cls-18 {
+        fill: url(#Degradado_sin_nombre_2-2);
+      }
+
+      .cls-19 {
+        fill: url(#Degradado_sin_nombre_2);
+      }
+
+      .cls-20 {
+        font-size: 56.61px;
+        letter-spacing: .09em;
+      }
+
+      .cls-21 {
+        clip-path: url(#clippath);
+      }
+
+      .cls-6 {
+        fill: #0e1c25;
+        stroke: url(#Degradado_sin_nombre_2-5);
+        stroke-width: 4.67px;
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="-358.59" y1="-990.78" x2="-239.81" y2="-991.23" gradientTransform="translate(-66.5551 1389.7309) rotate(30.2189)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#000"/>
+      <stop offset=".52" stop-color="#444"/>
+      <stop offset="1" stop-color="#000"/>
+    </linearGradient>
+    <clipPath id="clippath">
+      <polygon class="cls-1" points="174.97 497.86 150.65 422.37 72.98 438.46 172.39 267.78 274.38 327.18 174.97 497.86"/>
+    </clipPath>
+    <linearGradient id="Degradado_sin_nombre_2" data-name="Degradado sin nombre 2" x1="-344.96" y1="-882.61" x2="-344.96" y2="-1099.4" gradientTransform="translate(479.0401 1350.7962)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#744108"/>
+      <stop offset=".03" stop-color="#8e5813"/>
+      <stop offset=".07" stop-color="#a86f20"/>
+      <stop offset=".1" stop-color="#b87d27"/>
+      <stop offset=".12" stop-color="#be832a"/>
+      <stop offset=".15" stop-color="#c0872f"/>
+      <stop offset=".18" stop-color="#c6923d"/>
+      <stop offset=".21" stop-color="#d1a655"/>
+      <stop offset=".25" stop-color="#dfc177"/>
+      <stop offset=".29" stop-color="#f2e4a2"/>
+      <stop offset=".31" stop-color="#fffbbe"/>
+      <stop offset=".36" stop-color="#ffec9e"/>
+      <stop offset=".43" stop-color="#ffdc78"/>
+      <stop offset=".48" stop-color="#ffd161"/>
+      <stop offset=".52" stop-color="#ffce59"/>
+      <stop offset=".7" stop-color="#ce8331"/>
+      <stop offset=".87" stop-color="#ffce59"/>
+      <stop offset="1" stop-color="#744108"/>
+    </linearGradient>
+    <linearGradient id="Degradado_sin_nombre_2-2" data-name="Degradado sin nombre 2" x1="-253.43" y1="-882.61" x2="-253.43" y2="-1099.4" gradientTransform="translate(466.6476 1396.8488)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="linear-gradient-2" x1="-5116.79" y1="1849.39" x2="-5235.57" y2="1849.85" gradientTransform="translate(-5065.3287 1389.7309) rotate(149.7811) scale(1 -1)" xlink:href="#linear-gradient"/>
+    <clipPath id="clippath-1">
+      <polygon class="cls-1" points="337.03 497.86 361.35 422.37 439.02 438.46 339.61 267.78 237.62 327.18 337.03 497.86"/>
+    </clipPath>
+    <linearGradient id="Degradado_sin_nombre_2-3" data-name="Degradado sin nombre 2" x1="-5221.94" y1="1958.02" x2="-5221.94" y2="1741.23" gradientTransform="translate(5599.8568 2209.1069) scale(1 -1)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="Degradado_sin_nombre_2-4" data-name="Degradado sin nombre 2" x1="-5130.41" y1="1958.02" x2="-5130.41" y2="1741.23" gradientTransform="translate(5429.1436 2255.4152) scale(1 -1)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="Degradado_sin_nombre_2-5" data-name="Degradado sin nombre 2" x1="119.79" y1="340.64" x2="392.21" y2="68.22" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="linear-gradient-3" x1="136.77" y1="323.66" x2="375.23" y2="85.2" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Degradado_sin_nombre_2-6" data-name="Degradado sin nombre 2" x1="136.11" y1="324.32" x2="375.89" y2="84.54" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="Degradado_sin_nombre_2-7" data-name="Degradado sin nombre 2" x1="104.35" y1="246" x2="407.65" y2="246" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="Degradado_sin_nombre_2-8" data-name="Degradado sin nombre 2" x1="237.46" y1="76.25" x2="274.54" y2="76.25" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="Degradado_sin_nombre_2-9" data-name="Degradado sin nombre 2" x1="296.95" y1="103.69" x2="342.82" y2="103.69" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="Degradado_sin_nombre_2-10" data-name="Degradado sin nombre 2" x1="169.18" y1="103.69" x2="215.05" y2="103.69" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="Degradado_sin_nombre_2-11" data-name="Degradado sin nombre 2" x1="367.12" y1="121.79" x2="375.46" y2="121.79" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Degradado_sin_nombre_2"/>
+    <linearGradient id="Degradado_sin_nombre_2-12" data-name="Degradado sin nombre 2" x1="-5201.71" y1="697.27" x2="-5193.38" y2="697.27" gradientTransform="translate(-5543.4587 884.3942) rotate(-180) scale(1.0937)" xlink:href="#Degradado_sin_nombre_2"/>
+  </defs>
+  <g>
+    <polygon class="cls-9" points="174.97 497.86 150.65 422.37 72.98 438.46 172.39 267.78 274.38 327.18 174.97 497.86"/>
+    <g class="cls-21">
+      <g>
+        <rect class="cls-19" x="131.72" y="251.39" width="4.82" height="216.79" transform="translate(199.29 -18.62) rotate(30.22)"/>
+        <rect class="cls-18" x="210.82" y="297.46" width="4.82" height="216.79" transform="translate(233.24 -52.17) rotate(30.22)"/>
+      </g>
+    </g>
+    <polygon class="cls-5" points="337.03 497.86 361.35 422.37 439.02 438.46 339.61 267.78 237.62 327.18 337.03 497.86"/>
+    <g class="cls-13">
+      <g>
+        <rect class="cls-17" x="375.46" y="251.39" width="4.82" height="216.79" transform="translate(885.46 480.52) rotate(149.78)"/>
+        <rect class="cls-16" x="296.36" y="297.46" width="4.82" height="216.79" transform="translate(761.21 606.18) rotate(149.78)"/>
+      </g>
+    </g>
+    <circle class="cls-6" cx="256" cy="204.43" r="190.29"/>
+    <circle class="cls-4" cx="256" cy="204.43" r="168.61"/>
+    <circle class="cls-2" cx="256" cy="204.43" r="168.61"/>
+    <path class="cls-3" d="M121.12,136.15c-10.4,20.51-16.27,43.71-16.27,68.28,0,83.48,67.67,151.15,151.15,151.15s151.15-67.67,151.15-151.15c0-24.2-5.69-47.08-15.8-67.36"/>
+    <polygon class="cls-14" points="256 58.62 260.38 72.09 274.54 72.09 263.08 80.41 267.46 93.88 256 85.56 244.54 93.88 248.92 80.41 237.46 72.09 251.62 72.09 256 58.62"/>
+    <g>
+      <polygon class="cls-15" points="319.89 81.88 325.3 98.54 342.82 98.54 328.65 108.84 334.06 125.5 319.89 115.2 305.71 125.5 311.13 108.84 296.95 98.54 314.47 98.54 319.89 81.88"/>
+      <polygon class="cls-12" points="192.11 81.88 197.53 98.54 215.05 98.54 200.87 108.84 206.29 125.5 192.11 115.2 177.94 125.5 183.35 108.84 169.18 98.54 186.7 98.54 192.11 81.88"/>
+    </g>
+    <g>
+      <path class="cls-11" d="M375.46,121.79c0-2.3-1.87-4.17-4.17-4.17s-4.17,1.87-4.17,4.17,1.87,4.17,4.17,4.17,4.17-1.87,4.17-4.17Z"/>
+      <circle class="cls-10" cx="141.1" cy="121.79" r="4.56"/>
+    </g>
+  </g>
+  <text class="cls-8" transform="translate(172.72 223.89)"><tspan class="cls-20"><tspan x="0" y="0">Badge</tspan></tspan><tspan class="cls-7"><tspan x="14.55" y="44.57">Name</tspan></tspan></text>
+</svg>

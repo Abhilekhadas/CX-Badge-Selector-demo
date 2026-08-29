@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1 {
+        filter: url(#drop-shadow-1);
+      }
+
+      .cls-2 {
+        fill: url(#Dull_Brass);
+        stroke: url(#Gold_Radial);
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9, .cls-10, .cls-11, .cls-12, .cls-13, .cls-14 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-3 {
+        fill: url(#White_Gold);
+        stroke: url(#Gold_Radial-2);
+      }
+
+      .cls-4 {
+        fill: url(#White_Gold-7);
+        stroke: url(#Gold_Radial-10);
+      }
+
+      .cls-4, .cls-7, .cls-8, .cls-9, .cls-10 {
+        stroke-width: .19px;
+      }
+
+      .cls-5 {
+        fill: none;
+        stroke: url(#Gold_Radial-4);
+      }
+
+      .cls-6 {
+        fill: url(#Dull_Brass-5);
+        stroke: url(#Gold_Radial-5);
+        stroke-width: .74px;
+      }
+
+      .cls-6, .cls-15, .cls-16, .cls-17 {
+        fill-rule: evenodd;
+      }
+
+      .cls-15 {
+        fill: url(#Dull_Brass_2-2);
+      }
+
+      .cls-7 {
+        fill: url(#White_Gold-3);
+        stroke: url(#Gold_Radial-6);
+      }
+
+      .cls-8 {
+        fill: url(#White_Gold-6);
+        stroke: url(#Gold_Radial-9);
+      }
+
+      .cls-9 {
+        fill: url(#White_Gold-4);
+        stroke: url(#Gold_Radial-7);
+      }
+
+      .cls-10 {
+        fill: url(#White_Gold-5);
+        stroke: url(#Gold_Radial-8);
+      }
+
+      .cls-18 {
+        font-family: Metropolis-Regular, Metropolis;
+        font-size: 48px;
+        letter-spacing: .09em;
+      }
+
+      .cls-16 {
+        fill: #fff;
+        opacity: .2;
+      }
+
+      .cls-11 {
+        fill: url(#Dull_Brass-2);
+      }
+
+      .cls-11, .cls-12, .cls-13 {
+        stroke: #93700f;
+        stroke-width: .14px;
+      }
+
+      .cls-12 {
+        fill: url(#Dull_Brass-4);
+      }
+
+      .cls-13 {
+        fill: url(#Dull_Brass-3);
+      }
+
+      .cls-14 {
+        fill: url(#linear-gradient);
+        stroke: url(#New_Gradient_Swatch_9);
+        stroke-width: 3px;
+      }
+
+      .cls-17 {
+        fill: url(#Dull_Brass_2);
+      }
+
+      .cls-19 {
+        fill: url(#White_Gold-2);
+        stroke: url(#Gold_Radial-3);
+        stroke-dasharray: 0 4.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+    <linearGradient id="Dull_Brass" data-name="Dull Brass" x1="-1565.1" y1="-5142.54" x2="-1111.01" y2="-5142.54" gradientTransform="translate(-4885.404 1594.0565) rotate(90)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ebc17d"/>
+      <stop offset=".19" stop-color="#dfb77c"/>
+      <stop offset=".6" stop-color="#c08329"/>
+      <stop offset=".87" stop-color="#eabe81"/>
+      <stop offset="1" stop-color="#eedcc3"/>
+    </linearGradient>
+    <radialGradient id="Gold_Radial" data-name="Gold Radial" cx="257.13" cy="256" fx="257.13" fy="256" r="214.69" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fffbcc"/>
+      <stop offset=".11" stop-color="#faf1ba"/>
+      <stop offset=".34" stop-color="#efd98e"/>
+      <stop offset=".37" stop-color="#eed688"/>
+      <stop offset=".69" stop-color="#ebbb10"/>
+      <stop offset="1" stop-color="#c3922e"/>
+    </radialGradient>
+    <linearGradient id="White_Gold" data-name="White Gold" x1="75.34" y1="256" x2="441.6" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#dee3e6"/>
+      <stop offset=".25" stop-color="#fffde5"/>
+      <stop offset=".4" stop-color="#f0ebd8"/>
+      <stop offset=".6" stop-color="#d6cdc1"/>
+      <stop offset=".79" stop-color="#ededee"/>
+      <stop offset="1" stop-color="#d8d5bb"/>
+    </linearGradient>
+    <radialGradient id="Gold_Radial-2" data-name="Gold Radial" cx="258.47" cy="256" fx="258.47" fy="256" r="199.13" xlink:href="#Gold_Radial"/>
+    <linearGradient id="White_Gold-2" data-name="White Gold" x1="83.36" y1="256" x2="433.58" y2="256" xlink:href="#White_Gold"/>
+    <radialGradient id="Gold_Radial-3" data-name="Gold Radial" cx="258.47" cy="256" fx="258.47" fy="256" r="189.96" xlink:href="#Gold_Radial"/>
+    <linearGradient id="linear-gradient" x1="339.39" y1="111.21" x2="172.2" y2="400.79" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#ccc"/>
+    </linearGradient>
+    <linearGradient id="New_Gradient_Swatch_9" data-name="New Gradient Swatch 9" x1="87.21" y1="256" x2="424.38" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ede7dd"/>
+      <stop offset=".55" stop-color="#d8d6d2"/>
+      <stop offset=".93" stop-color="#aaa8a5"/>
+    </linearGradient>
+    <linearGradient id="Dull_Brass-2" data-name="Dull Brass" x1="-4757.01" y1="-3061.15" x2="-4765.41" y2="-3075.71" gradientTransform="translate(-4606.3731 -2768.636) rotate(178.0114)" xlink:href="#Dull_Brass"/>
+    <linearGradient id="Dull_Brass-3" data-name="Dull Brass" x1="-4715.94" y1="-3069.91" x2="-4724.34" y2="-3084.47" gradientTransform="translate(-4606.3731 -2768.636) rotate(178.0114)" xlink:href="#Dull_Brass"/>
+    <linearGradient id="Dull_Brass-4" data-name="Dull Brass" x1="-4798.07" y1="-3072.42" x2="-4806.48" y2="-3086.98" gradientTransform="translate(-4606.3731 -2768.636) rotate(178.0114)" xlink:href="#Dull_Brass"/>
+    <radialGradient id="Gold_Radial-4" data-name="Gold Radial" cx="259.81" cy="173.41" fx="259.81" fy="173.41" r="84.12" xlink:href="#Gold_Radial"/>
+    <filter id="drop-shadow-1" x="34.73" y="328.45" width="442.54" height="82.23" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy=".74"/>
+      <feGaussianBlur result="blur" stdDeviation="4.45"/>
+      <feFlood flood-color="#663d06" flood-opacity=".65"/>
+      <feComposite in2="blur" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <linearGradient id="Dull_Brass-5" data-name="Dull Brass" x1="256" y1="396.12" x2="256" y2="314.63" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Dull_Brass"/>
+    <radialGradient id="Gold_Radial-5" data-name="Gold Radial" cx="440.31" cy="369.56" fx="440.31" fy="369.56" r="168.81" gradientTransform="translate(-158.25) scale(.94 1)" xlink:href="#Gold_Radial"/>
+    <linearGradient id="Dull_Brass_2" data-name="Dull Brass 2" x1="33.32" y1="320.73" x2="56.63" y2="320.73" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a97623"/>
+      <stop offset=".19" stop-color="#a16d23"/>
+      <stop offset=".6" stop-color="#8a570c"/>
+      <stop offset=".87" stop-color="#a87124"/>
+      <stop offset="1" stop-color="#ab7a37"/>
+    </linearGradient>
+    <linearGradient id="Dull_Brass_2-2" data-name="Dull Brass 2" x1="-5638.65" y1="321.51" x2="-5617.81" y2="321.51" gradientTransform="translate(-5159.9732) scale(-1 1)" xlink:href="#Dull_Brass_2"/>
+    <linearGradient id="White_Gold-3" data-name="White Gold" x1="167.1" y1="383.53" x2="152.84" y2="358.82" xlink:href="#White_Gold"/>
+    <radialGradient id="Gold_Radial-6" data-name="Gold Radial" cx="159.05" cy="369.08" fx="159.05" fy="369.08" r="14.51" xlink:href="#Gold_Radial"/>
+    <linearGradient id="White_Gold-4" data-name="White Gold" x1="259.45" y1="383.53" x2="245.18" y2="358.82" xlink:href="#White_Gold"/>
+    <radialGradient id="Gold_Radial-7" data-name="Gold Radial" cx="251.4" cy="369.08" fx="251.4" fy="369.08" r="14.51" xlink:href="#Gold_Radial"/>
+    <linearGradient id="White_Gold-5" data-name="White Gold" x1="213.28" y1="383.53" x2="199.01" y2="358.82" xlink:href="#White_Gold"/>
+    <radialGradient id="Gold_Radial-8" data-name="Gold Radial" cx="205.23" cy="369.08" fx="205.23" fy="369.08" r="14.51" xlink:href="#Gold_Radial"/>
+    <linearGradient id="White_Gold-6" data-name="White Gold" x1="305.62" y1="383.53" x2="291.35" y2="358.82" xlink:href="#White_Gold"/>
+    <radialGradient id="Gold_Radial-9" data-name="Gold Radial" cx="297.57" cy="369.08" fx="297.57" fy="369.08" r="14.51" xlink:href="#Gold_Radial"/>
+    <linearGradient id="White_Gold-7" data-name="White Gold" x1="351.79" y1="383.53" x2="337.52" y2="358.82" xlink:href="#White_Gold"/>
+    <radialGradient id="Gold_Radial-10" data-name="Gold Radial" cx="343.74" cy="369.08" fx="343.74" fy="369.08" r="14.51" xlink:href="#Gold_Radial"/>
+  </defs>
+  <path class="cls-2" d="M56.63,148.72c0-4.03,3.54-8.96,7.03-10.96L250.78,30.46c3.49-2.01,9.37-2.01,12.87,0l187.2,107.3c3.49,2.01,6.79,6.94,6.79,10.96v214.55c0,4.03-3.21,8.96-6.69,10.97l-186.95,107.3c-3.49,2.01-9.29,2.01-12.78,0l-187.51-107.3c-3.49-2.01-7.07-6.94-7.07-10.97v-214.55Z"/>
+  <polygon class="cls-3" points="75.34 362.74 75.34 149.29 258.63 43.06 441.6 149.26 441.6 362.71 258.31 468.94 75.34 362.74"/>
+  <polygon class="cls-19" points="83.36 357.66 83.36 154.37 258.63 53.2 433.58 154.34 433.58 357.63 258.31 458.8 83.36 357.66"/>
+  <polygon class="cls-14" points="88.71 352.59 88.71 159.46 255.95 63.34 422.88 159.41 422.88 352.54 255.63 448.66 88.71 352.59"/>
+  <g>
+    <polygon class="cls-11" points="259.32 142.11 257.08 135.94 250.51 136.17 255.69 132.13 253.45 125.95 258.89 129.64 264.06 125.59 262.24 131.91 267.69 135.57 261.12 135.8 259.32 142.11"/>
+    <polygon class="cls-13" points="218.59 152.29 216.34 146.12 209.78 146.35 214.95 142.31 212.71 136.13 218.15 139.82 223.32 135.76 221.5 142.09 226.95 145.75 220.38 145.98 218.59 152.29"/>
+    <polygon class="cls-12" points="300.76 151.95 298.51 145.78 291.95 146.01 297.12 141.97 294.88 135.8 300.32 139.48 305.5 135.43 303.67 141.75 309.12 145.41 302.56 145.64 300.76 151.95"/>
+  </g>
+  <line class="cls-5" x1="140.84" y1="173.41" x2="378.77" y2="173.41"/>
+  <g class="cls-1">
+    <polygon class="cls-6" points="451.8 410.3 60.19 408.32 35.23 328.82 476.77 328.82 451.8 410.3"/>
+  </g>
+  <polygon class="cls-16" points="60.19 408.32 35.23 328.82 476.77 328.82 60.19 408.32"/>
+  <g>
+    <polygon class="cls-17" points="56.63 313.76 33.32 327.7 56.63 327.7 56.63 313.76"/>
+    <polygon class="cls-15" points="457.84 315.31 478.68 327.7 458.27 327.7 457.84 315.31"/>
+    <g>
+      <polygon class="cls-7" points="159.04 355.23 162.49 365.83 173.63 365.83 164.63 372.36 168.06 382.98 159.04 376.41 150.04 382.98 153.49 372.36 144.48 365.83 155.62 365.83 159.04 355.23"/>
+      <polygon class="cls-9" points="251.39 355.23 254.83 365.83 265.98 365.83 256.97 372.36 260.4 382.98 251.39 376.41 242.38 382.98 245.83 372.36 236.82 365.83 247.96 365.83 251.39 355.23"/>
+      <polygon class="cls-10" points="205.21 355.23 208.66 365.83 219.81 365.83 210.8 372.36 214.23 382.98 205.21 376.41 196.2 382.98 199.66 372.36 190.65 365.83 201.79 365.83 205.21 355.23"/>
+      <polygon class="cls-8" points="297.56 355.23 301 365.83 312.15 365.83 303.14 372.36 306.56 382.98 297.56 376.41 288.55 382.98 292.01 372.36 282.99 365.83 294.13 365.83 297.56 355.23"/>
+      <polygon class="cls-4" points="343.73 355.23 347.17 365.83 358.32 365.83 349.31 372.36 352.74 382.98 343.73 376.41 334.72 382.98 338.18 372.36 329.16 365.83 340.3 365.83 343.73 355.23"/>
+    </g>
+  </g>
+  <text class="cls-18" transform="translate(161.36 245.22)"><tspan x="0" y="0">BADGE</tspan><tspan x="15.74" y="52">NAME</tspan></text>
+</svg>

@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Catalogue — CX Badge Selector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --alabaster: #DCDCDD;
+    --pale-slate: #C5C3C6;
+    --iron: #46494C;
+    --blue-slate: #4C5C68;
+    --cyan: #FF6D05;
+    --cyan-soft: #FFE6D4;
+    --ink: #1F2125;
+    --muted: #6B6E72;
+    --line: #ECECEE;
+    --bg: #F7F7F8;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; background-color: #ffffff; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background-color: transparent;
+        background-attachment: fixed;
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: none; margin: 0; padding: 0 120px; }
+
+  /* AMBIENT ORBS */
+  .bg-orbs { position: fixed; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(120px); }
+  .orb-amber { width: 60vw; height: 60vh; bottom: -18vh; left: -14vw; background: rgba(248,225,170,0.45); }
+  .orb-cyan  { width: 55vw; height: 55vh; top: -12vh; right: -16vw; background: rgba(190,220,235,0.42); }
+  .orb-mint  { width: 38vw; height: 38vh; bottom: 4vh; left: 42vw; background: rgba(195,225,210,0.30); }
+
+  .page-frame { position: relative; min-height: 100vh; background: transparent; }
+  .page-frame > nav, .page-frame > main, .page-frame > footer { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 120px; max-width: none; margin: 0;
+  }
+  .nav-left { display: flex; align-items: center; gap: 18px; }
+  .brand-logo { display: inline-flex; align-items: center; text-decoration: none; }
+  .brand-logo img { height: 24px; width: auto; display: block; }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 8px 14px; border-radius: 100px; transition: background 0.2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,0.6); color: var(--ink); }
+  .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-links a.nav-profile {
+    display: none; align-items: center; gap: 8px;
+    padding: 4px 14px 4px 4px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 100px;
+    color: var(--ink); font-size: 13px; font-weight: 600;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .nav-links a.nav-profile:hover {
+    color: var(--ink); border-color: var(--alabaster);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(70,73,76,0.06);
+  }
+  .nav-links a.nav-profile.show { display: inline-flex; }
+  .nav-profile-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--cyan-soft); color: var(--cyan);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; overflow: hidden; flex: 0 0 auto;
+  }
+  .nav-profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .nav-profile-name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* PAGE HEAD */
+  .page-head {
+    text-align: center;
+    padding: 6vh 0 3vh;
+    width: 100%;
+    max-width: 60vw;
+    margin: 0 auto;
+  }
+
+  /* STEPPER — 50% smaller version of the reference design */
+  .stepper { display: flex; justify-content: center; margin: 0 auto 32px; max-width: 720px; position: relative; }
+  .stepper .step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+  .stepper .step:not(:last-child)::after {
+    content: ""; position: absolute; top: 7px; left: 50%; width: 100%; height: 1.5px;
+    background: var(--alabaster); z-index: 0;
+  }
+  .stepper .step.done:not(:last-child)::after { background: #29294c; }
+  .stepper .step[data-href] { cursor: pointer; }
+  .stepper .step[data-href]:hover .circle { transform: scale(1.05); }
+  .stepper .step[data-href]:hover .step-label { color: var(--ink); }
+  .stepper .circle {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--white); border: 1.5px solid var(--alabaster); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700; position: relative; z-index: 1;
+    transition: all 0.2s ease;
+  }
+  .stepper .step.done .circle { background: #29294c; border-color: #29294c; color: var(--white); }
+  .stepper .step.active .circle {
+    background: #29294c; border-color: #29294c; color: var(--white);
+    box-shadow: 0 0 0 2px rgba(41,41,76,0.15);
+  }
+  .stepper .step-label { font-size: 10px; font-weight: 500; color: var(--muted); white-space: nowrap; }
+  .stepper .step.active .step-label { color: var(--ink); font-weight: 700; }
+  .stepper .step.done .step-label { color: var(--iron); font-weight: 600; }
+  .eyebrow-script {
+    display: block; font-family: 'Kalam', cursive;
+    font-size: 20px; font-weight: 400; color: var(--iron); margin-bottom: 4px;
+  }
+  .page-head h1 {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .page-head h1 .accent { color: var(--cyan); }
+  .page-head p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .page-head .company-name { color: var(--ink); font-weight: 600; }
+
+  /* SUMMARY BAR */
+  .summary-bar {
+    display: flex; justify-content: center; gap: 32px;
+    padding: 18px 28px; margin: 0 auto 24px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    box-shadow: 0 4px 14px rgba(70,73,76,0.04);
+    width: fit-content;
+  }
+  .summary-stat { text-align: center; }
+  .summary-stat .v { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px; }
+  .summary-stat .l { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  /* BUNDLE SECTION */
+  .cat-bundle {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 28px 30px;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 12px 32px rgba(70,73,76,0.05);
+    margin: 0 0 22px;
+  }
+  .cat-bundle-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .cat-bundle-head .lhs { display: flex; align-items: center; gap: 14px; }
+  .cat-bundle-head .b-tile {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: #fff9e7;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .cat-bundle-head .b-tile img { width: 26px; height: 26px; display: block; }
+  .cat-bundle-head h2 {
+    font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px;
+  }
+  .cat-bundle-head .meta {
+    font-size: 13px; color: var(--muted); margin-top: 2px;
+  }
+  .style-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 100px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.2px;
+    background: #F4F5F7; color: var(--iron);
+  }
+  .style-pill.premium { background: #1A1A2E; color: #F0B86E; }
+  .style-pill.fun     { background: linear-gradient(135deg, #FFE3A8 0%, #FFCDB8 50%, #D7CAEC 100%); color: #46494C; }
+
+  .cat-badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+  }
+  .cat-badge {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--white);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .cat-badge:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(70,73,76,0.08); }
+  .cat-badge-placeholders {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--line);
+    background: #FCFCFD;
+  }
+  .catalogue-field {
+    width: 100%;
+    min-width: 0;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid #DDE0E5;
+    border-radius: 7px;
+    background: var(--white);
+    color: var(--ink);
+    font: inherit;
+    font-size: 11px;
+    outline: none;
+  }
+  .catalogue-field::placeholder { color: #8B919B; opacity: 1; }
+  .catalogue-field:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(255,109,5,0.12); }
+  .badge-preview {
+    aspect-ratio: 1 / 1;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; padding: 10px;
+  }
+  .badge-preview .glyph { font-size: 56px; line-height: 1; }
+  .badge-preview .glyph-img {
+    width: 90%; height: auto; max-height: 92%; object-fit: contain; display: block;
+  }
+  /* Feed Banner samples are portrait rectangles — match tile aspect to the sample so no letterbox */
+  .badge-preview[data-sample^="Feed Banner_"] {
+    padding: 0; aspect-ratio: 142 / 200;
+  }
+  .badge-preview[data-sample^="Feed Banner_"] .glyph-img {
+    width: 100%; height: 100%; max-height: 100%; object-fit: cover;
+  }
+  .badge-preview.minimal { background: #F4F5F7; color: var(--ink); }
+  .badge-preview.minimal .glyph { filter: grayscale(1); opacity: 0.85; }
+  .badge-preview.premium { background: radial-gradient(circle at 30% 20%, #2A2C5C 0%, #1A1A2E 70%); color: #F0B86E; }
+  .badge-preview.premium .glyph { filter: drop-shadow(0 2px 6px rgba(240,184,110,0.4)); }
+  .badge-preview.fun { background: linear-gradient(135deg, #FFE3A8 0%, #FFCDB8 50%, #D7CAEC 100%); color: #46494C; }
+  .badge-preview.fun .glyph { transform: rotate(-6deg); }
+
+  /* Award name centered overlay — mirrors customize.html's .label-overlay so
+     the catalogue tile matches the live customize preview exactly. */
+  .badge-name {
+    position: absolute;
+    left: 22%; right: 22%; top: 61%;
+    transform: translateY(-50%);
+    margin: 0;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-height: 60%;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    z-index: 1; pointer-events: none;
+  }
+  /* When the tile shows a sample SVG, the label lands inside the medal's
+     plate area. Values MUST match customize.html's `.mockup-badge.has-img
+     .label-overlay` (customize.html ~line 428-433) — the feed-mockup
+     preview is the reference the client compares this card against, so
+     any drift here will read as "the final catalogue doesn't look like
+     what I customized". Also see the font-size calc at render time
+     (Math.max(7, fontSize * 0.35)) — same reference. */
+  .badge-preview.has-img .badge-name {
+    top: 64%;
+    max-width: 22.86%; left: 38.57%; right: 38.57%;
+    -webkit-line-clamp: 3;
+  }
+  /* Per-sample override: Monetary_Premium_01's crest sits lower/tighter. */
+  .badge-preview[data-sample="Monetary_Premium_01"].has-img .badge-name {
+    top: 60.5%;
+    max-width: 28%; left: 36%; right: 36%;
+  }
+  /* Monetary_fun_04: blue-and-green rosette. Label centered inside the
+     green disc — mirrors customize.html's `.mockup-badge` override. */
+  .badge-preview[data-sample="Monetary_fun_04"].has-img .badge-name {
+    top: 57% !important;
+  }
+  /* Monetary_fun_08: orange circle with trophy and a navy banner across the
+     middle; label sits centered on the banner as ONE line. */
+  .badge-preview[data-sample="Monetary_fun_08"].has-img .badge-name {
+    top: 60% !important;
+    max-width: 76%; left: 12%; right: 12%;
+    white-space: nowrap;
+    -webkit-line-clamp: 1;
+  }
+  /* Style-specific color/weight fallbacks — the injected brand-theme
+     stylesheet overrides these via !important when brand colors exist. */
+  .badge-preview.minimal .badge-name { color: var(--ink); }
+  .badge-preview.premium .badge-name { color: #FFFFFF; font-weight: 500; font-size: 11px; letter-spacing: 0.2px; }
+  .badge-preview.fun .badge-name { color: var(--ink); font-weight: 700; }
+
+  .customized-tag {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--white); background: rgba(0,0,0,0.45);
+    padding: 3px 7px; border-radius: 100px;
+    z-index: 1;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center; padding: 70px 24px;
+    background: var(--white); border: 1px dashed var(--alabaster); border-radius: 24px;
+    margin: 0 0 22px;
+  }
+  .empty-state .ic {
+    font-size: 44px; margin-bottom: 14px; opacity: 0.6;
+  }
+  .empty-state h2 { font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .empty-state p { font-size: 14.5px; color: var(--muted); margin-bottom: 20px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #29294c; color: var(--white); text-decoration: none;
+    padding: 11px 22px; border-radius: 100px;
+    font-size: 14px; font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn:hover { background: #1F1F3D; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(41,41,76,0.22); }
+
+  /* FOOTER */
+  footer { padding: 19px 0 22px; color: var(--muted); font-size: 13px; }
+  .foot-grid {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 14px; padding: 18px 120px; max-width: none; margin: 0;
+  }
+  .foot-copy { color: var(--muted); }
+  .foot-brand { color: #5B6CFF; text-decoration: none; font-weight: 600; margin: 0 2px; }
+  .foot-brand:hover { text-decoration: underline; }
+  .foot-links { display: flex; gap: 28px; }
+  .foot-links a { color: var(--iron); text-decoration: none; font-size: 13px; font-weight: 500; }
+  .foot-links a:hover { color: #5B6CFF; }
+
+  @media (max-width: 820px) {
+    .wrap, nav.top, .foot-grid { padding-left: 28px; padding-right: 28px; }
+    .page-head h1 { font-size: 34px; letter-spacing: -0.8px; }
+    .cat-bundle { padding: 22px 18px; }
+    .cat-badge-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary-bar { gap: 22px; padding: 14px 22px; }
+  }
+
+  .bg-orbs { display: none !important; }
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .page-bg img {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    will-change: transform;
+    animation: pageBgDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes pageBgDrift {
+    0%   { transform: translate(0, 0) scale(1.05); }
+    100% { transform: translate(-1.8%, -1.5%) scale(1.10); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-bg img { animation: none; }
+  }
+
+  .cat-back-fab {
+    position: fixed;
+    left: 32px; bottom: 84px;
+    z-index: 9999;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px;
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    color: var(--iron);
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.10), 0 2px 6px rgba(70,73,76,0.05);
+    transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .cat-back-fab:hover {
+    color: var(--ink);
+    border-color: var(--iron);
+    transform: translateY(-1px);
+  }
+  .cat-back-fab svg { display: block; }
+
+  .cat-badge-details {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 12px;
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+  .cat-badge-details > div { display: contents; }
+  .cat-badge-details .dk {
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-size: 10px;
+    align-self: center;
+  }
+  .cat-badge-details .dv {
+    color: var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    word-break: break-word;
+  }
+  .cat-badge-details .sw {
+    width: 12px; height: 12px; border-radius: 3px;
+    display: inline-block; flex: 0 0 auto;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .cat-pdf-fab {
+    position: fixed;
+    right: 32px; bottom: 84px;
+    z-index: 9999;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px;
+    background: var(--cyan);
+    border: 1px solid var(--cyan);
+    border-radius: 100px;
+    color: var(--white);
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 12px 32px rgba(255,109,5,0.28), 0 2px 6px rgba(70,73,76,0.08);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .cat-pdf-fab:hover { background: var(--iron); border-color: var(--iron); transform: translateY(-1px); }
+  .cat-pdf-fab svg { display: block; }
+  .cat-pdf-fab:disabled,
+  .cat-pdf-fab.is-loading {
+    opacity: 0.7; cursor: wait; pointer-events: none;
+    transform: none !important;
+  }
+
+  /* PDF EXPORT — applied to <body> only while html2pdf is capturing .wrap,
+     so the exported file gets clean margins/columns regardless of the
+     viewer's actual window size at the moment they clicked Download. */
+  body.pdf-export .wrap { padding: 0 48px !important; max-width: 100% !important; }
+  body.pdf-export main  { padding: 0 !important; }
+  body.pdf-export .cat-bundle { box-shadow: none !important; border-color: #DDDDDD; }
+  body.pdf-export .cat-badge-grid { grid-template-columns: repeat(3, 1fr) !important; }
+
+  @media print {
+    html, body { background: #FFFFFF !important; }
+    nav.top, footer, .cat-back-fab, .cat-pdf-fab, .page-bg, .bg-orbs { display: none !important; }
+    .page-head { padding: 0 0 16px; }
+    .cat-bundle { break-inside: avoid; box-shadow: none !important; border-color: #DDDDDD; }
+    .cat-badge  { break-inside: avoid; }
+    .cat-badge-details { background: #FAFAFA; }
+    .wrap { padding: 0 !important; max-width: 100% !important; }
+    main  { padding: 0 !important; }
+  }
+
+</style>
+</head>
+<body>
+<div class="page-bg" aria-hidden="true"><img src="Background.svg" alt=""></div>
+
+<div class="page-frame">
+
+<div class="bg-orbs" aria-hidden="true">
+  <span class="orb orb-amber"></span>
+  <span class="orb orb-cyan"></span>
+  <span class="orb orb-mint"></span>
+</div>
+
+<nav class="top">
+  <div class="nav-left">
+    <a href="https://www.vantagecircle.com" class="brand-logo" aria-label="Vantage Circle home" target="_blank" rel="noopener"><img src="Images/vc-logo-new.png" alt="Vantage Circle"></a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How it works</a></li>
+    <li><a href="profile.html" class="nav-profile" id="navProfile" aria-label="View your profile">
+      <span class="nav-profile-avatar" id="navProfileAvatar"></span>
+      <span class="nav-profile-name" id="navProfileName"></span>
+    </a></li>
+  </ul>
+</nav>
+<script>
+  (function() {
+    try {
+      var ps = JSON.parse(sessionStorage.getItem('cxBadge.designState.v1') || '{}');
+      var company = (ps.company || '').trim();
+      if (!company) return;
+      var chip = document.getElementById('navProfile');
+      var avatar = document.getElementById('navProfileAvatar');
+      var nameEl = document.getElementById('navProfileName');
+      if (!chip || !avatar || !nameEl) return;
+      nameEl.textContent = 'Profile';
+      var colors = (ps.brand && ps.brand.colors) || [];
+      var primary = colors[0];
+      if (primary) {
+        avatar.style.background = primary;
+        avatar.style.color = 'transparent';
+        avatar.textContent = '';
+      } else {
+        avatar.textContent = company.charAt(0).toUpperCase();
+      }
+      chip.classList.add('show');
+    } catch (e) {}
+  })();
+</script>
+
+<main>
+  <div class="wrap">
+
+    <div class="page-head">
+      <h1>My Catalogue</h1>
+    </div>
+
+    <div class="summary-bar" id="summaryBar" hidden>
+      <div class="summary-stat"><div class="v" id="statBundles">0</div><div class="l">Bundles</div></div>
+      <div class="summary-stat"><div class="v" id="statBadges">0</div><div class="l">Badges</div></div>
+      <div class="summary-stat"><div class="v" id="statCustom">0</div><div class="l">Customised</div></div>
+    </div>
+
+    <div id="catalogueContent"></div>
+
+    <div class="empty-state" id="emptyState" hidden>
+      <div class="ic">📭</div>
+      <h2>Nothing in your catalogue yet</h2>
+      <p>Pick some bundles and badges first, then come back here to see them all in one place.</p>
+      <a href="bundles.html" class="btn">Pick bundles</a>
+    </div>
+
+  </div>
+</main>
+
+<a href="design-style.html" class="cat-back-fab" id="catBackFab" aria-label="Back to design style">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 12H5M12 19l-7-7 7-7"/>
+  </svg>
+  Back
+</a>
+
+<button type="button" class="cat-pdf-fab" id="catPdfFab" aria-label="Download catalogue as PDF">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <path d="M7 10l5 5 5-5"/>
+    <path d="M12 15V3"/>
+  </svg>
+  <span class="cat-pdf-fab-label">Download as PDF</span>
+</button>
+
+</div><!-- /.page-frame -->
+
+<!-- Bundled locally so PDF downloads also work on deployed sites with no CDN access. -->
+<script src="vendor/html2pdf.bundle.min.js"></script>
+<script>
+  // --- shared data (mirrors design-style.html + customize.html) ---
+  const BUNDLES = [
+    { key: 'monetary',      name: 'Monetary Awards',     icon: 'Icons/Monetary.svg',      emoji: '💰' },
+    { key: 'non-monetary',  name: 'Non-Monetary Awards', icon: 'Icons/Non-Monetary.svg',  emoji: '⭐' },
+    { key: 'lsa',           name: 'LSA',                  icon: 'Icons/LSA.svg',           emoji: '🏆' },
+    { key: 'feed-banner',   name: 'Feed Banner',          icon: 'Icons/Feed Banner.svg',   emoji: '📢' },
+    { key: 'certificate',   name: 'Certificate',          icon: 'Icons/Certificate.svg',   emoji: '📜' },
+    { key: 'teaser',        name: 'Teaser',               icon: 'Icons/Teaser.svg',        emoji: '✨' },
+    { key: 'launch-mailer', name: 'Launch Mailer',        icon: 'Icons/Launch Mailer.svg', emoji: '✉️' },
+    { key: 'login-banner',  name: 'Login Banner',         icon: 'Icons/Login Banner.svg',  emoji: '🔐' },
+  ];
+
+  const STYLE_NAMES = { minimal: 'Minimal', premium: 'Premium', fun: 'Fun & Colourful' };
+  const TIERS = ['I', 'II', 'III', 'IV', 'V'];
+  const VARIANTS_PER_BUNDLE = 30;
+
+  const BADGE_VARIANTS = {
+    'non-monetary': [
+      { label: 'Top Star',       icon: '⭐' },
+      { label: 'Team Player',    icon: '🤝' },
+      { label: 'Innovator',      icon: '💡' },
+      { label: 'Mentor',         icon: '🎓' },
+      { label: 'Quick Learner',  icon: '🚀' },
+      { label: 'Customer Hero',  icon: '🌟' },
+    ],
+    'monetary': [
+      { label: '$100 Bonus',     icon: '💵' },
+      { label: '$250 Bonus',     icon: '💵' },
+      { label: '$500 Award',     icon: '💰' },
+      { label: '$1,000 Award',   icon: '💰' },
+      { label: '$2,500 Honor',   icon: '💎' },
+      { label: '$5,000 Pinnacle',icon: '🏆' },
+    ],
+    'lsa': [
+      { label: '1 Year',  icon: '🎯' },
+      { label: '3 Years', icon: '🌱' },
+      { label: '5 Years', icon: '🏆' },
+      { label: '10 Years',icon: '🏅' },
+      { label: '20 Years',icon: '👑' },
+      { label: '25 Years',icon: '💎' },
+    ],
+    'teaser': [
+      { label: 'Coming Soon',    icon: '✨' },
+      { label: 'Launching Soon', icon: '🚀' },
+      { label: 'Big Reveal',     icon: '🎊' },
+      { label: 'Sneak Peek',     icon: '👀' },
+      { label: 'Save the Date',  icon: '📅' },
+      { label: 'Countdown',      icon: '⏳' },
+    ],
+    'launch-mailer': [
+      { label: 'Welcome Email',  icon: '✉️' },
+      { label: 'Program Launch', icon: '📣' },
+      { label: 'Invitation',     icon: '💌' },
+      { label: 'Reminder',       icon: '🔔' },
+      { label: 'Thank You',      icon: '🙏' },
+      { label: 'What’s Next', icon: '➡️' },
+    ],
+    'feed-banner': [
+      { label: 'Announcement',   icon: '📢' },
+      { label: 'Celebrate Wins', icon: '🎉' },
+      { label: 'Milestone Hit',  icon: '🎯' },
+      { label: 'Campaign Live',  icon: '🚀' },
+      { label: 'Upcoming Event', icon: '📅' },
+      { label: 'Kudos Wall',     icon: '👏' },
+    ],
+    'certificate': [
+      { label: 'Excellence',        icon: '📜' },
+      { label: 'Achievement',       icon: '🏆' },
+      { label: 'Long Service',      icon: '🎖️' },
+      { label: 'Recognition',       icon: '✨' },
+      { label: 'Course Completion', icon: '🎓' },
+      { label: 'Milestone',         icon: '🥇' },
+    ],
+    'login-banner': [
+      { label: 'Welcome Back',     icon: '👋' },
+      { label: 'Celebrate Today',  icon: '🎉' },
+      { label: 'Milestone Mode',   icon: '🏆' },
+      { label: 'Awards Live',      icon: '⭐' },
+      { label: 'Season Greetings', icon: '🎄' },
+      { label: 'New Launch',       icon: '🚀' },
+    ],
+  };
+
+  // Keep this in lockstep with design-style.html + customize.html so the same
+  // badge id renders the same SVG on every page. Only files that actually
+  // exist on disk are listed — a mismatch here shows up as an empty preview
+  // because the <img> fails to load.
+  const SAMPLE_OVERRIDES = {
+    'monetary|premium|monetary-0-0': 'Samples/Award/Premium/Monetary_Premium_02.svg',
+    'monetary|premium|monetary-0-1': 'Samples/Award/Premium/Monetary_Premium_03.svg',
+    'monetary|premium|monetary-0-2': 'Samples/Award/Premium/Monetary_premium_04.svg',
+    'monetary|premium|monetary-0-3': 'Samples/Award/Premium/Monetary_Premium_07.svg',
+    'monetary|premium|monetary-0-4': 'Samples/Award/Premium/Monetary_Premium_08.svg',
+    'monetary|premium|monetary-1-0': 'Samples/Award/Premium/Monetary_Premium_09.svg',
+    'monetary|premium|monetary-1-1': 'Samples/Award/Premium/Monetary_Premium_11.svg',
+    'monetary|premium|monetary-1-2': 'Samples/Award/Premium/Monetary_Premium_15.svg',
+    'monetary|premium|monetary-1-3': 'Samples/Award/Premium/Monetary_Premium_16.svg',
+    'monetary|premium|monetary-1-4': 'Samples/Award/Premium/Monetary_Premium_17.svg',
+    'monetary|premium|monetary-2-0': 'Samples/Award/Premium/Monetary_Premium_18.svg',
+    'monetary|premium|monetary-2-1': 'Samples/Award/Premium/Monetary_Premium_19.svg',
+    'monetary|premium|monetary-2-2': 'Samples/Award/Premium/Monetary_Premium_20.svg',
+    'monetary|premium|monetary-2-3': 'Samples/Award/Premium/Monetary_Premium_21.svg',
+    'monetary|minimal|monetary-0-0': 'Samples/Award/Minimal/Monetary_minimal_01.svg',
+    'monetary|minimal|monetary-0-1': 'Samples/Award/Minimal/Monetary_minimal_02.svg',
+    'monetary|minimal|monetary-0-2': 'Samples/Award/Minimal/Monetary_minimal_03.svg',
+    'monetary|minimal|monetary-0-3': 'Samples/Award/Minimal/Monetary_minimal_04.svg',
+    'monetary|minimal|monetary-0-4': 'Samples/Award/Minimal/Monetary_minimal_05.svg',
+    'monetary|minimal|monetary-1-0': 'Samples/Award/Minimal/Monetary_minimal_07.svg',
+    'monetary|minimal|monetary-1-1': 'Samples/Award/Minimal/Monetary_minimal_08.svg',
+    'monetary|minimal|monetary-1-2': 'Samples/Award/Minimal/Monetary_minimal_09.svg',
+    'monetary|minimal|monetary-1-3': 'Samples/Award/Minimal/Monetary_minimal_10.svg',
+    'monetary|minimal|monetary-1-4': 'Samples/Award/Minimal/Monetary_minimal_11.svg',
+    'monetary|minimal|monetary-2-0': 'Samples/Award/Minimal/Monetary_minimal_12.svg',
+    'monetary|minimal|monetary-2-1': 'Samples/Award/Minimal/Monetary_minimal_13.svg',
+    'monetary|fun|monetary-0-0': 'Samples/Award/Fun & Playful/Monetary_fun_01.svg',
+    'monetary|fun|monetary-0-1': 'Samples/Award/Fun & Playful/Monetary_fun_02.svg',
+    'monetary|fun|monetary-0-2': 'Samples/Award/Fun & Playful/Monetary_fun_03.svg',
+    'monetary|fun|monetary-0-3': 'Samples/Award/Fun & Playful/Monetary_fun_04.svg',
+    'monetary|fun|monetary-0-4': 'Samples/Award/Fun & Playful/Monetary_fun_05.svg',
+    'monetary|fun|monetary-1-0': 'Samples/Award/Fun & Playful/Monetary_fun_06.svg',
+    'monetary|fun|monetary-1-1': 'Samples/Award/Fun & Playful/Monetary_fun_07.svg',
+    'monetary|fun|monetary-1-2': 'Samples/Award/Fun & Playful/Monetary_fun_08.svg',
+    'lsa|premium|lsa-0-0': 'Samples/LSA/Premium/LSA_Premium_01.svg',
+    'lsa|premium|lsa-0-1': 'Samples/LSA/Premium/LSA_Premium_02.svg',
+    'lsa|premium|lsa-0-2': 'Samples/LSA/Premium/LSA_Premium_03.svg',
+    'lsa|premium|lsa-0-3': 'Samples/LSA/Premium/LSA_Premium_04.svg',
+    'lsa|premium|lsa-0-4': 'Samples/LSA/Premium/LSA_Premium_05.svg',
+    'lsa|premium|lsa-1-0': 'Samples/LSA/Premium/LSA_Premium_06.svg',
+    'lsa|premium|lsa-1-1': 'Samples/LSA/Premium/LSA_Premium_07.svg',
+    'lsa|premium|lsa-1-2': 'Samples/LSA/Premium/LSA_Premium_08.svg',
+    'lsa|premium|lsa-1-3': 'Samples/LSA/Premium/LSA_Premium_09.svg',
+    'lsa|premium|lsa-1-4': 'Samples/LSA/Premium/LSA_Premium_10.svg',
+    'lsa|premium|lsa-2-0': 'Samples/LSA/Premium/LSA_Premium_11.svg',
+    'lsa|premium|lsa-2-1': 'Samples/LSA/Premium/LSA_Premium_12.svg',
+    'lsa|minimal|lsa-0-0': 'Samples/LSA/Minimal/LSA_minimal_01.svg',
+    'lsa|minimal|lsa-0-1': 'Samples/LSA/Minimal/LSA_minimal_02.svg',
+    'lsa|minimal|lsa-0-2': 'Samples/LSA/Minimal/LSA_minimal_03.svg',
+    'lsa|minimal|lsa-0-3': 'Samples/LSA/Minimal/LSA_minimal_04.svg',
+    'lsa|minimal|lsa-0-4': 'Samples/LSA/Minimal/LSA_minimal_05.svg',
+    'lsa|minimal|lsa-1-0': 'Samples/LSA/Minimal/LSA_minimal_06.svg',
+    'lsa|minimal|lsa-1-1': 'Samples/LSA/Minimal/LSA_minimal_07.svg',
+    'lsa|minimal|lsa-1-2': 'Samples/LSA/Minimal/LSA_minimal_08.svg',
+    'lsa|minimal|lsa-1-3': 'Samples/LSA/Minimal/LSA_minimal_09.svg',
+    'lsa|minimal|lsa-1-4': 'Samples/LSA/Minimal/LSA_minimal_10.svg',
+    'lsa|minimal|lsa-2-0': 'Samples/LSA/Minimal/LSA_minimal_11.svg',
+    'lsa|minimal|lsa-2-1': 'Samples/LSA/Minimal/LSA_minimal_12.svg',
+    'lsa|fun|lsa-0-0': 'Samples/LSA/Fun & Playful/LSA_fun_01.svg',
+    'lsa|fun|lsa-0-1': 'Samples/LSA/Fun & Playful/LSA_fun_02.svg',
+    'lsa|fun|lsa-0-2': 'Samples/LSA/Fun & Playful/LSA_fun_03.svg',
+    'lsa|fun|lsa-0-3': 'Samples/LSA/Fun & Playful/LSA_fun_04.svg',
+    'lsa|fun|lsa-0-4': 'Samples/LSA/Fun & Playful/LSA_fun_05.svg',
+    'lsa|fun|lsa-1-0': 'Samples/LSA/Fun & Playful/LSA_fun_06.svg',
+    'lsa|fun|lsa-1-1': 'Samples/LSA/Fun & Playful/LSA_fun_07.svg',
+    'lsa|fun|lsa-1-2': 'Samples/LSA/Fun & Playful/LSA_fun_08.svg',
+    'lsa|fun|lsa-1-3': 'Samples/LSA/Fun & Playful/LSA_fun_09.svg',
+    'lsa|fun|lsa-1-4': 'Samples/LSA/Fun & Playful/LSA_fun_10.svg',
+    'lsa|fun|lsa-2-0': 'Samples/LSA/Fun & Playful/LSA_fun_11.svg',
+    'lsa|fun|lsa-2-1': 'Samples/LSA/Fun & Playful/LSA_fun_12.svg',
+    // Keep the catalogue asset registry aligned with the selection gallery.
+    'feed-banner|premium|feed-banner-0-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-03.svg',
+    'feed-banner|premium|feed-banner-0-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-04.svg',
+    'feed-banner|premium|feed-banner-0-2': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-05.png',
+    'feed-banner|premium|feed-banner-0-3': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-06.svg',
+    'feed-banner|premium|feed-banner-0-4': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-12.png',
+    'feed-banner|premium|feed-banner-1-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-13.png',
+    'feed-banner|premium|feed-banner-1-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-14.png',
+    'feed-banner|premium|feed-banner-1-2': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-15.png',
+    'feed-banner|premium|feed-banner-1-3': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-16.png',
+    'feed-banner|premium|feed-banner-1-4': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-17.png',
+    'feed-banner|premium|feed-banner-2-0': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-01.png',
+    'feed-banner|premium|feed-banner-2-1': 'Samples/Feed Banner/Premium/Feed Banner_Premium-Feedbanner-02.png',
+    'feed-banner|minimal|feed-banner-0-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-6.svg',
+    'feed-banner|minimal|feed-banner-0-1': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-7.png',
+    'feed-banner|minimal|feed-banner-0-2': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-8.png',
+    'feed-banner|minimal|feed-banner-0-3': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-11.png',
+    'feed-banner|minimal|feed-banner-0-4': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-12.png',
+    'feed-banner|minimal|feed-banner-1-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-13.png',
+    'feed-banner|minimal|feed-banner-1-1': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-1.png',
+    'feed-banner|minimal|feed-banner-1-2': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-2.png',
+    'feed-banner|minimal|feed-banner-1-3': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-3.png',
+    'feed-banner|minimal|feed-banner-1-4': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-4.png',
+    'feed-banner|minimal|feed-banner-2-0': 'Samples/Feed Banner/Minimal/Feed Banner_Minimal-Feedbanner-5.png',
+    'feed-banner|fun|feed-banner-0-0': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-2.svg',
+    'feed-banner|fun|feed-banner-0-1': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-3.svg',
+    'feed-banner|fun|feed-banner-0-2': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-4.svg',
+    'feed-banner|fun|feed-banner-0-3': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-5.png',
+    'feed-banner|fun|feed-banner-0-4': 'Samples/Feed Banner/Fun & Playful/Feed Banner_Fun-Feedbanner-1.png',
+    'teaser|minimal|teaser-0-0': 'Samples/Teaser/Minimal/teaser_minimal_1.png',
+    'teaser|minimal|teaser-0-1': 'Samples/Teaser/Minimal/teaser_minimal_2.png',
+    'teaser|minimal|teaser-0-2': 'Samples/Teaser/Minimal/teaser_minimal_3.png',
+    'teaser|minimal|teaser-0-3': 'Samples/Teaser/Minimal/teaser_minimal_5.png',
+    'teaser|minimal|teaser-0-4': 'Samples/Teaser/Minimal/teaser_minimal_5.png',
+    'teaser|minimal|teaser-1-0': 'Samples/Teaser/Minimal/teaser_minimal_6.png',
+    'teaser|minimal|teaser-1-1': 'Samples/Teaser/Minimal/teaser_minimal_7.png',
+    'teaser|premium|teaser-0-0': 'Samples/Teaser/Premium/teaser_premium_1.png',
+    'teaser|premium|teaser-0-1': 'Samples/Teaser/Premium/teaser_premium_2.png',
+    'teaser|premium|teaser-0-2': 'Samples/Teaser/Premium/teaser_premium_3.png',
+    'teaser|premium|teaser-0-3': 'Samples/Teaser/Premium/teaser_premium_4.png',
+    'teaser|premium|teaser-0-4': 'Samples/Teaser/Premium/teaser_premium_5.png',
+    'teaser|premium|teaser-1-0': 'Samples/Teaser/Premium/teaser_premium_6.png',
+    'teaser|premium|teaser-1-1': 'Samples/Teaser/Premium/teaser_premium_7.png',
+    'teaser|fun|teaser-0-0': 'Samples/Teaser/Fun/teaser_fun_1.png',
+    'teaser|fun|teaser-0-1': 'Samples/Teaser/Fun/teaser_fun_2.png',
+    'teaser|fun|teaser-0-2': 'Samples/Teaser/Fun/teaser_fun_3.png',
+    'teaser|fun|teaser-0-3': 'Samples/Teaser/Fun/teaser_fun_4.png',
+    'teaser|fun|teaser-0-4': 'Samples/Teaser/Fun/teaser_fun_5.png',
+    'certificate|minimal|certificate-0-0': 'Samples/Certificate/Minimal/Minimal-01.svg',
+    'certificate|minimal|certificate-0-1': 'Samples/Certificate/Minimal/Minimal-01 copy.svg',
+    'certificate|minimal|certificate-0-2': 'Samples/Certificate/Minimal/Minimal-02.svg',
+    'certificate|minimal|certificate-0-3': 'Samples/Certificate/Minimal/Minimal-02 copy.svg',
+    'certificate|minimal|certificate-0-4': 'Samples/Certificate/Minimal/Minimal-03.svg',
+    'certificate|minimal|certificate-1-0': 'Samples/Certificate/Minimal/Minimal-03 copy.svg',
+    'certificate|premium|certificate-0-0': 'Samples/Certificate/Premium/Premium-07.svg',
+    'certificate|premium|certificate-0-1': 'Samples/Certificate/Premium/Premium-07 copy.svg',
+    'certificate|premium|certificate-0-2': 'Samples/Certificate/Premium/Premium-08.svg',
+    'certificate|premium|certificate-0-3': 'Samples/Certificate/Premium/Premium-08 copy.svg',
+    'certificate|premium|certificate-0-4': 'Samples/Certificate/Premium/Premium-09.svg',
+    'certificate|premium|certificate-1-0': 'Samples/Certificate/Premium/Premium-09 copy.svg',
+    'certificate|fun|certificate-0-0': 'Samples/Certificate/Fun/Fun-04.svg',
+    'certificate|fun|certificate-0-1': 'Samples/Certificate/Fun/Fun-04 copy.svg',
+    'certificate|fun|certificate-0-2': 'Samples/Certificate/Fun/Fun-05.svg',
+    'certificate|fun|certificate-0-3': 'Samples/Certificate/Fun/Fun-05 copy.svg',
+    'certificate|fun|certificate-0-4': 'Samples/Certificate/Fun/Fun-06.svg',
+    'certificate|fun|certificate-1-0': 'Samples/Certificate/Fun/Fun-06 copy.svg',
+    'non-monetary|minimal|non-monetary-0-0': 'Samples/Badge/Minimal/Badge_minimal_01.svg',
+    'non-monetary|minimal|non-monetary-0-1': 'Samples/Badge/Minimal/Badge_minimal_02.svg',
+    'non-monetary|minimal|non-monetary-0-2': 'Samples/Badge/Minimal/Badge_minimal_03.svg',
+    'non-monetary|minimal|non-monetary-0-3': 'Samples/Badge/Minimal/Badge_minimal_04.svg',
+    'non-monetary|minimal|non-monetary-0-4': 'Samples/Badge/Minimal/Badge_minimal_05.svg',
+    'non-monetary|minimal|non-monetary-1-0': 'Samples/Badge/Minimal/Badge_minimal_06.svg',
+    'non-monetary|minimal|non-monetary-1-1': 'Samples/Badge/Minimal/Badge_minimal_07.svg',
+    'non-monetary|minimal|non-monetary-1-2': 'Samples/Badge/Minimal/Badge_minimal_08.svg',
+    'non-monetary|minimal|non-monetary-1-3': 'Samples/Badge/Minimal/Badge_minimal_09.svg',
+    'non-monetary|minimal|non-monetary-1-4': 'Samples/Badge/Minimal/Badge_minimal_10.svg',
+    'non-monetary|minimal|non-monetary-2-0': 'Samples/Badge/Minimal/Badge_minimal_11.svg',
+    'non-monetary|minimal|non-monetary-2-1': 'Samples/Badge/Minimal/Badge_minimal_12.svg',
+    'non-monetary|minimal|non-monetary-2-2': 'Samples/Badge/Minimal/Badge_minimal_13.svg',
+    'non-monetary|minimal|non-monetary-2-3': 'Samples/Badge/Minimal/Badge_minimal_14.svg',
+    'non-monetary|minimal|non-monetary-2-4': 'Samples/Badge/Minimal/Badge_minimal_15.svg',
+    'non-monetary|minimal|non-monetary-3-0': 'Samples/Badge/Minimal/Badge_minimal_16.svg',
+    'non-monetary|minimal|non-monetary-3-1': 'Samples/Badge/Minimal/Badge_minimal_17.svg',
+    'non-monetary|minimal|non-monetary-3-2': 'Samples/Badge/Minimal/Badge_minimal_18.svg',
+    'non-monetary|minimal|non-monetary-3-3': 'Samples/Badge/Minimal/Badge_minimal_19.svg',
+    'non-monetary|minimal|non-monetary-3-4': 'Samples/Badge/Minimal/Badge_minimal_20.svg',
+    'non-monetary|premium|non-monetary-0-0': 'Samples/Badge/Premium/Badge_Premium_01.svg',
+    'non-monetary|premium|non-monetary-0-1': 'Samples/Badge/Premium/Badge_Premium_02.svg',
+    'non-monetary|premium|non-monetary-0-2': 'Samples/Badge/Premium/Badge_Premium_03.svg',
+    'non-monetary|premium|non-monetary-0-3': 'Samples/Badge/Premium/Badge_Premium_04.svg',
+    'non-monetary|premium|non-monetary-0-4': 'Samples/Badge/Premium/Badge_Premium_05.svg',
+    'non-monetary|premium|non-monetary-1-0': 'Samples/Badge/Premium/Badge_Premium_06.svg',
+    'non-monetary|premium|non-monetary-1-1': 'Samples/Badge/Premium/Badge_Premium_07.svg',
+    'non-monetary|premium|non-monetary-1-2': 'Samples/Badge/Premium/Badge_Premium_08.svg',
+    'non-monetary|premium|non-monetary-1-3': 'Samples/Badge/Premium/Badge_Premium_09.svg',
+    'non-monetary|premium|non-monetary-1-4': 'Samples/Badge/Premium/Badge_Premium_10.svg',
+    'non-monetary|premium|non-monetary-2-0': 'Samples/Badge/Premium/Badge_Premium_11.svg',
+    'non-monetary|premium|non-monetary-2-1': 'Samples/Badge/Premium/Badge_Premium_12.svg',
+    'non-monetary|premium|non-monetary-2-2': 'Samples/Badge/Premium/Badge_Premium_13.svg',
+    'non-monetary|premium|non-monetary-2-3': 'Samples/Badge/Premium/Badge_Premium_14.svg',
+    'non-monetary|premium|non-monetary-2-4': 'Samples/Badge/Premium/Badge_Premium_16.svg',
+    'non-monetary|premium|non-monetary-3-0': 'Samples/Badge/Premium/Badge_Premium_16.svg',
+    'non-monetary|premium|non-monetary-3-1': 'Samples/Badge/Premium/Badge_Premium_17.svg',
+    'non-monetary|premium|non-monetary-3-2': 'Samples/Badge/Premium/Badge_Premium_18.svg',
+    'non-monetary|premium|non-monetary-3-3': 'Samples/Badge/Premium/Badge_Premium_19.svg',
+    'non-monetary|premium|non-monetary-3-4': 'Samples/Badge/Premium/Badge_Premium_20.svg',
+    'non-monetary|premium|non-monetary-4-0': 'Samples/Badge/Premium/Badge_Premium_21.svg',
+    'non-monetary|premium|non-monetary-4-1': 'Samples/Badge/Premium/Badge_Premium_22.svg',
+    'non-monetary|fun|non-monetary-0-0': 'Samples/Badge/Fun & Playful/Badge_fun_01.svg',
+    'non-monetary|fun|non-monetary-0-1': 'Samples/Badge/Fun & Playful/Badge_fun_02.svg',
+    'non-monetary|fun|non-monetary-0-2': 'Samples/Badge/Fun & Playful/Badge_fun_03.svg',
+    'non-monetary|fun|non-monetary-0-3': 'Samples/Badge/Fun & Playful/Badge_fun_04.svg',
+    'non-monetary|fun|non-monetary-0-4': 'Samples/Badge/Fun & Playful/Badge_fun_05.svg',
+    'non-monetary|fun|non-monetary-1-0': 'Samples/Badge/Fun & Playful/Badge_fun_06.svg',
+    'non-monetary|fun|non-monetary-1-1': 'Samples/Badge/Fun & Playful/Badge_fun_07.svg',
+    'non-monetary|fun|non-monetary-1-2': 'Samples/Badge/Fun & Playful/Badge_fun_08.svg',
+    'non-monetary|fun|non-monetary-1-3': 'Samples/Badge/Fun & Playful/Badge_fun_09.svg',
+    'non-monetary|fun|non-monetary-1-4': 'Samples/Badge/Fun & Playful/Badge_fun_10.svg',
+    'non-monetary|fun|non-monetary-2-0': 'Samples/Badge/Fun & Playful/Badge_fun_11.svg',
+    'non-monetary|fun|non-monetary-2-1': 'Samples/Badge/Fun & Playful/Badge_fun_12.svg',
+    'non-monetary|fun|non-monetary-2-2': 'Samples/Badge/Fun & Playful/Badge_fun_13.svg',
+    'non-monetary|fun|non-monetary-2-3': 'Samples/Badge/Fun & Playful/Badge_fun_14.svg',
+    'non-monetary|fun|non-monetary-2-4': 'Samples/Badge/Fun & Playful/Badge_fun_15.svg',
+    'non-monetary|fun|non-monetary-3-0': 'Samples/Badge/Fun & Playful/Badge_fun_16.svg',
+    'non-monetary|fun|non-monetary-3-1': 'Samples/Badge/Fun & Playful/Badge_fun_17.svg',
+    'non-monetary|fun|non-monetary-3-2': 'Samples/Badge/Fun & Playful/Badge_fun_18.svg',
+    'non-monetary|fun|non-monetary-3-3': 'Samples/Badge/Fun & Playful/Badge_fun_19.svg',
+    'non-monetary|fun|non-monetary-3-4': 'Samples/Badge/Fun & Playful/Badge_fun_20.svg',
+    'non-monetary|fun|non-monetary-4-0': 'Samples/Badge/Fun & Playful/Badge_fun_21.svg',
+    'launch-mailer|minimal|launch-mailer-0-0': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_01.png',
+    'launch-mailer|minimal|launch-mailer-0-1': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_02.png',
+    'launch-mailer|minimal|launch-mailer-0-2': 'Samples/Launch Mailer/Minimal/LaunchMailer_minimal_03.png',
+    'launch-mailer|premium|launch-mailer-0-0': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_01.png',
+    'launch-mailer|premium|launch-mailer-0-1': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_02.png',
+    'launch-mailer|premium|launch-mailer-0-2': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_03.png',
+    'launch-mailer|premium|launch-mailer-0-3': 'Samples/Launch Mailer/Premium/LaunchMailer_Premium_04.png',
+    'launch-mailer|fun|launch-mailer-0-0': 'Samples/Launch Mailer/Fun & Playful/LaunchMailer_fun_01.png',
+    'launch-mailer|fun|launch-mailer-0-1': 'Samples/Launch Mailer/Fun & Playful/LaunchMailer_fun_02.png',
+    'login-banner|minimal|login-banner-0-0': 'Samples/Login Banner/Minimal/Login banner-Minimal-01.png',
+    'login-banner|minimal|login-banner-0-1': 'Samples/Login Banner/Minimal/Login banner-Minimal-02.png',
+    'login-banner|premium|login-banner-0-0': 'Samples/Login Banner/Premium/Login banner-Premium-01.png',
+    'login-banner|premium|login-banner-0-1': 'Samples/Login Banner/Premium/Login banner-Premium-02.png',
+    'login-banner|fun|login-banner-0-0': 'Samples/Login Banner/Fun & Playful/Login banner-Fun-01.png',
+    'login-banner|fun|login-banner-0-1': 'Samples/Login Banner/Fun & Playful/Login banner-Fun-02.png',
+  };
+
+  function buildVariants(bundleKey) {
+    const base = BADGE_VARIANTS[bundleKey] || [];
+    if (!base.length) return [];
+    const out = [];
+    for (let baseIdx = 0; baseIdx < base.length && out.length < VARIANTS_PER_BUNDLE; baseIdx++) {
+      for (let t = 0; t < TIERS.length && out.length < VARIANTS_PER_BUNDLE; t++) {
+        const v = base[baseIdx];
+        out.push({
+          id: `${bundleKey}-${baseIdx}-${t}`,
+          label: '',
+          icon: v.icon,
+        });
+      }
+    }
+    return out;
+  }
+
+  // --- read state ---
+  const PERSIST_KEY = 'cxBadge.designState.v1';
+  const persisted = (() => {
+    try { return JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch { return {}; }
+  })();
+  const styles = persisted.styles || {};
+  const badgeSelections = persisted.badgeSelections || {};
+  // Every per-badge lookup uses a compound `styleId|badgeId` key so the same
+  // badge template can appear under multiple styles as independent awards.
+  // Legacy bare-badgeId entries are supported as a fallback for reads.
+  const badgeNames = persisted.badgeNames || {};
+  const badgeCustomizations = persisted.badgeCustomizations || {};
+  const _legacyBadgeStyles = persisted.badgeStyles || {};
+  function styleForLegacyId(bareId, bundleKey) {
+    if (_legacyBadgeStyles[bareId]) return _legacyBadgeStyles[bareId];
+    return styles[bundleKey] || 'minimal';
+  }
+
+  // Pattern registry (mirrors customize.html BG_PATTERNS) so catalogue can
+  // paint the same background overlay on top of custom bg colors.
+  // The url() wrapper uses single quotes and the inner SVG attributes use
+  // %22 (URL-encoded double-quote) so the whole value contains no bare `"`
+  // — safe to drop into a double-quoted `style="..."` HTML attribute AND
+  // safe to assign to element.style.backgroundImage.
+  const BG_PATTERNS = {
+    'none':     'none',
+    'dots':     "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22><circle cx=%228%22 cy=%228%22 r=%221.4%22 fill=%22rgba(255,255,255,0.08)%22/></svg>')",
+    'diagonal': "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22><path d=%22M0 12 L12 0%22 stroke=%22rgba(255,255,255,0.06)%22 stroke-width=%221%22/></svg>')",
+    'grid':     "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22><path d=%22M0 0 H18 M0 0 V18%22 stroke=%22rgba(255,255,255,0.05)%22 stroke-width=%221%22 fill=%22none%22/></svg>')",
+    'plus':     "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22><path d=%22M10 7 V13 M7 10 H13%22 stroke=%22rgba(255,255,255,0.09)%22 stroke-width=%221.2%22 stroke-linecap=%22round%22/></svg>')",
+    'waves':    "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2220%22><path d=%22M0 10 Q10 0 20 10 T40 10%22 stroke=%22rgba(255,255,255,0.07)%22 stroke-width=%221%22 fill=%22none%22/></svg>')",
+  };
+  function getPatternCss(id) { return BG_PATTERNS[id || 'none'] || 'none'; }
+
+  // Apply the client's picked brand colors to every .badge-preview surface so
+  // the catalogue shows the branded look instead of the generic style presets.
+  (function applyBrandColors() {
+    const brand = persisted.brand || {};
+    const colors = brand.colors || [];
+    // Always run: monetary/non-monetary force a flat light-gray default that
+    // must apply even before brand extraction has populated colors/awardBg.
+    function darkenHex(hex, amount) {
+      const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+      if (!m) return hex;
+      const r = Math.max(0, Math.round(parseInt(m[1].slice(0,2), 16) * (1 - amount)));
+      const g = Math.max(0, Math.round(parseInt(m[1].slice(2,4), 16) * (1 - amount)));
+      const b = Math.max(0, Math.round(parseInt(m[1].slice(4,6), 16) * (1 - amount)));
+      return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+    function isLightHex(hex) {
+      const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+      if (!m) return true;
+      const r = parseInt(m[1].slice(0,2), 16);
+      const g = parseInt(m[1].slice(2,4), 16);
+      const b = parseInt(m[1].slice(4,6), 16);
+      return (0.299*r + 0.587*g + 0.114*b) > 160;
+    }
+    // Every catalogue tile uses the same light-grey backdrop; brand color
+    // still comes through on custom badges via inline styles.
+    const bg = '#F7F7F7';
+    const monetaryBg = '#F7F7F7';
+    const nonMonetaryBg = '#F7F7F7';
+    const lsaBg = '#F7F7F7';
+    // Text color must be a shade of the primary brand color, chosen to contrast
+    // against the bg. Amounts match customize.html's FG_LIGHTEN_AMOUNT / FG_DARKEN_AMOUNT.
+    const primary = colors[0];
+    const autoFg = (b) => primary
+      ? (isLightHex(b) ? darkenHex(primary, 0.80) : lightenHex(primary, 0.85))
+      : (isLightHex(b) ? '#1F2125' : '#FFFFFF');
+    const text = autoFg(bg);
+    const monetaryText = autoFg(monetaryBg);
+    const nonMonetaryText = autoFg(nonMonetaryBg);
+    const lsaText = autoFg(lsaBg);
+    // Scope: :not(.is-custom) on every .badge-name rule so per-badge user-
+    // picked colors (applied via DOM properties on customized cards) aren't
+    // stomped by the brand default. Background rules stay unscoped —
+    // customized bg is set via DOM property and its specificity beats these.
+    // has-img samples paint their own inner plate (typically LIGHT on these
+    // premium medals) — the label sits over the plate, not the outer bg —
+    // so default to a darker shade of the primary for those.
+    const darkText = primary ? darkenHex(primary, 0.80) : '#1F2125';
+    // Minimal-style plates are consistently lighter than Premium/Fun — bump
+    // the darkening so the label doesn't wash out on the metallic surfaces.
+    const minimalText = primary ? darkenHex(primary, 0.92) : '#000000';
+    const css = `
+      .badge-preview.minimal, .badge-preview.premium, .badge-preview.fun {
+        background: ${bg} !important;
+        color: ${text} !important;
+      }
+      /* Override the hardcoded per-style .badge-name colors (#FFFFFF for premium
+         etc.) only for non-customized badges. */
+      .badge-preview.minimal:not(.is-custom) .badge-name,
+      .badge-preview.premium:not(.is-custom) .badge-name,
+      .badge-preview.fun:not(.is-custom)    .badge-name { color: ${text} !important; }
+      /* Non-customized sample-backed badges: label sits over the medal's
+         light inner plate, so it needs the dark shade of the primary. */
+      .badge-preview.has-img:not(.is-custom) .badge-name { color: ${darkText} !important; }
+      /* Minimal-only: darker still, to stay readable on light metallic plates. */
+      .badge-preview.minimal:not(.is-custom) .badge-name,
+      .badge-preview.minimal.has-img:not(.is-custom) .badge-name { color: ${minimalText} !important; }
+      .cat-bundle[data-bundle="monetary"] .badge-preview.minimal,
+      .cat-bundle[data-bundle="monetary"] .badge-preview.premium,
+      .cat-bundle[data-bundle="monetary"] .badge-preview.fun {
+        background: ${monetaryBg} !important;
+        color: ${monetaryText} !important;
+      }
+      .cat-bundle[data-bundle="monetary"] .badge-preview.minimal:not(.is-custom) .badge-name,
+      .cat-bundle[data-bundle="monetary"] .badge-preview.premium:not(.is-custom) .badge-name,
+      .cat-bundle[data-bundle="monetary"] .badge-preview.fun:not(.is-custom)    .badge-name { color: ${monetaryText} !important; }
+      .cat-bundle[data-bundle="monetary"] .badge-preview.has-img:not(.is-custom) .badge-name { color: ${darkText} !important; }
+      .cat-bundle[data-bundle="monetary"] .badge-preview.minimal:not(.is-custom) .badge-name,
+      .cat-bundle[data-bundle="monetary"] .badge-preview.minimal.has-img:not(.is-custom) .badge-name { color: ${minimalText} !important; }
+      .cat-bundle[data-bundle="non-monetary"] .badge-preview.minimal,
+      .cat-bundle[data-bundle="non-monetary"] .badge-preview.premium,
+      .cat-bundle[data-bundle="non-monetary"] .badge-preview.fun {
+        background: ${nonMonetaryBg} !important;
+        color: ${nonMonetaryText} !important;
+      }
+      .cat-bundle[data-bundle="non-monetary"] .badge-preview.minimal:not(.is-custom) .badge-name,
+      .cat-bundle[data-bundle="non-monetary"] .badge-preview.premium:not(.is-custom) .badge-name,
+      .cat-bundle[data-bundle="non-monetary"] .badge-preview.fun:not(.is-custom)    .badge-name { color: ${nonMonetaryText} !important; }
+      .cat-bundle[data-bundle="lsa"] .badge-preview.minimal,
+      .cat-bundle[data-bundle="lsa"] .badge-preview.premium,
+      .cat-bundle[data-bundle="lsa"] .badge-preview.fun {
+        background: ${lsaBg} !important;
+        color: ${lsaText} !important;
+      }
+      .cat-bundle[data-bundle="lsa"] .badge-preview.minimal:not(.is-custom) .badge-name,
+      .cat-bundle[data-bundle="lsa"] .badge-preview.premium:not(.is-custom) .badge-name,
+      .cat-bundle[data-bundle="lsa"] .badge-preview.fun:not(.is-custom)    .badge-name { color: ${lsaText} !important; }
+      .badge-preview .glyph { color: inherit !important; filter: none !important; opacity: 1 !important; }
+    `;
+    let style = document.getElementById('brand-theme');
+    if (!style) { style = document.createElement('style'); style.id = 'brand-theme'; document.head.appendChild(style); }
+    style.textContent = css;
+  })();
+
+  const params = new URLSearchParams(location.search);
+  const company = (params.get('company') || '').trim();
+  // back link forwards selected/company so the previous flow is preserved
+  const navBack = document.getElementById('navBack');
+  if (navBack) navBack.href = 'design-style.html' + location.search;
+  const catBackFab = document.getElementById('catBackFab');
+  if (catBackFab) catBackFab.href = 'design-style.html' + location.search;
+
+  // Download-as-PDF generates and saves a REAL .pdf file client-side via
+  // html2pdf.js (html2canvas + jsPDF under the hood), instead of relying on
+  // window.print() + the browser's native print dialog. The print-dialog
+  // approach silently did nothing for some users (blocked pop-ups/printing,
+  // no default PDF handler, or a slow print-preview render with no visible
+  // "in progress" state) — this makes the button itself always produce a
+  // downloadable file and surfaces a real error if it can't.
+  const catPdfFab = document.getElementById('catPdfFab');
+  const catPdfFabLabel = catPdfFab ? catPdfFab.querySelector('.cat-pdf-fab-label') : null;
+  function loadHtml2Pdf() {
+    if (window.html2pdf) return Promise.resolve();
+    return Promise.reject(new Error('The bundled PDF component could not be loaded. Please redeploy the latest files and try again.'));
+  }
+  if (catPdfFab) {
+    catPdfFab.addEventListener('click', async () => {
+      if (catPdfFab.classList.contains('is-loading')) return;
+      catPdfFab.classList.add('is-loading');
+      catPdfFab.setAttribute('aria-busy', 'true');
+      if (catPdfFabLabel) catPdfFabLabel.textContent = 'Preparing PDF…';
+      try {
+        await loadHtml2Pdf();
+        const target = document.querySelector('.wrap');
+        if (!target) throw new Error('Nothing to export.');
+        document.body.classList.add('pdf-export');
+        const companySlug = company
+          ? company.replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase()
+          : '';
+        await window.html2pdf().set({
+          margin: 10,
+          filename: companySlug ? `${companySlug}-award-catalogue.pdf` : 'award-catalogue.pdf',
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: '#FFFFFF',
+            windowWidth: 1200,
+            // Custom patterns are CSS data-SVG backgrounds. Browsers can
+            // display them but may taint html2canvas when the PDF is saved.
+            // Remove those decorative layers only in the export clone; the
+            // chosen artwork, names and other client-entered values remain.
+            onclone: (exportDoc) => {
+              exportDoc.querySelectorAll('.badge-preview').forEach(preview => {
+                preview.style.backgroundImage = 'none';
+              });
+              exportDoc.querySelectorAll('.catalogue-field').forEach(field => {
+                field.setAttribute('value', field.value);
+              });
+            }
+          },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+          pagebreak: { mode: ['css', 'avoid-all'], avoid: '.cat-bundle' }
+        }).from(target).save();
+      } catch (err) {
+        console.error('[catalogue] PDF export failed', err);
+        // Some browsers render complex SVG artwork correctly but mark the
+        // html2canvas surface as unreadable. Their native print engine does
+        // not have that limitation, so keep every selected design visible and
+        // hand off to the browser's Save as PDF flow instead of failing.
+        const message = err && err.message ? err.message : '';
+        if (/tainted canvas|todataurl|securityerror/i.test(message)) {
+          if (catPdfFabLabel) catPdfFabLabel.textContent = 'Choose Save as PDF…';
+          window.print();
+          return;
+        }
+        alert('Sorry — the PDF could not be generated. ' + (message || 'Please try again.'));
+      } finally {
+        document.body.classList.remove('pdf-export');
+        catPdfFab.classList.remove('is-loading');
+        catPdfFab.removeAttribute('aria-busy');
+        if (catPdfFabLabel) catPdfFabLabel.textContent = 'Download as PDF';
+      }
+    });
+  }
+
+  if (company) {
+    const sub = document.getElementById('subline');
+    if (sub) sub.innerHTML = `Everything you've picked for <span class="company-name">${escapeHtml(company)}</span>.`;
+  }
+  function lightenHex(hex, amount) {
+    // Mix hex toward white by `amount` (0..1). Mirrors darkenHex so the two
+    // together give shades of a picked color rather than arbitrary greys.
+    const m = (hex || '').match(/^#?([0-9a-f]{6})$/i);
+    if (!m) return hex;
+    const mix = (c) => Math.min(255, Math.round(c + (255 - c) * amount));
+    const r = mix(parseInt(m[1].slice(0,2), 16));
+    const g = mix(parseInt(m[1].slice(2,4), 16));
+    const b = mix(parseInt(m[1].slice(4,6), 16));
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
+  function placeholderFields(bundleKey, awardName) {
+    const field = (placeholder, value = '') =>
+      `<input class="catalogue-field" type="text" value="${escapeHtml(value)}" placeholder="${placeholder}" aria-label="${placeholder}">`;
+    if (bundleKey === 'lsa') {
+      return field('LSA Years');
+    }
+    if (bundleKey === 'teaser' || bundleKey === 'certificate') {
+      return '';
+    }
+    if (['launch-mailer', 'feed-banner', 'login-banner'].includes(bundleKey)) {
+      return field('Program Name');
+    }
+    if (bundleKey === 'non-monetary') {
+      return field('Badge Name', awardName || '');
+    }
+    return field('Award Name', awardName || '');
+  }
+
+  // --- render ---
+  const contentEl = document.getElementById('catalogueContent');
+  const emptyEl = document.getElementById('emptyState');
+  const summaryEl = document.getElementById('summaryBar');
+
+  // "Customized" is the strict flag set on explicit Save (or by autoSave once
+  // the user actually changes a field). Used for the per-card "Custom" tag
+  // and the summary count — NOT for filtering visibility.
+  function wasCustomized(id) {
+    const c = badgeCustomizations[id];
+    return !!(c && c.customized === true);
+  }
+  // A bundle appears in the catalogue if the user picked any of its badges
+  // in the design-style gallery. Selection alone is enough — the catalogue
+  // should reflect *everything* the user chose, whether they went into
+  // customize.html for it or not.
+  const bundlesWithPicks = BUNDLES.filter(b => {
+    const sel = badgeSelections[b.key];
+    return sel && (Array.isArray(sel) ? sel.length : sel.size) > 0;
+  });
+
+  let totalBadges = 0;
+  let totalCustom = 0;
+
+  if (bundlesWithPicks.length === 0) {
+    emptyEl.hidden = false;
+  } else {
+    summaryEl.hidden = false;
+    bundlesWithPicks.forEach(b => {
+      const bundleStyleId = styles[b.key] || 'minimal';
+      const selRaw = badgeSelections[b.key];
+      // Selections are compound `styleId|badgeId` keys. Legacy bare entries
+      // are compounded on the fly using the same rules as design-style.html.
+      const variantIndex = new Map(buildVariants(b.key).map(v => [v.id, v]));
+      const picks = [];
+      (Array.isArray(selRaw) ? selRaw : Array.from(selRaw || [])).forEach(entry => {
+        if (typeof entry !== 'string') return;
+        let styleId, badgeId;
+        if (entry.includes('|')) {
+          const idx = entry.indexOf('|');
+          styleId = entry.slice(0, idx);
+          badgeId = entry.slice(idx + 1);
+        } else {
+          badgeId = entry;
+          styleId = styleForLegacyId(badgeId, b.key);
+        }
+        const v = variantIndex.get(badgeId);
+        if (!v) return;
+        picks.push({ v, styleId, key: styleId + '|' + badgeId });
+      });
+      if (!picks.length) return;
+      totalBadges += picks.length;
+
+      // Header pill shows the mix of styles actually used in this bundle.
+      const stylesInThisBundle = Array.from(new Set(picks.map(p => p.styleId)));
+      const styleName = stylesInThisBundle.length === 1
+        ? (STYLE_NAMES[stylesInThisBundle[0]] || 'Minimal')
+        : 'Mixed';
+      const styleClassForHeader = stylesInThisBundle.length === 1
+        ? stylesInThisBundle[0]
+        : 'minimal';
+
+      const cardsHtml = picks.map(({ v, styleId, key }) => {
+        // Compound key lookups; fall back to legacy bare-badgeId entries so
+        // pre-migration customizations still render on first visit.
+        const customName = badgeNames[key] != null ? badgeNames[key] : badgeNames[v.id];
+        const name = customName != null ? customName : v.label;
+        const custom = badgeCustomizations[key] || badgeCustomizations[v.id] || {};
+        const isCustom = custom.customized === true;
+        if (isCustom) totalCustom += 1;
+        const sampleSrc = SAMPLE_OVERRIDES[`${b.key}|${styleId}|${v.id}`];
+        const glyphMarkup = sampleSrc
+          ? `<img class="glyph-img" src="${sampleSrc.replace(/ /g, '%20')}" alt="">`
+          : `<span class="glyph">${v.icon}</span>`;
+        // File basename (e.g. "Monetary_Premium_01") drives the per-sample
+        // label-position override — matches customize.html's data-sample.
+        const sampleBase = sampleSrc
+          ? sampleSrc.split('/').pop().replace(/\.svg$/i, '')
+          : '';
+        const previewClasses = ['badge-preview', styleId];
+        if (sampleSrc) previewClasses.push('has-img');
+        // `is-custom` scopes the injected brand-theme rules so they don't
+        // stomp per-badge user-picked colors set via DOM properties below.
+        if (isCustom) previewClasses.push('is-custom');
+        const dataSampleAttr = sampleBase ? ` data-sample="${escapeHtml(sampleBase)}"` : '';
+        // Details caption — text-listing of the customization so clients can
+        // verify (and export) every value at a glance.
+        const patternLabel = (custom.pattern && custom.pattern !== 'none') ? custom.pattern : '—';
+        const detailsHtml = isCustom ? `
+          <div class="cat-badge-details">
+            <div><span class="dk">Text</span><span class="dv">${escapeHtml(name || '—')}</span></div>
+            <div><span class="dk">Font</span><span class="dv">${escapeHtml(custom.fontFamily || 'Inter')} · ${custom.fontSize || 32}px</span></div>
+            <div><span class="dk">Text color</span><span class="dv"><span class="sw" style="background:${custom.fg || '#FFFFFF'}"></span>${escapeHtml((custom.fg || '#FFFFFF').toUpperCase())}</span></div>
+            <div><span class="dk">Background</span><span class="dv"><span class="sw" style="background:${custom.bg || '—'}"></span>${escapeHtml((custom.bg || '—').toUpperCase())}</span></div>
+            <div><span class="dk">Pattern</span><span class="dv">${escapeHtml(patternLabel)}</span></div>
+          </div>` : '';
+        const placeholdersHtml = placeholderFields(b.key, customName);
+        // Every customized value is applied via DOM property AFTER innerHTML
+        // is set (see applyPreviewStyles(section) below). Nothing computed
+        // gets template-interpolated into a style="…" attribute anymore —
+        // that's what leaked `);background-repeat:…"` into the visible text
+        // on patterned cards.
+        return `
+          <div class="cat-badge" data-badge-key="${escapeHtml(key)}" data-badge-id="${escapeHtml(v.id)}">
+            <div class="${previewClasses.join(' ')}"${dataSampleAttr}>
+              ${isCustom ? '<span class="customized-tag">Custom</span>' : ''}
+              ${glyphMarkup}
+            </div>
+            ${placeholdersHtml ? `<div class="cat-badge-placeholders">${placeholdersHtml}</div>` : ''}
+            ${detailsHtml}
+          </div>`;
+      }).join('');
+
+      const iconSrc = b.icon ? b.icon.replace(/ /g, '%20') : '';
+      const tileMarkup = iconSrc
+        ? `<div class="b-tile"><img src="${iconSrc}" alt=""></div>`
+        : `<div class="b-tile">${b.emoji}</div>`;
+
+      const section = document.createElement('section');
+      section.className = 'cat-bundle';
+      section.setAttribute('data-bundle', b.key);
+      section.innerHTML = `
+        <div class="cat-bundle-head">
+          <div class="lhs">
+            ${tileMarkup}
+            <div>
+              <h2>${escapeHtml(b.name)}</h2>
+              <div class="meta">${picks.length} badge${picks.length === 1 ? '' : 's'} selected</div>
+            </div>
+          </div>
+          <span class="style-pill ${styleClassForHeader}">${escapeHtml(styleName)} style</span>
+        </div>
+        <div class="cat-badge-grid">${cardsHtml}</div>
+      `;
+      // Apply every computed style via DOM properties (no HTML-attribute
+      // templating for values that can contain quotes — see the patterned-bg
+      // bug where url("…") collided with the outer style="…" wrapper and
+      // leaked into visible text).
+      section.querySelectorAll('.cat-badge').forEach(cardEl => {
+        const key = cardEl.getAttribute('data-badge-key');
+        const id = cardEl.getAttribute('data-badge-id');
+        // Prefer compound-key lookup; legacy bare-badgeId entries still work
+        // for pre-migration data on first visit.
+        const custom = badgeCustomizations[key] || badgeCustomizations[id] || {};
+        const preview = cardEl.querySelector('.badge-preview');
+        const nameEl  = cardEl.querySelector('.badge-name');
+        if (preview) {
+          // Every catalogue tile stays on the light-grey backdrop — do not
+          // inline `custom.bg` (which would stamp the persisted brand default
+          // dark navy onto every card).
+          const patternCss = getPatternCss(custom.pattern);
+          if (patternCss && patternCss !== 'none') {
+            preview.style.backgroundImage  = patternCss;
+            preview.style.backgroundRepeat = 'repeat';
+          }
+        }
+        if (nameEl) {
+          if (custom.fg) nameEl.style.color = custom.fg;
+          if (custom.fontFamily) nameEl.style.fontFamily = "'" + custom.fontFamily + "', ui-sans-serif, system-ui, sans-serif";
+          // Multiplier MUST match customize.html's `.mockup-badge` calc
+          // (customize.html ~line 1002: `Math.max(7, Math.round(state.fontSize * 0.35))`).
+          // That feed-mockup preview is what the client judges the catalogue
+          // card against — the earlier 0.5 multiplier made this card read
+          // ~40% larger than the preview the client actually saw.
+          if (custom.fontSize) nameEl.style.fontSize = Math.max(7, Math.round(Number(custom.fontSize) * 0.35)) + 'px';
+        }
+      });
+      contentEl.appendChild(section);
+    });
+
+    document.getElementById('statBundles').textContent = bundlesWithPicks.length;
+    document.getElementById('statBadges').textContent = totalBadges;
+    document.getElementById('statCustom').textContent = totalCustom;
+  }
+
+  // Stepper click navigation
+  document.querySelectorAll('.stepper .step[data-href]').forEach(s => {
+    s.addEventListener('click', () => { location.href = s.dataset.href; });
+  });
+</script>
+
+
+</body>
+</html>

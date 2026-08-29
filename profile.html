@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand profile — Interactive Catalogue</title>
+<style>
+  :root {
+    --alabaster: #DCDCDD;
+    --pale-slate: #C5C3C6;
+    --iron: #46494C;
+    --blue-slate: #4C5C68;
+    --cyan: #FF6D05;
+    --cyan-soft: #FFE6D4;
+    --ink: #1F2125;
+    --muted: #6B6E72;
+    --line: #ECECEE;
+    --bg: #F7F7F8;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; background-color: #ffffff; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background-color: transparent;
+        background-attachment: fixed;
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: none; margin: 0; padding: 0 120px; }
+
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 120px; max-width: none; margin: 0;
+  }
+  .nav-left { display: flex; align-items: center; gap: 18px; }
+  .brand-logo { display: inline-flex; align-items: center; text-decoration: none; }
+  .brand-logo img { height: 24px; width: auto; display: block; }
+  .nav-back {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500;
+    padding: 8px 14px; border-radius: 100px; transition: background 0.2s;
+  }
+  .nav-back:hover { background: rgba(255,255,255,0.6); color: var(--cyan); }
+  .nav-links { display: flex; align-items: center; gap: 24px; list-style: none; }
+  .nav-links a { color: var(--iron); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--cyan); }
+  .nav-links a.nav-profile {
+    display: none; align-items: center; gap: 8px;
+    padding: 4px 14px 4px 4px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 100px;
+    color: var(--ink); font-size: 13px; font-weight: 600;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .nav-links a.nav-profile:hover {
+    color: var(--ink); border-color: var(--alabaster);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(70,73,76,0.06);
+  }
+  .nav-links a.nav-profile.show { display: inline-flex; }
+  .nav-profile-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--cyan-soft); color: var(--cyan);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; overflow: hidden; flex: 0 0 auto;
+  }
+  .nav-profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .nav-profile-name { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .page-head {
+    text-align: center;
+    padding: 6vh 0 3vh;
+    width: 100%;
+    max-width: 60vw;
+    margin: 0 auto;
+  }
+  .page-head h1 {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .page-head h1 .accent { color: var(--cyan); }
+  .page-head p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .panel-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 1px 2px rgba(70,73,76,0.04), 0 12px 32px rgba(70,73,76,0.05);
+  }
+
+  .profile-grid {
+    display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px;
+  }
+  @media (max-width: 820px) { .profile-grid { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 10px; }
+  .field-label { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: 0.2px; }
+  .field-value { font-size: 14px; color: var(--ink); word-break: break-word; }
+  .field-value.muted { color: var(--muted); }
+  .field-value a { color: #29294C; text-decoration: none; border-bottom: 1px dashed rgba(41,41,76,0.35); }
+  .field-value a:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+  .logo-preview {
+    width: 100%; aspect-ratio: 16 / 9;
+    border-radius: 12px; background: #F4F5F7;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .logo-preview img { max-width: 80%; max-height: 80%; object-fit: contain; }
+  .logo-preview .placeholder { color: var(--muted); font-size: 13px; }
+
+  .doc-pill {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: #F4F5F7; border-radius: 10px;
+    font-size: 13px; color: var(--ink);
+  }
+
+  .swatches { display: flex; gap: 14px; flex-wrap: wrap; }
+  .swatch {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .swatch .swatch-color {
+    width: 44px; height: 44px; border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+  }
+  .swatch .hex {
+    font-size: 10px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    color: var(--muted); white-space: nowrap;
+  }
+
+  .url-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .empty-card {
+    text-align: center; padding: 40px 24px;
+    color: var(--muted); font-size: 14px;
+  }
+  .empty-card .empty-title { font-size: 16px; color: var(--ink); font-weight: 600; margin-bottom: 6px; }
+
+  .foot {
+    position: fixed; right: 32px; bottom: 84px; z-index: 9999;
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px 10px 22px;
+    background: #FFFFFF;
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 100px;
+    box-shadow: 0 12px 32px rgba(70,73,76,0.10), 0 2px 6px rgba(70,73,76,0.05);
+  }
+  .panel-card { padding-bottom: 56px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px; border-radius: 100px; border: none;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-primary { background: var(--cyan); color: var(--white); }
+  .btn-primary:hover { background: var(--iron); transform: translateY(-1px); }
+  .btn-ghost { background: var(--white); color: var(--iron); border: 1px solid var(--line); }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--alabaster); }
+
+  .page-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .page-bg img {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 92%);
+    will-change: transform;
+    animation: pageBgDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes pageBgDrift {
+    0%   { transform: translate(0, 0) scale(1.05); }
+    100% { transform: translate(-1.8%, -1.5%) scale(1.10); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-bg img { animation: none; }
+  }
+
+
+</style>
+</head>
+<body>
+<div class="page-bg" aria-hidden="true"><img src="Background.svg" alt=""></div>
+
+
+<nav class="top">
+  <div class="nav-left">
+    <a href="https://www.vantagecircle.com" class="brand-logo" aria-label="Vantage Circle home" target="_blank" rel="noopener"><img src="Images/vc-logo-new.png" alt="Vantage Circle"></a>
+  </div>
+  <ul class="nav-links">
+    <li><a href="how-it-works.html">How it works</a></li>
+    <li><a href="profile.html" class="nav-profile" id="navProfile" aria-label="View your profile">
+      <span class="nav-profile-avatar" id="navProfileAvatar"></span>
+      <span class="nav-profile-name" id="navProfileName"></span>
+    </a></li>
+  </ul>
+</nav>
+<script>
+  (function() {
+    try {
+      var ps = JSON.parse(sessionStorage.getItem('cxBadge.designState.v1') || '{}');
+      var company = (ps.company || '').trim();
+      if (!company) return;
+      var chip = document.getElementById('navProfile');
+      var avatar = document.getElementById('navProfileAvatar');
+      var nameEl = document.getElementById('navProfileName');
+      if (!chip || !avatar || !nameEl) return;
+      nameEl.textContent = 'Profile';
+      var colors = (ps.brand && ps.brand.colors) || [];
+      var primary = colors[0];
+      if (primary) {
+        avatar.style.background = primary;
+        avatar.style.color = 'transparent';
+        avatar.textContent = '';
+      } else {
+        avatar.textContent = company.charAt(0).toUpperCase();
+      }
+      chip.classList.add('show');
+    } catch (e) {}
+  })();
+</script>
+
+<main>
+  <div class="wrap">
+    <div class="panel-card" id="profileCard"></div>
+  </div>
+</main>
+
+<div class="foot">
+  <a href="brand.html" class="btn btn-primary">
+    Edit
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M12 20h9M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+    </svg>
+  </a>
+</div>
+
+<script>
+  const PERSIST_KEY = 'cxBadge.designState.v1';
+  const persisted = (() => {
+    try { return JSON.parse(sessionStorage.getItem(PERSIST_KEY) || '{}'); } catch { return {}; }
+  })();
+  const brand = persisted.brand || {};
+  const company = (persisted.company || '').trim();
+
+  const headingCompany = document.getElementById('headingCompany');
+  if (headingCompany) headingCompany.textContent = company || 'Your';
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function renderEmpty() {
+    document.getElementById('profileCard').innerHTML = `
+      <div class="empty-card">
+        <div class="empty-title">No brand info yet</div>
+        <div>Add your logo, website, and brand assets to build your profile.</div>
+        <div style="margin-top: 18px;"><a href="brand.html" class="btn btn-primary">Add brand info</a></div>
+      </div>`;
+  }
+
+  function renderProfile() {
+    const hasAnything = brand.logoDataUrl || brand.website || (brand.urls && brand.urls.length) || brand.docName || (brand.colors && brand.colors.length);
+    if (!hasAnything) { renderEmpty(); return; }
+
+    const logoBlock = brand.logoDataUrl
+      ? `<img src="${brand.logoDataUrl}" alt="${escapeHtml(brand.logoName || 'Logo')}">`
+      : `<span class="placeholder">No logo uploaded</span>`;
+
+    const websiteBlock = brand.website
+      ? `<div class="field-value"><a href="${escapeHtml(brand.website)}" target="_blank" rel="noopener">${escapeHtml(brand.website)}</a></div>`
+      : `<div class="field-value muted">Not added</div>`;
+
+    const urlsBlock = (Array.isArray(brand.urls) && brand.urls.length)
+      ? `<div class="url-list">${brand.urls.map(u => `<a class="field-value" style="display:block;" href="${escapeHtml(u)}" target="_blank" rel="noopener">${escapeHtml(u)}</a>`).join('')}</div>`
+      : `<div class="field-value muted">None added</div>`;
+
+    const docBlock = brand.docName
+      ? `<div class="doc-pill"><span>📄</span><span>${escapeHtml(brand.docName)}</span></div>`
+      : `<div class="field-value muted">Not uploaded</div>`;
+
+    const colorsBlock = (Array.isArray(brand.colors) && brand.colors.length)
+      ? `<div class="swatches">${brand.colors.map(c => `<div class="swatch"><div class="swatch-color" style="background:${escapeHtml(c)}"></div><span class="hex">${escapeHtml(c)}</span></div>`).join('')}</div>`
+      : `<div class="field-value muted">Will be extracted from your logo</div>`;
+
+    document.getElementById('profileCard').innerHTML = `
+      <div class="profile-grid">
+        <div class="field">
+          <div class="field-label">Company logo</div>
+          <div class="logo-preview">${logoBlock}</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 22px;">
+          <div class="field">
+            <div class="field-label">Company name</div>
+            <div class="field-value ${company ? '' : 'muted'}">${company ? escapeHtml(company) : 'Not added'}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Company website</div>
+            ${websiteBlock}
+          </div>
+          <div class="field">
+            <div class="field-label">Other URLs</div>
+            ${urlsBlock}
+          </div>
+          <div class="field">
+            <div class="field-label">Brand guidelines</div>
+            ${docBlock}
+          </div>
+          <div class="field">
+            <div class="field-label">Brand colors</div>
+            <div style="padding-bottom: 22px;">${colorsBlock}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  renderProfile();
+</script>
+</body>
+</html>
