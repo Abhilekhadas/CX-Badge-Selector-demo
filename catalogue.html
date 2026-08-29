@@ -471,7 +471,8 @@
      viewer's actual window size at the moment they clicked Download. */
   body.pdf-export .wrap { padding: 0 48px !important; max-width: 100% !important; }
   body.pdf-export main  { padding: 0 !important; }
-  body.pdf-export .cat-bundle { box-shadow: none !important; border-color: #DDDDDD; }
+  body.pdf-export .cat-bundle { break-inside: auto !important; box-shadow: none !important; border-color: #DDDDDD; }
+  body.pdf-export .cat-badge { break-inside: avoid !important; }
   body.pdf-export .cat-badge-grid { grid-template-columns: repeat(3, 1fr) !important; }
 
   @media print {
@@ -1098,7 +1099,10 @@
             }
           },
           jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-          pagebreak: { mode: ['css', 'avoid-all'], avoid: '.cat-bundle' }
+          // Bundles can be taller than a PDF page. Avoiding the entire
+          // section creates blank pages, so only keep individual cards and
+          // their headings together while the bundle flows normally.
+          pagebreak: { mode: ['css', 'legacy'], avoid: ['.cat-badge', '.cat-bundle-head', '.summary-bar'] }
         }).from(target).save();
       } catch (err) {
         console.error('[catalogue] PDF export failed', err);
